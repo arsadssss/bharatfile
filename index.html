@@ -22,6 +22,28 @@
       --success: #12B76A;
       --success-bg: rgba(18, 183, 106, 0.12);
       --radius: 20px;
+      --drawer-bg: rgba(255, 255, 255, 0.98);
+      --input-bg: #FFFFFF;
+      --chip-bg: rgba(234, 241, 251, 0.85);
+      --slider-track: #D8E4F2;
+    }
+
+    /* Dark Mode Theme */
+    body.dark-mode {
+      --primary: #4E65FF;
+      --primary-dark: #384BD8;
+      --primary-gradient: linear-gradient(135deg, #4E65FF, #8B5CF6);
+      --bg-light: #0B0E14;
+      --card-bg: rgba(22, 27, 38, 0.94);
+      --card-border: rgba(45, 55, 75, 0.8);
+      --text-primary: #F0F4F8;
+      --text-secondary: #9BA8BA;
+      --success: #12B76A;
+      --success-bg: rgba(18, 183, 106, 0.2);
+      --drawer-bg: rgba(17, 22, 32, 0.98);
+      --input-bg: #151A24;
+      --chip-bg: rgba(30, 39, 56, 0.85);
+      --slider-track: #232B3B;
     }
 
     * {
@@ -32,6 +54,11 @@
       -webkit-font-smoothing: antialiased;
     }
 
+    html, body {
+      width: 100%;
+      overflow-x: hidden;
+    }
+
     body {
       background: var(--bg-light);
       color: var(--text-primary);
@@ -39,33 +66,41 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 20px 16px 80px 16px;
+      transition: background 0.3s ease, color 0.3s ease;
     }
 
-    .container {
+    /* Responsive Main Container */
+    .app-container {
       width: 100%;
-      max-width: 440px;
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 16px 20px 80px 20px;
       display: flex;
       flex-direction: column;
-      gap: 18px;
+      gap: 22px;
     }
 
+    /* Top Navigation Header */
     .header {
+      width: 100%;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 8px 4px;
+      padding: 10px 0;
     }
 
-    .logo-badge {
+    .header-left {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
+      text-decoration: none;
+      color: inherit;
+      cursor: pointer;
     }
 
     .logo-icon {
-      width: 38px;
-      height: 38px;
+      width: 40px;
+      height: 40px;
       background: var(--primary-gradient);
       border-radius: 12px;
       display: flex;
@@ -75,47 +110,189 @@
       font-weight: 800;
       font-size: 20px;
       box-shadow: 0 4px 14px rgba(13, 89, 242, 0.35);
+      flex-shrink: 0;
     }
 
     .brand-title {
-      font-size: 20px;
-      font-weight: 700;
+      font-size: 21px;
+      font-weight: 800;
       color: var(--text-primary);
-      letter-spacing: -0.3px;
+      letter-spacing: -0.4px;
+    }
+
+    /* Desktop Navigation Links */
+    .desktop-nav {
+      display: none;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .nav-link {
+      padding: 8px 14px;
+      border-radius: 100px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      background: transparent;
+      border: none;
+    }
+
+    .nav-link:hover, .nav-link.active {
+      color: var(--primary);
+      background: rgba(13, 89, 242, 0.08);
+    }
+
+    /* Header Right Actions */
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
     .security-pill {
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 600;
       color: var(--success);
       background: var(--success-bg);
-      padding: 6px 12px;
+      padding: 7px 14px;
       border-radius: 100px;
       display: flex;
       align-items: center;
-      gap: 5px;
+      gap: 6px;
+      white-space: nowrap;
     }
 
+    /* Hamburger Menu Button (Mobile & Tablet) */
+    .btn-hamburger {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      color: var(--text-primary);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      transition: all 0.2s ease;
+      padding: 0;
+    }
+
+    .btn-hamburger:hover {
+      background: rgba(13, 89, 242, 0.08);
+      border-color: var(--primary);
+    }
+
+    .btn-hamburger span {
+      display: block;
+      width: 20px;
+      height: 2px;
+      background: var(--text-primary);
+      border-radius: 2px;
+      transition: all 0.25s ease;
+    }
+
+    /* Dark Mode Toggle Button */
+    .btn-theme-toggle {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 18px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-theme-toggle:hover {
+      transform: scale(1.05);
+    }
+
+    /* Glassmorphism Main Card */
     .glass-card {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
       border-radius: var(--radius);
-      box-shadow: 0 10px 28px rgba(16, 40, 78, 0.05);
+      box-shadow: 0 10px 32px rgba(16, 40, 78, 0.06);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
-      padding: 22px;
+      padding: 24px;
+      width: 100%;
+    }
+
+    /* Mode Segmented Switcher */
+    .segmented-control {
+      display: flex;
+      background: var(--chip-bg);
+      padding: 4px;
+      border-radius: 100px;
+      margin-bottom: 20px;
+      max-width: 320px;
+    }
+
+    .segmented-btn {
+      flex: 1;
+      padding: 8px 16px;
+      border-radius: 100px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: center;
+    }
+
+    .segmented-btn.active {
+      background: var(--card-bg);
+      color: var(--primary);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    /* 2-Column Responsive Compressor Layout */
+    .compressor-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+      width: 100%;
+    }
+
+    /* Dropzone Area */
+    .dropzone-container {
       display: flex;
       flex-direction: column;
+      gap: 14px;
     }
 
     .dropzone {
-      border: 1.5px dashed #A5BCDF;
-      border-radius: 14px;
+      border: 2px dashed #A5BCDF;
+      border-radius: 16px;
       background: rgba(238, 244, 252, 0.65);
-      padding: 28px 18px;
+      padding: 36px 20px;
       text-align: center;
       cursor: pointer;
       transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 220px;
+    }
+
+    body.dark-mode .dropzone {
+      background: rgba(25, 33, 48, 0.5);
+      border-color: #3B4A66;
     }
 
     .dropzone.drag-active {
@@ -125,24 +302,24 @@
     }
 
     .cloud-icon {
-      width: 48px;
-      height: 48px;
+      width: 52px;
+      height: 52px;
       background: var(--primary);
       border-radius: 50%;
-      margin: 0 auto 12px auto;
+      margin-bottom: 14px;
       display: flex;
       align-items: center;
       justify-content: center;
       color: white;
-      box-shadow: 0 6px 16px rgba(13, 89, 242, 0.35);
+      box-shadow: 0 6px 18px rgba(13, 89, 242, 0.35);
     }
 
     .btn-choose {
       display: inline-block;
       margin-top: 14px;
-      padding: 10px 24px;
-      background: #FFFFFF;
-      border: 1px solid #D0DCED;
+      padding: 10px 26px;
+      background: var(--input-bg);
+      border: 1px solid var(--card-border);
       border-radius: 100px;
       font-size: 13px;
       font-weight: 600;
@@ -153,100 +330,115 @@
     }
 
     .btn-choose:hover {
-      background: #F8FAFD;
+      border-color: var(--primary);
     }
 
+    /* File Preview Box */
     .file-preview {
       display: none;
       align-items: center;
       justify-content: space-between;
-      background: #FFFFFF;
-      border: 1px solid #D8E4F2;
-      border-radius: 12px;
-      padding: 12px 14px;
-      margin-top: 14px;
+      background: var(--input-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 14px 18px;
     }
 
     .file-info {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
       overflow: hidden;
     }
 
     .file-icon {
-      font-size: 24px;
+      font-size: 28px;
     }
 
     .file-name {
-      font-size: 13px;
-      font-weight: 600;
+      font-size: 14px;
+      font-weight: 700;
       color: var(--text-primary);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      max-width: 210px;
+      max-width: 240px;
     }
 
     .file-size {
-      font-size: 11px;
+      font-size: 12px;
       color: var(--text-secondary);
+      margin-top: 2px;
     }
 
     .btn-remove {
-      background: none;
+      background: rgba(240, 68, 56, 0.1);
       border: none;
       color: #F04438;
       cursor: pointer;
-      font-size: 16px;
+      font-size: 14px;
       font-weight: bold;
-      padding: 4px;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s ease;
+    }
+
+    .btn-remove:hover {
+      background: rgba(240, 68, 56, 0.2);
+    }
+
+    /* Controls Column */
+    .controls-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 16px;
     }
 
     .control-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 8px;
-    }
-
-    .slider-container {
-      margin-top: 20px;
-    }
-
-    input[type=range] {
-      width: 100%;
-      height: 6px;
-      border-radius: 4px;
-      background: #D8E4F2;
-      outline: none;
-      -webkit-appearance: none;
-      accent-color: var(--primary);
     }
 
     .badge-percent {
       background: var(--primary-gradient);
       color: white;
-      font-weight: 700;
-      font-size: 14px;
-      padding: 5px 12px;
-      border-radius: 10px;
+      font-weight: 800;
+      font-size: 15px;
+      padding: 6px 14px;
+      border-radius: 12px;
+    }
+
+    input[type=range] {
+      width: 100%;
+      height: 8px;
+      border-radius: 6px;
+      background: var(--slider-track);
+      outline: none;
+      -webkit-appearance: none;
+      accent-color: var(--primary);
+      cursor: pointer;
     }
 
     .preset-chips {
       display: flex;
-      gap: 6px;
+      gap: 8px;
       overflow-x: auto;
-      margin-top: 10px;
       padding-bottom: 4px;
+      flex-wrap: wrap;
     }
 
     .chip {
-      background: rgba(234, 241, 251, 0.85);
+      background: var(--chip-bg);
       border: 1px solid transparent;
-      padding: 6px 12px;
+      padding: 7px 14px;
       border-radius: 100px;
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 600;
       color: var(--text-primary);
       cursor: pointer;
@@ -254,8 +446,12 @@
       transition: all 0.15s ease;
     }
 
+    .chip:hover {
+      border-color: var(--primary);
+    }
+
     .chip.active {
-      background: rgba(13, 89, 242, 0.12);
+      background: rgba(13, 89, 242, 0.15);
       border-color: var(--primary);
       color: var(--primary);
     }
@@ -263,16 +459,19 @@
     .primary-btn {
       background: var(--primary-gradient);
       color: white;
-      font-weight: 600;
+      font-weight: 700;
       font-size: 15px;
       border: none;
       border-radius: 100px;
-      padding: 14px;
+      padding: 15px;
       cursor: pointer;
-      box-shadow: 0 8px 20px rgba(13, 89, 242, 0.28);
+      box-shadow: 0 8px 22px rgba(13, 89, 242, 0.3);
       width: 100%;
-      margin-top: 18px;
       transition: transform 0.15s ease, opacity 0.15s ease;
+    }
+
+    .primary-btn:hover {
+      transform: translateY(-1px);
     }
 
     .primary-btn:active {
@@ -281,17 +480,16 @@
 
     .progress-box {
       display: none;
-      margin-top: 16px;
-      background: #FFFFFF;
-      border: 1px solid #D8E4F2;
-      border-radius: 12px;
+      background: var(--input-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
       padding: 14px;
     }
 
     .progress-bar {
       width: 100%;
       height: 8px;
-      background: #E8EEF6;
+      background: var(--slider-track);
       border-radius: 100px;
       overflow: hidden;
       margin-top: 8px;
@@ -306,187 +504,496 @@
 
     .result-box {
       display: none;
-      margin-top: 16px;
-      background: rgba(18, 183, 106, 0.08);
-      border: 1px solid rgba(18, 183, 106, 0.3);
-      border-radius: 12px;
-      padding: 14px;
+      background: var(--success-bg);
+      border: 1px solid rgba(18, 183, 106, 0.4);
+      border-radius: 14px;
+      padding: 16px;
       text-align: center;
+    }
+
+    /* All-In-One Utilities Grid */
+    .section-title {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text-secondary);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-top: 10px;
+      padding-left: 2px;
     }
 
     .tools-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
+      gap: 14px;
+      width: 100%;
     }
 
     .tool-tile {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
-      border-radius: 14px;
-      padding: 14px;
+      border-radius: 16px;
+      padding: 18px;
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 6px;
       cursor: pointer;
-      transition: transform 0.15s ease;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.03);
     }
 
     .tool-tile:hover {
-      transform: translateY(-2px);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(13, 89, 242, 0.12);
+      border-color: var(--primary);
     }
 
     .tool-tile h4 {
-      font-size: 13px;
-      font-weight: 600;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-primary);
     }
 
     .tool-tile p {
-      font-size: 11px;
+      font-size: 12px;
       color: var(--text-secondary);
+      line-height: 1.4;
     }
 
     .footer {
       text-align: center;
-      font-size: 11px;
+      font-size: 12px;
       color: var(--text-secondary);
-      margin-top: 16px;
+      margin-top: 24px;
+      line-height: 1.6;
+    }
+
+    /* Mobile Navigation Drawer & Backdrop */
+    .drawer-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.45);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      z-index: 998;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    .drawer-backdrop.open {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 82%;
+      max-width: 340px;
+      height: 100vh;
+      background: var(--drawer-bg);
+      border-left: 1px solid var(--card-border);
+      z-index: 999;
+      transform: translateX(100%);
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      flex-direction: column;
+      box-shadow: -10px 0 35px rgba(0, 0, 0, 0.15);
+      overflow-y: auto;
+    }
+
+    .drawer.open {
+      transform: translateX(0);
+    }
+
+    .drawer-header {
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .btn-close-drawer {
+      background: var(--chip-bg);
+      border: none;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      color: var(--text-primary);
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+
+    .drawer-menu {
+      padding: 16px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .drawer-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-primary);
+      text-decoration: none;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      text-align: left;
+      width: 100%;
+      transition: background 0.15s ease;
+    }
+
+    .drawer-item:hover, .drawer-item.active {
+      background: rgba(13, 89, 242, 0.1);
+      color: var(--primary);
+    }
+
+    .drawer-divider {
+      height: 1px;
+      background: var(--card-border);
+      margin: 12px 16px;
+    }
+
+    /* Modal Dialog (For About, Privacy, Terms, Tools) */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-content {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      width: 100%;
+      max-width: 480px;
+      max-height: 85vh;
+      overflow-y: auto;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-header h3 {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .btn-close-modal {
+      background: var(--chip-bg);
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-primary);
+    }
+
+    /* ================================================= */
+    /* RESPONSIVE MEDIA QUERIES (TABLET & DESKTOP)       */
+    /* ================================================= */
+
+    /* Tablet (>= 680px) */
+    @media (min-width: 680px) {
+      .tools-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+      }
+    }
+
+    /* Desktop (>= 880px) */
+    @media (min-width: 880px) {
+      .app-container {
+        padding: 24px 32px 90px 32px;
+        gap: 28px;
+      }
+
+      .desktop-nav {
+        display: flex;
+      }
+
+      .compressor-grid {
+        grid-template-columns: 1.05fr 1.15fr;
+        gap: 32px;
+        align-items: center;
+      }
+
+      .dropzone {
+        min-height: 280px;
+      }
+
+      .tools-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
+      }
+    }
+
+    /* Large Desktop (>= 1100px) */
+    @media (min-width: 1100px) {
+      .tools-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+      }
     }
   </style>
 </head>
 <body>
 
-  <div class="container">
-    <!-- Header -->
-    <header class="header">
-      <div class="logo-badge">
-        <div class="logo-icon">B</div>
-        <div>
-          <h1 class="brand-title">BharatFile</h1>
-        </div>
+  <!-- Mobile Drawer Backdrop -->
+  <div class="drawer-backdrop" id="drawerBackdrop"></div>
+
+  <!-- Mobile Navigation Drawer -->
+  <aside class="drawer" id="drawer">
+    <div class="drawer-header">
+      <div class="logo-badge" style="display: flex; align-items: center; gap: 10px;">
+        <div class="logo-icon" style="width: 32px; height: 32px; font-size: 16px;">B</div>
+        <span class="brand-title" style="font-size: 18px;">BharatFile</span>
       </div>
-      <div class="security-pill">
-        🛡️ 100% On-Device
+      <button class="btn-close-drawer" id="closeDrawerBtn" aria-label="Close Menu">✕</button>
+    </div>
+
+    <div class="drawer-menu">
+      <button class="drawer-item active" onclick="navTo('home')">🏠 Home</button>
+      <button class="drawer-item" onclick="navTo('compress-pdf')">📄 Compress PDF</button>
+      <button class="drawer-item" onclick="navTo('compress-image')">🖼️ Compress Image</button>
+      <button class="drawer-item" onclick="navTo('resize-image')">📐 Resize Image</button>
+      <button class="drawer-item" onclick="navTo('convert-image')">🔄 Convert Image</button>
+      <button class="drawer-item" onclick="navTo('more-tools')">🧰 More Tools</button>
+
+      <div class="drawer-divider"></div>
+
+      <button class="drawer-item" onclick="toggleTheme();">🌙 Toggle Dark Mode</button>
+      <button class="drawer-item" onclick="openModal('about')">ℹ️ About BharatFile</button>
+      <button class="drawer-item" onclick="openModal('privacy')">🔒 Privacy Policy</button>
+      <button class="drawer-item" onclick="openModal('terms')">📜 Terms of Service</button>
+      <button class="drawer-item" onclick="openModal('contact')">✉️ Contact Support</button>
+    </div>
+  </aside>
+
+  <!-- Modal Dialog for Info & Tools -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal-content" id="modalContent">
+      <div class="modal-header">
+        <h3 id="modalTitle">Information</h3>
+        <button class="btn-close-modal" onclick="closeModal()">✕</button>
+      </div>
+      <div id="modalBody" style="font-size: 13px; line-height: 1.6; color: var(--text-secondary);">
+        <!-- Injected via JavaScript -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Application Wrapper -->
+  <div class="app-container">
+
+    <!-- Top Header -->
+    <header class="header">
+      <a class="header-left" href="#" onclick="navTo('home'); return false;">
+        <div class="logo-icon">B</div>
+        <span class="brand-title">BharatFile</span>
+      </a>
+
+      <!-- Desktop Navigation Menu -->
+      <nav class="desktop-nav">
+        <button class="nav-link active" onclick="navTo('home')">Home</button>
+        <button class="nav-link" onclick="navTo('compress-pdf')">Compress PDF</button>
+        <button class="nav-link" onclick="navTo('compress-image')">Compress Image</button>
+        <button class="nav-link" onclick="navTo('resize-image')">Resize</button>
+        <button class="nav-link" onclick="navTo('convert-image')">Convert</button>
+        <button class="nav-link" onclick="navTo('more-tools')">All Tools</button>
+      </nav>
+
+      <!-- Right Header Actions -->
+      <div class="header-right">
+        <div class="security-pill">
+          🛡️ 100% On-Device
+        </div>
+        <button class="btn-theme-toggle" id="themeToggleBtn" title="Toggle Theme">🌓</button>
+        <button class="btn-hamburger" id="hamburgerBtn" aria-label="Open Navigation Drawer">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
       </div>
     </header>
 
-    <!-- Main Card -->
-    <div class="glass-card">
-      <input type="file" id="fileInput" accept=".pdf,image/*" style="display: none;">
-
-      <div class="dropzone" id="dropArea">
-        <div class="cloud-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/>
-          </svg>
-        </div>
-        <p style="font-weight: 600; font-size: 14px;">Select or Drop File to Compress</p>
-        <p style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">PDF documents or JPG/PNG images</p>
-        <button type="button" class="btn-choose" id="chooseFileBtn">Choose File</button>
+    <!-- Main Compression Card -->
+    <main class="glass-card" id="compressorCard">
+      <!-- Mode Switcher -->
+      <div class="segmented-control">
+        <button class="segmented-btn active" id="btnModePdf" onclick="switchMode('pdf')">PDF Mode</button>
+        <button class="segmented-btn" id="btnModeImg" onclick="switchMode('image')">Image Mode</button>
       </div>
 
-      <!-- File Preview Card -->
-      <div class="file-preview" id="filePreview">
-        <div class="file-info">
-          <span class="file-icon" id="fileIcon">📄</span>
-          <div>
-            <div class="file-name" id="fileName">document.pdf</div>
-            <div class="file-size" id="fileSize">2.4 MB</div>
+      <input type="file" id="fileInput" accept=".pdf" style="display: none;">
+
+      <!-- Responsive Two-Column Grid on Desktop -->
+      <div class="compressor-grid">
+
+        <!-- Column 1: Dropzone & File Info -->
+        <div class="dropzone-container">
+          <div class="dropzone" id="dropArea">
+            <div class="cloud-icon">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/>
+              </svg>
+            </div>
+            <p style="font-weight: 700; font-size: 15px;" id="dropzoneTitle">Select or Drop PDF to Compress</p>
+            <p style="font-size: 12px; color: var(--text-secondary); margin-top: 5px;" id="dropzoneSubtitle">100% local processing • Zero cloud upload</p>
+            <button type="button" class="btn-choose" id="chooseFileBtn">Choose File</button>
+          </div>
+
+          <!-- File Preview -->
+          <div class="file-preview" id="filePreview">
+            <div class="file-info">
+              <span class="file-icon" id="fileIcon">📄</span>
+              <div>
+                <div class="file-name" id="fileName">certificate.pdf</div>
+                <div class="file-size" id="fileSize">2.4 MB</div>
+              </div>
+            </div>
+            <button type="button" class="btn-remove" id="removeFileBtn" title="Remove file">✕</button>
           </div>
         </div>
-        <button type="button" class="btn-remove" id="removeFileBtn" title="Remove file">✕</button>
-      </div>
 
-      <!-- Compression Slider 1% to 100% -->
-      <div class="slider-container">
-        <div class="control-row">
+        <!-- Column 2: Compression Controls -->
+        <div class="controls-container">
           <div>
-            <h3 style="font-size: 14px; font-weight: 700;">Compression</h3>
-            <p style="font-size: 11px; color: var(--text-secondary);" id="sliderDesc">Balanced compression • Recommended</p>
+            <div class="control-row">
+              <div>
+                <h3 style="font-size: 15px; font-weight: 700;">Compression Level</h3>
+                <p style="font-size: 12px; color: var(--text-secondary); margin-top: 2px;" id="sliderDesc">Balanced compression • Recommended for forms</p>
+              </div>
+              <div class="badge-percent" id="percentBadge">65%</div>
+            </div>
+
+            <div style="margin-top: 14px;">
+              <input type="range" id="compressionRange" min="1" max="100" value="65">
+              <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--text-secondary); margin-top: 6px;">
+                <span>1% (Max Clarity)</span>
+                <span>50%</span>
+                <span>100% (Min Size)</span>
+              </div>
+            </div>
           </div>
-          <div class="badge-percent" id="percentBadge">65%</div>
+
+          <!-- Quick Presets -->
+          <div>
+            <p style="font-size: 12px; font-weight: 700; color: var(--text-secondary); margin-bottom: 8px;">Target Exam & Govt Portal Presets:</p>
+            <div class="preset-chips">
+              <div class="chip" onclick="setPreset('50 KB', 85, this)">50 KB</div>
+              <div class="chip" onclick="setPreset('100 KB', 75, this)">100 KB</div>
+              <div class="chip active" onclick="setPreset('200 KB', 65, this)">200 KB</div>
+              <div class="chip" onclick="setPreset('500 KB', 50, this)">500 KB</div>
+              <div class="chip" onclick="setPreset('1 MB', 35, this)">1 MB</div>
+              <div class="chip" onclick="setPreset('2 MB', 20, this)">2 MB</div>
+            </div>
+          </div>
+
+          <!-- Action Button -->
+          <button class="primary-btn" id="compressBtn">
+            Compress Document Now
+          </button>
+
+          <!-- Progress Box -->
+          <div class="progress-box" id="progressBox">
+            <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 700;">
+              <span id="progressText">Compressing on device...</span>
+              <span id="progressPercent">0%</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" id="progressFill"></div>
+            </div>
+          </div>
+
+          <!-- Result Box -->
+          <div class="result-box" id="resultBox">
+            <h4 style="color: var(--success); font-size: 15px; font-weight: 800;">🎉 Compression Complete!</h4>
+            <p style="font-size: 13px; color: var(--text-primary); margin: 6px 0;" id="resultDetails">Original: 2.4 MB → Compressed: 840 KB (65% smaller)</p>
+            <button class="btn-choose" style="margin-top: 8px; width: 100%; background: var(--success); color: white; border: none; font-weight: 700;" onclick="downloadDemo()">
+              Download Compressed File
+            </button>
+          </div>
         </div>
 
-        <input type="range" id="compressionRange" min="1" max="100" value="65">
+      </div>
+    </main>
 
-        <div style="display: flex; justify-content: space-between; font-size: 10px; color: var(--text-secondary); margin-top: 4px;">
-          <span>1% (Max Quality)</span>
-          <span>50%</span>
-          <span>100% (Min Size)</span>
+    <!-- Recommended All-In-One Tools Section -->
+    <section id="toolsSection">
+      <h3 class="section-title">All-in-One Privacy Utilities</h3>
+      <div class="tools-grid">
+        <div class="tool-tile" onclick="openModal('merge-pdf')">
+          <h4>📄 Merge PDF</h4>
+          <p>Combine multiple mark sheets, certificates and applications into a single document.</p>
+        </div>
+        <div class="tool-tile" onclick="openModal('split-pdf')">
+          <h4>✂️ Split PDF</h4>
+          <p>Extract specific page ranges (e.g. 1-3, 5) with precision on-device extraction.</p>
+        </div>
+        <div class="tool-tile" onclick="openModal('doc-scanner')">
+          <h4>📸 Doc Scanner</h4>
+          <p>Auto-crop documents with Magic Color and clean Black & White document filters.</p>
+        </div>
+        <div class="tool-tile" onclick="openModal('signature')">
+          <h4>✍️ Signature Maker</h4>
+          <p>Sign forms digitally and export transparent background PNG for online applications.</p>
+        </div>
+        <div class="tool-tile" onclick="openModal('resize')">
+          <h4>📐 Image Resizer</h4>
+          <p>Exact pixel scale (140×60 px, 200×230 px) with aspect ratio lock for exam portals.</p>
+        </div>
+        <div class="tool-tile" onclick="openModal('passport')">
+          <h4>👤 Passport Photo</h4>
+          <p>Crop to Indian Passport standard (3.5×4.5 cm) and stamp size with clean borders.</p>
         </div>
       </div>
+    </section>
 
-      <!-- Quick Preset Chips -->
-      <div style="margin-top: 14px;">
-        <p style="font-size: 11px; font-weight: 600; color: var(--text-secondary);">Target Exam Portal Presets:</p>
-        <div class="preset-chips">
-          <div class="chip" onclick="setPreset('50 KB', 85, this)">50 KB</div>
-          <div class="chip" onclick="setPreset('100 KB', 75, this)">100 KB</div>
-          <div class="chip active" onclick="setPreset('200 KB', 65, this)">200 KB</div>
-          <div class="chip" onclick="setPreset('500 KB', 50, this)">500 KB</div>
-          <div class="chip" onclick="setPreset('1 MB', 35, this)">1 MB</div>
-          <div class="chip" onclick="setPreset('2 MB', 20, this)">2 MB</div>
-        </div>
-      </div>
+    <!-- Footer -->
+    <footer class="footer">
+      <p>BharatFile v1.1.0 • Engineered with ❤️ in India • 100% Offline & Private</p>
+      <p style="margin-top: 4px; opacity: 0.8;">Designed for students, teachers, job applicants & office professionals.</p>
+    </footer>
 
-      <!-- Action Button -->
-      <button class="primary-btn" id="compressBtn">
-        Compress Document Now
-      </button>
-
-      <!-- Progress Box -->
-      <div class="progress-box" id="progressBox">
-        <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 600;">
-          <span id="progressText">Processing on device...</span>
-          <span id="progressPercent">0%</span>
-        </div>
-        <div class="progress-bar">
-          <div class="progress-fill" id="progressFill"></div>
-        </div>
-      </div>
-
-      <!-- Result Box -->
-      <div class="result-box" id="resultBox">
-        <h4 style="color: var(--success); font-size: 14px; font-weight: 700;">🎉 Compression Complete!</h4>
-        <p style="font-size: 12px; color: var(--text-primary); margin: 6px 0;" id="resultDetails">Original: 2.4 MB → Compressed: 840 KB (65% smaller)</p>
-        <button class="btn-choose" style="margin-top: 8px; width: 100%; background: var(--success); color: white; border: none;" onclick="downloadDemo()">
-          Download Compressed File
-        </button>
-      </div>
-    </div>
-
-    <!-- Recommended Tools Showcase -->
-    <h3 style="font-size: 13px; font-weight: 700; color: var(--text-secondary); padding-left: 4px;">ALL-IN-ONE UTILITIES</h3>
-    <div class="tools-grid">
-      <div class="tool-tile" onclick="alert('Merge PDF: Select and combine multiple PDF files locally.')">
-        <h4>📄 Merge PDF</h4>
-        <p>Combine multiple certificates</p>
-      </div>
-      <div class="tool-tile" onclick="alert('Split PDF: Extract specific page ranges (e.g. 1-3, 5).')">
-        <h4>✂️ Split PDF</h4>
-        <p>Extract specific marks sheet pages</p>
-      </div>
-      <div class="tool-tile" onclick="alert('Doc Scanner: Crop with magic contrast & B&W filters.')">
-        <h4>📸 Doc Scanner</h4>
-        <p>Auto-crop with magic filters</p>
-      </div>
-      <div class="tool-tile" onclick="alert('Signature Maker: Draw smooth signatures with transparent PNG export.')">
-        <h4>✍️ Signature Maker</h4>
-        <p>Transparent PNG for forms</p>
-      </div>
-      <div class="tool-tile" onclick="alert('Image Resizer: Resize dimensions to exact pixel requirements (140x60 px).')">
-        <h4>🖼️ Image Resizer</h4>
-        <p>Exact pixel scale (140×60 px)</p>
-      </div>
-      <div class="tool-tile" onclick="alert('Passport Photo: Crop to 3.5x4.5 cm with plain background.')">
-        <h4>👤 Passport Photo</h4>
-        <p>3.5×4.5 cm with plain background</p>
-      </div>
-    </div>
-
-    <div class="footer">
-      BharatFile v1.0.1 • Made with ❤️ in India • 100% Offline & Private
-    </div>
   </div>
 
   <script>
@@ -500,14 +1007,28 @@
     }
 
     // Elements
+    const drawer = document.getElementById('drawer');
+    const drawerBackdrop = document.getElementById('drawerBackdrop');
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    const closeDrawerBtn = document.getElementById('closeDrawerBtn');
+    const themeToggleBtn = document.getElementById('themeToggleBtn');
+    const modalOverlay = document.getElementById('modalOverlay');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalBody = document.getElementById('modalBody');
+
     const fileInput = document.getElementById('fileInput');
     const dropArea = document.getElementById('dropArea');
+    const dropzoneTitle = document.getElementById('dropzoneTitle');
+    const dropzoneSubtitle = document.getElementById('dropzoneSubtitle');
     const chooseFileBtn = document.getElementById('chooseFileBtn');
     const filePreview = document.getElementById('filePreview');
     const fileIcon = document.getElementById('fileIcon');
     const fileName = document.getElementById('fileName');
     const fileSize = document.getElementById('fileSize');
     const removeFileBtn = document.getElementById('removeFileBtn');
+
+    const btnModePdf = document.getElementById('btnModePdf');
+    const btnModeImg = document.getElementById('btnModeImg');
     const slider = document.getElementById('compressionRange');
     const badge = document.getElementById('percentBadge');
     const desc = document.getElementById('sliderDesc');
@@ -518,32 +1039,201 @@
     const resultBox = document.getElementById('resultBox');
     const resultDetails = document.getElementById('resultDetails');
 
+    let currentMode = 'pdf';
     let currentFile = null;
 
-    // Trigger File Input
+    // Theme Management (Dark Mode)
+    function initTheme() {
+      const saved = localStorage.getItem('bharatfile_theme');
+      if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.body.classList.add('dark-mode');
+        themeToggleBtn.textContent = '☀️';
+      } else {
+        document.body.classList.remove('dark-mode');
+        themeToggleBtn.textContent = '🌙';
+      }
+    }
+    initTheme();
+
+    function toggleTheme() {
+      document.body.classList.toggle('dark-mode');
+      const isDark = document.body.classList.contains('dark-mode');
+      localStorage.setItem('bharatfile_theme', isDark ? 'dark' : 'light');
+      themeToggleBtn.textContent = isDark ? '☀️' : '🌙';
+    }
+    themeToggleBtn.addEventListener('click', toggleTheme);
+
+    // Drawer Management
+    function openDrawer() {
+      drawer.classList.add('open');
+      drawerBackdrop.classList.add('open');
+    }
+
+    function closeDrawer() {
+      drawer.classList.remove('open');
+      drawerBackdrop.classList.remove('open');
+    }
+
+    hamburgerBtn.addEventListener('click', openDrawer);
+    closeDrawerBtn.addEventListener('click', closeDrawer);
+    drawerBackdrop.addEventListener('click', closeDrawer);
+
+    // Mode Switching (PDF vs Image)
+    function switchMode(mode) {
+      currentMode = mode;
+      currentFile = null;
+      fileInput.value = '';
+      dropArea.style.display = 'flex';
+      filePreview.style.display = 'none';
+      resultBox.style.display = 'none';
+      progressBox.style.display = 'none';
+
+      if (mode === 'pdf') {
+        btnModePdf.classList.add('active');
+        btnModeImg.classList.remove('active');
+        fileInput.accept = '.pdf,application/pdf';
+        dropzoneTitle.textContent = 'Select or Drop PDF to Compress';
+        dropzoneSubtitle.textContent = '100% local processing • Zero cloud upload';
+      } else {
+        btnModeImg.classList.add('active');
+        btnModePdf.classList.remove('active');
+        fileInput.accept = 'image/*';
+        dropzoneTitle.textContent = 'Select or Drop Image to Compress';
+        dropzoneSubtitle.textContent = 'JPG, PNG, WebP supported • Preserves EXIF';
+      }
+      updateSliderDescription(slider.value);
+    }
+
+    // Navigation Handler
+    function navTo(target) {
+      closeDrawer();
+
+      // Update active nav link
+      document.querySelectorAll('.nav-link').forEach(btn => btn.classList.remove('active'));
+
+      if (target === 'home') {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else if (target === 'compress-pdf') {
+        switchMode('pdf');
+        document.getElementById('compressorCard').scrollIntoView({ behavior: 'smooth' });
+      } else if (target === 'compress-image') {
+        switchMode('image');
+        document.getElementById('compressorCard').scrollIntoView({ behavior: 'smooth' });
+      } else if (target === 'resize-image') {
+        openModal('resize');
+      } else if (target === 'convert-image') {
+        openModal('convert');
+      } else if (target === 'more-tools') {
+        document.getElementById('toolsSection').scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+
+    // Modal Handler
+    function openModal(type) {
+      closeDrawer();
+      modalOverlay.style.display = 'flex';
+
+      const contentMap = {
+        'about': {
+          title: 'About BharatFile',
+          html: `<p><strong>BharatFile</strong> is a modern, privacy-first utility platform built for Indian students, job applicants, educators, and office users.</p>
+                 <p style="margin-top:10px;">All processing algorithms (PDF compression, exact KB size reduction, image formatting) run <strong>100% locally in your browser/device</strong>. Your documents are never uploaded to any remote server.</p>`
+        },
+        'privacy': {
+          title: 'Privacy Policy',
+          html: `<p><strong>Zero Cloud Storage:</strong> We do not operate remote file storage for your uploaded documents. Files never leave your local device memory.</p>
+                 <p style="margin-top:10px;"><strong>No Analytics Tracker:</strong> We do not sell or monetize personal information. You can use BharatFile completely offline.</p>`
+        },
+        'terms': {
+          title: 'Terms of Service',
+          html: `<p>BharatFile provides on-device compression and utility algorithms free of charge for personal and professional use. Users retain 100% ownership of their processed files.</p>`
+        },
+        'contact': {
+          title: 'Contact Support',
+          html: `<p>Have feedback or suggestions for government exam presets?</p>
+                 <p style="margin-top:10px;">Email: <strong>support@bharatfile.app</strong></p>
+                 <p>GitHub: <strong>github.com/arsadssss/bharatfile</strong></p>`
+        },
+        'resize': {
+          title: '📐 Image Resizer',
+          html: `<p>Adjust dimensions to fit official job portal requirements (e.g. UPSC, SSC, IBPS):</p>
+                 <div style="margin: 12px 0; display: flex; gap: 8px;">
+                   <input type="number" placeholder="Width (px)" value="200" style="width: 50%; padding: 8px; border-radius: 8px; border: 1px solid var(--card-border); background: var(--input-bg); color: var(--text-primary);">
+                   <input type="number" placeholder="Height (px)" value="230" style="width: 50%; padding: 8px; border-radius: 8px; border: 1px solid var(--card-border); background: var(--input-bg); color: var(--text-primary);">
+                 </div>
+                 <button class="primary-btn" onclick="alert('Image Resizer ready on device!'); closeModal();">Select Photo to Resize</button>`
+        },
+        'convert': {
+          title: '🔄 Image Converter',
+          html: `<p>Convert between image formats with transparency preservation:</p>
+                 <div style="margin: 14px 0; display: flex; gap: 8px;">
+                   <button class="chip active">JPG</button>
+                   <button class="chip">PNG</button>
+                   <button class="chip">WebP</button>
+                 </div>
+                 <button class="primary-btn" onclick="alert('Image Converter ready on device!'); closeModal();">Choose Image to Convert</button>`
+        },
+        'merge-pdf': {
+          title: '📄 Merge PDF',
+          html: `<p>Select multiple PDF mark sheets or certificates to combine them into a single file with clean margins.</p>
+                 <button class="primary-btn" style="margin-top:14px;" onclick="alert('Merge PDF ready!'); closeModal();">Select PDFs to Combine</button>`
+        },
+        'split-pdf': {
+          title: '✂️ Split PDF',
+          html: `<p>Extract custom page ranges (e.g., <code>1-3, 5, 8-10</code>) from large official notification documents.</p>
+                 <button class="primary-btn" style="margin-top:14px;" onclick="alert('Split PDF ready!'); closeModal();">Select PDF to Split</button>`
+        },
+        'doc-scanner': {
+          title: '📸 Document Scanner',
+          html: `<p>Automatic edge contrast enhancement, Magic Color, and clean Black & White document thresholding.</p>
+                 <button class="primary-btn" style="margin-top:14px;" onclick="alert('Scanner camera ready!'); closeModal();">Open Scanner</button>`
+        },
+        'signature': {
+          title: '✍️ Signature Maker',
+          html: `<p>Draw a crisp signature with finger or stylus on high-DPI canvas and export with a transparent PNG background.</p>
+                 <button class="primary-btn" style="margin-top:14px;" onclick="alert('Signature canvas ready!'); closeModal();">Create Signature</button>`
+        },
+        'passport': {
+          title: '👤 Passport Photo Cropper',
+          html: `<p>Standard Indian Passport size (<code>3.5 × 4.5 cm</code>) and stamp size presets with white/light background framing.</p>
+                 <button class="primary-btn" style="margin-top:14px;" onclick="alert('Passport tool ready!'); closeModal();">Select Photo</button>`
+        }
+      };
+
+      const item = contentMap[type] || { title: 'BharatFile', html: '<p>Document Utility</p>' };
+      modalTitle.textContent = item.title;
+      modalBody.innerHTML = item.html;
+    }
+
+    function closeModal() {
+      modalOverlay.style.display = 'none';
+    }
+    modalOverlay.addEventListener('click', (e) => {
+      if (e.target === modalOverlay) closeModal();
+    });
+
+    // File Input Interactions
     chooseFileBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       fileInput.click();
     });
     dropArea.addEventListener('click', () => fileInput.click());
 
-    // File Input change
     fileInput.addEventListener('change', (e) => {
       if (e.target.files && e.target.files[0]) {
         handleFileSelect(e.target.files[0]);
       }
     });
 
-    // Drag and Drop
-    ['dragenter', 'dragover'].forEach(eventName => {
-      dropArea.addEventListener(eventName, (e) => {
+    ['dragenter', 'dragover'].forEach(name => {
+      dropArea.addEventListener(name, (e) => {
         e.preventDefault();
         dropArea.classList.add('drag-active');
       });
     });
 
-    ['dragleave', 'drop'].forEach(eventName => {
-      dropArea.addEventListener(eventName, (e) => {
+    ['dragleave', 'drop'].forEach(name => {
+      dropArea.addEventListener(name, (e) => {
         e.preventDefault();
         dropArea.classList.remove('drag-active');
       });
@@ -567,7 +1257,7 @@
       currentFile = file;
       fileName.textContent = file.name;
       fileSize.textContent = formatBytes(file.size);
-      fileIcon.textContent = file.type.includes('pdf') ? '📄' : '🖼️';
+      fileIcon.textContent = file.type.includes('pdf') || file.name.endsWith('.pdf') ? '📄' : '🖼️';
       dropArea.style.display = 'none';
       filePreview.style.display = 'flex';
       resultBox.style.display = 'none';
@@ -577,13 +1267,14 @@
     removeFileBtn.addEventListener('click', () => {
       currentFile = null;
       fileInput.value = '';
-      dropArea.style.display = 'block';
+      dropArea.style.display = 'flex';
       filePreview.style.display = 'none';
       resultBox.style.display = 'none';
       progressBox.style.display = 'none';
+      updateSliderDescription(slider.value);
     });
 
-    // Slider interaction
+    // Slider & Presets
     slider.addEventListener('input', (e) => {
       updateSliderDescription(e.target.value);
     });
@@ -592,12 +1283,12 @@
       badge.textContent = val + '%';
       if (currentFile) {
         const estBytes = Math.max(1024, Math.round(currentFile.size * (1 - (val / 100))));
-        desc.textContent = `Est. Output: ~${formatBytes(estBytes)} (${val}% reduction)`;
+        desc.textContent = `Estimated Output: ~${formatBytes(estBytes)} (${val}% reduction)`;
       } else {
         if (val < 30) {
           desc.textContent = 'Light compression • Maximum quality';
         } else if (val < 70) {
-          desc.textContent = 'Balanced compression • Recommended';
+          desc.textContent = 'Balanced compression • Recommended for forms';
         } else {
           desc.textContent = 'Aggressive compression • Minimum file size';
         }
@@ -611,10 +1302,9 @@
       updateSliderDescription(sliderValue);
     }
 
-    // Compression simulation / execution
+    // Compression Processing Simulation
     compressBtn.addEventListener('click', () => {
       if (!currentFile) {
-        // Prompt file selection
         fileInput.click();
         return;
       }
@@ -645,7 +1335,7 @@
             resultBox.style.display = 'block';
           }, 200);
         }
-      }, 70);
+      }, 60);
     });
 
     function downloadDemo() {
