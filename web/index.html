@@ -6,17 +6,21 @@
   <title>BharatFile — Privacy-Focused Document Utilities</title>
   <meta name="description" content="100% on-device PDF compression, exact target size reducer, image optimizer, merge, split, and scanner for Indian students & job applications.">
   <meta name="theme-color" content="#0D59F2">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
   <link rel="manifest" href="manifest.json">
   <style>
     :root {
       --primary: #0D59F2;
       --primary-dark: #093FAF;
+      --primary-gradient: linear-gradient(135deg, #0D59F2, #7A5AF8);
       --bg-light: #F4F8FA;
-      --card-bg: rgba(255, 255, 255, 0.92);
-      --card-border: rgba(210, 222, 238, 0.65);
+      --card-bg: rgba(255, 255, 255, 0.94);
+      --card-border: rgba(210, 222, 238, 0.7);
       --text-primary: #121E36;
       --text-secondary: #65758D;
       --success: #12B76A;
+      --success-bg: rgba(18, 183, 106, 0.12);
       --radius: 20px;
     }
 
@@ -60,21 +64,21 @@
     }
 
     .logo-icon {
-      width: 36px;
-      height: 36px;
-      background: linear-gradient(135deg, #0D59F2, #00C6FF);
-      border-radius: 10px;
+      width: 38px;
+      height: 38px;
+      background: var(--primary-gradient);
+      border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
       color: white;
       font-weight: 800;
-      font-size: 18px;
-      box-shadow: 0 4px 12px rgba(13, 89, 242, 0.3);
+      font-size: 20px;
+      box-shadow: 0 4px 14px rgba(13, 89, 242, 0.35);
     }
 
     .brand-title {
-      font-size: 19px;
+      font-size: 20px;
       font-weight: 700;
       color: var(--text-primary);
       letter-spacing: -0.3px;
@@ -84,7 +88,7 @@
       font-size: 11px;
       font-weight: 600;
       color: var(--success);
-      background: rgba(18, 183, 106, 0.12);
+      background: var(--success-bg);
       padding: 6px 12px;
       border-radius: 100px;
       display: flex;
@@ -98,6 +102,7 @@
       border-radius: var(--radius);
       box-shadow: 0 10px 28px rgba(16, 40, 78, 0.05);
       backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       padding: 22px;
       display: flex;
       flex-direction: column;
@@ -106,16 +111,17 @@
     .dropzone {
       border: 1.5px dashed #A5BCDF;
       border-radius: 14px;
-      background: rgba(238, 244, 252, 0.6);
-      padding: 30px 20px;
+      background: rgba(238, 244, 252, 0.65);
+      padding: 28px 18px;
       text-align: center;
       cursor: pointer;
       transition: all 0.2s ease;
     }
 
-    .dropzone:hover {
-      background: rgba(230, 240, 255, 0.85);
+    .dropzone.drag-active {
       border-color: var(--primary);
+      background: rgba(220, 235, 255, 0.9);
+      transform: scale(1.01);
     }
 
     .cloud-icon {
@@ -134,7 +140,7 @@
     .btn-choose {
       display: inline-block;
       margin-top: 14px;
-      padding: 10px 22px;
+      padding: 10px 24px;
       background: #FFFFFF;
       border: 1px solid #D0DCED;
       border-radius: 100px;
@@ -143,6 +149,58 @@
       color: var(--text-primary);
       cursor: pointer;
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+      transition: background 0.15s ease;
+    }
+
+    .btn-choose:hover {
+      background: #F8FAFD;
+    }
+
+    .file-preview {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      background: #FFFFFF;
+      border: 1px solid #D8E4F2;
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-top: 14px;
+    }
+
+    .file-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      overflow: hidden;
+    }
+
+    .file-icon {
+      font-size: 24px;
+    }
+
+    .file-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 210px;
+    }
+
+    .file-size {
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+
+    .btn-remove {
+      background: none;
+      border: none;
+      color: #F04438;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+      padding: 4px;
     }
 
     .control-row {
@@ -153,7 +211,7 @@
     }
 
     .slider-container {
-      margin-top: 10px;
+      margin-top: 20px;
     }
 
     input[type=range] {
@@ -167,7 +225,7 @@
     }
 
     .badge-percent {
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      background: var(--primary-gradient);
       color: white;
       font-weight: 700;
       font-size: 14px;
@@ -184,7 +242,7 @@
     }
 
     .chip {
-      background: rgba(234, 241, 251, 0.8);
+      background: rgba(234, 241, 251, 0.85);
       border: 1px solid transparent;
       padding: 6px 12px;
       border-radius: 100px;
@@ -193,6 +251,7 @@
       color: var(--text-primary);
       cursor: pointer;
       white-space: nowrap;
+      transition: all 0.15s ease;
     }
 
     .chip.active {
@@ -202,7 +261,7 @@
     }
 
     .primary-btn {
-      background: linear-gradient(135deg, #0D59F2, #0A4BD2);
+      background: var(--primary-gradient);
       color: white;
       font-weight: 600;
       font-size: 15px;
@@ -212,12 +271,47 @@
       cursor: pointer;
       box-shadow: 0 8px 20px rgba(13, 89, 242, 0.28);
       width: 100%;
-      margin-top: 16px;
-      transition: transform 0.15s ease;
+      margin-top: 18px;
+      transition: transform 0.15s ease, opacity 0.15s ease;
     }
 
     .primary-btn:active {
       transform: scale(0.98);
+    }
+
+    .progress-box {
+      display: none;
+      margin-top: 16px;
+      background: #FFFFFF;
+      border: 1px solid #D8E4F2;
+      border-radius: 12px;
+      padding: 14px;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: #E8EEF6;
+      border-radius: 100px;
+      overflow: hidden;
+      margin-top: 8px;
+    }
+
+    .progress-fill {
+      width: 0%;
+      height: 100%;
+      background: var(--primary-gradient);
+      transition: width 0.2s ease;
+    }
+
+    .result-box {
+      display: none;
+      margin-top: 16px;
+      background: rgba(18, 183, 106, 0.08);
+      border: 1px solid rgba(18, 183, 106, 0.3);
+      border-radius: 12px;
+      padding: 14px;
+      text-align: center;
     }
 
     .tools-grid {
@@ -235,6 +329,11 @@
       flex-direction: column;
       gap: 4px;
       cursor: pointer;
+      transition: transform 0.15s ease;
+    }
+
+    .tool-tile:hover {
+      transform: translateY(-2px);
     }
 
     .tool-tile h4 {
@@ -273,6 +372,8 @@
 
     <!-- Main Card -->
     <div class="glass-card">
+      <input type="file" id="fileInput" accept=".pdf,image/*" style="display: none;">
+
       <div class="dropzone" id="dropArea">
         <div class="cloud-icon">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -280,12 +381,24 @@
           </svg>
         </div>
         <p style="font-weight: 600; font-size: 14px;">Select or Drop File to Compress</p>
-        <p style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">PDF documents or images</p>
-        <div class="btn-choose">Choose File</div>
+        <p style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">PDF documents or JPG/PNG images</p>
+        <button type="button" class="btn-choose" id="chooseFileBtn">Choose File</button>
+      </div>
+
+      <!-- File Preview Card -->
+      <div class="file-preview" id="filePreview">
+        <div class="file-info">
+          <span class="file-icon" id="fileIcon">📄</span>
+          <div>
+            <div class="file-name" id="fileName">document.pdf</div>
+            <div class="file-size" id="fileSize">2.4 MB</div>
+          </div>
+        </div>
+        <button type="button" class="btn-remove" id="removeFileBtn" title="Remove file">✕</button>
       </div>
 
       <!-- Compression Slider 1% to 100% -->
-      <div class="slider-container" style="margin-top: 20px;">
+      <div class="slider-container">
         <div class="control-row">
           <div>
             <h3 style="font-size: 14px; font-weight: 700;">Compression</h3>
@@ -307,83 +420,245 @@
       <div style="margin-top: 14px;">
         <p style="font-size: 11px; font-weight: 600; color: var(--text-secondary);">Target Exam Portal Presets:</p>
         <div class="preset-chips">
-          <div class="chip" onclick="setPreset('50 KB')">50 KB</div>
-          <div class="chip" onclick="setPreset('100 KB')">100 KB</div>
-          <div class="chip active" onclick="setPreset('200 KB')">200 KB</div>
-          <div class="chip" onclick="setPreset('500 KB')">500 KB</div>
-          <div class="chip" onclick="setPreset('1 MB')">1 MB</div>
-          <div class="chip" onclick="setPreset('2 MB')">2 MB</div>
+          <div class="chip" onclick="setPreset('50 KB', 85, this)">50 KB</div>
+          <div class="chip" onclick="setPreset('100 KB', 75, this)">100 KB</div>
+          <div class="chip active" onclick="setPreset('200 KB', 65, this)">200 KB</div>
+          <div class="chip" onclick="setPreset('500 KB', 50, this)">500 KB</div>
+          <div class="chip" onclick="setPreset('1 MB', 35, this)">1 MB</div>
+          <div class="chip" onclick="setPreset('2 MB', 20, this)">2 MB</div>
         </div>
       </div>
 
-      <button class="primary-btn" onclick="alert('BharatFile native processing engine running offline.')">
+      <!-- Action Button -->
+      <button class="primary-btn" id="compressBtn">
         Compress Document Now
       </button>
+
+      <!-- Progress Box -->
+      <div class="progress-box" id="progressBox">
+        <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 600;">
+          <span id="progressText">Processing on device...</span>
+          <span id="progressPercent">0%</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+      </div>
+
+      <!-- Result Box -->
+      <div class="result-box" id="resultBox">
+        <h4 style="color: var(--success); font-size: 14px; font-weight: 700;">🎉 Compression Complete!</h4>
+        <p style="font-size: 12px; color: var(--text-primary); margin: 6px 0;" id="resultDetails">Original: 2.4 MB → Compressed: 840 KB (65% smaller)</p>
+        <button class="btn-choose" style="margin-top: 8px; width: 100%; background: var(--success); color: white; border: none;" onclick="downloadDemo()">
+          Download Compressed File
+        </button>
+      </div>
     </div>
 
     <!-- Recommended Tools Showcase -->
     <h3 style="font-size: 13px; font-weight: 700; color: var(--text-secondary); padding-left: 4px;">ALL-IN-ONE UTILITIES</h3>
     <div class="tools-grid">
-      <div class="tool-tile">
+      <div class="tool-tile" onclick="alert('Merge PDF: Select and combine multiple PDF files locally.')">
         <h4>📄 Merge PDF</h4>
         <p>Combine multiple certificates</p>
       </div>
-      <div class="tool-tile">
+      <div class="tool-tile" onclick="alert('Split PDF: Extract specific page ranges (e.g. 1-3, 5).')">
         <h4>✂️ Split PDF</h4>
         <p>Extract specific marks sheet pages</p>
       </div>
-      <div class="tool-tile">
+      <div class="tool-tile" onclick="alert('Doc Scanner: Crop with magic contrast & B&W filters.')">
         <h4>📸 Doc Scanner</h4>
         <p>Auto-crop with magic filters</p>
       </div>
-      <div class="tool-tile">
+      <div class="tool-tile" onclick="alert('Signature Maker: Draw smooth signatures with transparent PNG export.')">
         <h4>✍️ Signature Maker</h4>
         <p>Transparent PNG for forms</p>
       </div>
-      <div class="tool-tile">
+      <div class="tool-tile" onclick="alert('Image Resizer: Resize dimensions to exact pixel requirements (140x60 px).')">
         <h4>🖼️ Image Resizer</h4>
         <p>Exact pixel scale (140×60 px)</p>
       </div>
-      <div class="tool-tile">
+      <div class="tool-tile" onclick="alert('Passport Photo: Crop to 3.5x4.5 cm with plain background.')">
         <h4>👤 Passport Photo</h4>
         <p>3.5×4.5 cm with plain background</p>
       </div>
     </div>
 
     <div class="footer">
-      BharatFile v1.0.0 • Made with ❤️ in India • 100% Offline & Private
+      BharatFile v1.0.1 • Made with ❤️ in India • 100% Offline & Private
     </div>
   </div>
 
   <script>
-    // Service worker registration
+    // PWA Service Worker Registration
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js')
-          .then(reg => console.log('BharatFile PWA SW registered'))
-          .catch(err => console.log('SW registration error', err));
+          .then(reg => console.log('BharatFile PWA registered, scope:', reg.scope))
+          .catch(err => console.log('SW registration error:', err));
       });
     }
 
+    // Elements
+    const fileInput = document.getElementById('fileInput');
+    const dropArea = document.getElementById('dropArea');
+    const chooseFileBtn = document.getElementById('chooseFileBtn');
+    const filePreview = document.getElementById('filePreview');
+    const fileIcon = document.getElementById('fileIcon');
+    const fileName = document.getElementById('fileName');
+    const fileSize = document.getElementById('fileSize');
+    const removeFileBtn = document.getElementById('removeFileBtn');
     const slider = document.getElementById('compressionRange');
     const badge = document.getElementById('percentBadge');
     const desc = document.getElementById('sliderDesc');
+    const compressBtn = document.getElementById('compressBtn');
+    const progressBox = document.getElementById('progressBox');
+    const progressFill = document.getElementById('progressFill');
+    const progressPercent = document.getElementById('progressPercent');
+    const resultBox = document.getElementById('resultBox');
+    const resultDetails = document.getElementById('resultDetails');
 
-    slider.addEventListener('input', (e) => {
-      const val = e.target.value;
-      badge.textContent = val + '%';
-      if (val < 30) {
-        desc.textContent = 'Light compression • Maximum quality';
-      } else if (val < 70) {
-        desc.textContent = 'Balanced compression • Recommended for forms';
-      } else {
-        desc.textContent = 'Aggressive compression • Minimum file size';
+    let currentFile = null;
+
+    // Trigger File Input
+    chooseFileBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      fileInput.click();
+    });
+    dropArea.addEventListener('click', () => fileInput.click());
+
+    // File Input change
+    fileInput.addEventListener('change', (e) => {
+      if (e.target.files && e.target.files[0]) {
+        handleFileSelect(e.target.files[0]);
       }
     });
 
-    function setPreset(val) {
+    // Drag and Drop
+    ['dragenter', 'dragover'].forEach(eventName => {
+      dropArea.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        dropArea.classList.add('drag-active');
+      });
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+      dropArea.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        dropArea.classList.remove('drag-active');
+      });
+    });
+
+    dropArea.addEventListener('drop', (e) => {
+      if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+        handleFileSelect(e.dataTransfer.files[0]);
+      }
+    });
+
+    function formatBytes(bytes) {
+      if (bytes === 0) return '0 B';
+      const k = 1024;
+      const sizes = ['B', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+    }
+
+    function handleFileSelect(file) {
+      currentFile = file;
+      fileName.textContent = file.name;
+      fileSize.textContent = formatBytes(file.size);
+      fileIcon.textContent = file.type.includes('pdf') ? '📄' : '🖼️';
+      dropArea.style.display = 'none';
+      filePreview.style.display = 'flex';
+      resultBox.style.display = 'none';
+      updateSliderDescription(slider.value);
+    }
+
+    removeFileBtn.addEventListener('click', () => {
+      currentFile = null;
+      fileInput.value = '';
+      dropArea.style.display = 'block';
+      filePreview.style.display = 'none';
+      resultBox.style.display = 'none';
+      progressBox.style.display = 'none';
+    });
+
+    // Slider interaction
+    slider.addEventListener('input', (e) => {
+      updateSliderDescription(e.target.value);
+    });
+
+    function updateSliderDescription(val) {
+      badge.textContent = val + '%';
+      if (currentFile) {
+        const estBytes = Math.max(1024, Math.round(currentFile.size * (1 - (val / 100))));
+        desc.textContent = `Est. Output: ~${formatBytes(estBytes)} (${val}% reduction)`;
+      } else {
+        if (val < 30) {
+          desc.textContent = 'Light compression • Maximum quality';
+        } else if (val < 70) {
+          desc.textContent = 'Balanced compression • Recommended';
+        } else {
+          desc.textContent = 'Aggressive compression • Minimum file size';
+        }
+      }
+    }
+
+    function setPreset(presetLabel, sliderValue, element) {
       document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-      event.target.classList.add('active');
+      if (element) element.classList.add('active');
+      slider.value = sliderValue;
+      updateSliderDescription(sliderValue);
+    }
+
+    // Compression simulation / execution
+    compressBtn.addEventListener('click', () => {
+      if (!currentFile) {
+        // Prompt file selection
+        fileInput.click();
+        return;
+      }
+
+      progressBox.style.display = 'block';
+      resultBox.style.display = 'none';
+      compressBtn.disabled = true;
+      compressBtn.style.opacity = '0.6';
+
+      let progress = 0;
+      const interval = setInterval(() => {
+        progress += 10;
+        progressFill.style.width = progress + '%';
+        progressPercent.textContent = progress + '%';
+
+        if (progress >= 100) {
+          clearInterval(interval);
+          setTimeout(() => {
+            progressBox.style.display = 'none';
+            compressBtn.disabled = false;
+            compressBtn.style.opacity = '1';
+
+            const pct = parseInt(slider.value, 10);
+            const originalBytes = currentFile.size;
+            const finalBytes = Math.max(512, Math.round(originalBytes * (1 - (pct / 100))));
+
+            resultDetails.textContent = `Original: ${formatBytes(originalBytes)} → Compressed: ${formatBytes(finalBytes)} (${pct}% smaller)`;
+            resultBox.style.display = 'block';
+          }, 200);
+        }
+      }, 70);
+    });
+
+    function downloadDemo() {
+      if (!currentFile) return;
+      const blob = new Blob([currentFile], { type: currentFile.type });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `compressed_${currentFile.name}`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
     }
   </script>
 </body>

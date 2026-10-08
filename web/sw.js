@@ -1,10 +1,12 @@
 // BharatFile Service Worker for Offline PWA
-const CACHE_NAME = 'bharatfile-v1.0.0';
+const CACHE_NAME = 'bharatfile-v1.0.1';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
   './manifest.json',
-  './sw.js'
+  './sw.js',
+  './icons/icon-192.png',
+  './icons/icon-512.png'
 ];
 
 self.addEventListener('install', (event) => {
