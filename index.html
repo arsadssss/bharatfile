@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>BharatFile — Privacy-Focused Document Utilities</title>
+  <meta name="description" content="100% on-device PDF compression, exact target size reducer, image optimizer, merge, split, and scanner for Indian students & job applications.">
+  <meta name="theme-color" content="#0D59F2">
+  <link rel="manifest" href="manifest.json">
+  <style>
+    :root {
+      --primary: #0D59F2;
+      --primary-dark: #093FAF;
+      --bg-light: #F4F8FA;
+      --card-bg: rgba(255, 255, 255, 0.92);
+      --card-border: rgba(210, 222, 238, 0.65);
+      --text-primary: #121E36;
+      --text-secondary: #65758D;
+      --success: #12B76A;
+      --radius: 20px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      background: var(--bg-light);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px 16px 80px 16px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 440px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 4px;
+    }
+
+    .logo-badge {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, #0D59F2, #00C6FF);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 800;
+      font-size: 18px;
+      box-shadow: 0 4px 12px rgba(13, 89, 242, 0.3);
+    }
+
+    .brand-title {
+      font-size: 19px;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.3px;
+    }
+
+    .security-pill {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--success);
+      background: rgba(18, 183, 106, 0.12);
+      padding: 6px 12px;
+      border-radius: 100px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .glass-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      box-shadow: 0 10px 28px rgba(16, 40, 78, 0.05);
+      backdrop-filter: blur(16px);
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .dropzone {
+      border: 1.5px dashed #A5BCDF;
+      border-radius: 14px;
+      background: rgba(238, 244, 252, 0.6);
+      padding: 30px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .dropzone:hover {
+      background: rgba(230, 240, 255, 0.85);
+      border-color: var(--primary);
+    }
+
+    .cloud-icon {
+      width: 48px;
+      height: 48px;
+      background: var(--primary);
+      border-radius: 50%;
+      margin: 0 auto 12px auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      box-shadow: 0 6px 16px rgba(13, 89, 242, 0.35);
+    }
+
+    .btn-choose {
+      display: inline-block;
+      margin-top: 14px;
+      padding: 10px 22px;
+      background: #FFFFFF;
+      border: 1px solid #D0DCED;
+      border-radius: 100px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-primary);
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+    }
+
+    .control-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .slider-container {
+      margin-top: 10px;
+    }
+
+    input[type=range] {
+      width: 100%;
+      height: 6px;
+      border-radius: 4px;
+      background: #D8E4F2;
+      outline: none;
+      -webkit-appearance: none;
+      accent-color: var(--primary);
+    }
+
+    .badge-percent {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      font-weight: 700;
+      font-size: 14px;
+      padding: 5px 12px;
+      border-radius: 10px;
+    }
+
+    .preset-chips {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      margin-top: 10px;
+      padding-bottom: 4px;
+    }
+
+    .chip {
+      background: rgba(234, 241, 251, 0.8);
+      border: 1px solid transparent;
+      padding: 6px 12px;
+      border-radius: 100px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-primary);
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .chip.active {
+      background: rgba(13, 89, 242, 0.12);
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .primary-btn {
+      background: linear-gradient(135deg, #0D59F2, #0A4BD2);
+      color: white;
+      font-weight: 600;
+      font-size: 15px;
+      border: none;
+      border-radius: 100px;
+      padding: 14px;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(13, 89, 242, 0.28);
+      width: 100%;
+      margin-top: 16px;
+      transition: transform 0.15s ease;
+    }
+
+    .primary-btn:active {
+      transform: scale(0.98);
+    }
+
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .tool-tile {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      cursor: pointer;
+    }
+
+    .tool-tile h4 {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .tool-tile p {
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+
+    .footer {
+      text-align: center;
+      font-size: 11px;
+      color: var(--text-secondary);
+      margin-top: 16px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- Header -->
+    <header class="header">
+      <div class="logo-badge">
+        <div class="logo-icon">B</div>
+        <div>
+          <h1 class="brand-title">BharatFile</h1>
+        </div>
+      </div>
+      <div class="security-pill">
+        🛡️ 100% On-Device
+      </div>
+    </header>
+
+    <!-- Main Card -->
+    <div class="glass-card">
+      <div class="dropzone" id="dropArea">
+        <div class="cloud-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/>
+          </svg>
+        </div>
+        <p style="font-weight: 600; font-size: 14px;">Select or Drop File to Compress</p>
+        <p style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">PDF documents or images</p>
+        <div class="btn-choose">Choose File</div>
+      </div>
+
+      <!-- Compression Slider 1% to 100% -->
+      <div class="slider-container" style="margin-top: 20px;">
+        <div class="control-row">
+          <div>
+            <h3 style="font-size: 14px; font-weight: 700;">Compression</h3>
+            <p style="font-size: 11px; color: var(--text-secondary);" id="sliderDesc">Balanced compression • Recommended</p>
+          </div>
+          <div class="badge-percent" id="percentBadge">65%</div>
+        </div>
+
+        <input type="range" id="compressionRange" min="1" max="100" value="65">
+
+        <div style="display: flex; justify-content: space-between; font-size: 10px; color: var(--text-secondary); margin-top: 4px;">
+          <span>1% (Max Quality)</span>
+          <span>50%</span>
+          <span>100% (Min Size)</span>
+        </div>
+      </div>
+
+      <!-- Quick Preset Chips -->
+      <div style="margin-top: 14px;">
+        <p style="font-size: 11px; font-weight: 600; color: var(--text-secondary);">Target Exam Portal Presets:</p>
+        <div class="preset-chips">
+          <div class="chip" onclick="setPreset('50 KB')">50 KB</div>
+          <div class="chip" onclick="setPreset('100 KB')">100 KB</div>
+          <div class="chip active" onclick="setPreset('200 KB')">200 KB</div>
+          <div class="chip" onclick="setPreset('500 KB')">500 KB</div>
+          <div class="chip" onclick="setPreset('1 MB')">1 MB</div>
+          <div class="chip" onclick="setPreset('2 MB')">2 MB</div>
+        </div>
+      </div>
+
+      <button class="primary-btn" onclick="alert('BharatFile native processing engine running offline.')">
+        Compress Document Now
+      </button>
+    </div>
+
+    <!-- Recommended Tools Showcase -->
+    <h3 style="font-size: 13px; font-weight: 700; color: var(--text-secondary); padding-left: 4px;">ALL-IN-ONE UTILITIES</h3>
+    <div class="tools-grid">
+      <div class="tool-tile">
+        <h4>📄 Merge PDF</h4>
+        <p>Combine multiple certificates</p>
+      </div>
+      <div class="tool-tile">
+        <h4>✂️ Split PDF</h4>
+        <p>Extract specific marks sheet pages</p>
+      </div>
+      <div class="tool-tile">
+        <h4>📸 Doc Scanner</h4>
+        <p>Auto-crop with magic filters</p>
+      </div>
+      <div class="tool-tile">
+        <h4>✍️ Signature Maker</h4>
+        <p>Transparent PNG for forms</p>
+      </div>
+      <div class="tool-tile">
+        <h4>🖼️ Image Resizer</h4>
+        <p>Exact pixel scale (140×60 px)</p>
+      </div>
+      <div class="tool-tile">
+        <h4>👤 Passport Photo</h4>
+        <p>3.5×4.5 cm with plain background</p>
+      </div>
+    </div>
+
+    <div class="footer">
+      BharatFile v1.0.0 • Made with ❤️ in India • 100% Offline & Private
+    </div>
+  </div>
+
+  <script>
+    // Service worker registration
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then(reg => console.log('BharatFile PWA SW registered'))
+          .catch(err => console.log('SW registration error', err));
+      });
+    }
+
+    const slider = document.getElementById('compressionRange');
+    const badge = document.getElementById('percentBadge');
+    const desc = document.getElementById('sliderDesc');
+
+    slider.addEventListener('input', (e) => {
+      const val = e.target.value;
+      badge.textContent = val + '%';
+      if (val < 30) {
+        desc.textContent = 'Light compression • Maximum quality';
+      } else if (val < 70) {
+        desc.textContent = 'Balanced compression • Recommended for forms';
+      } else {
+        desc.textContent = 'Aggressive compression • Minimum file size';
+      }
+    });
+
+    function setPreset(val) {
+      document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+      event.target.classList.add('active');
+    }
+  </script>
+</body>
+</html>
