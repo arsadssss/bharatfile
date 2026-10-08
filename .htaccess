@@ -1,0 +1,24 @@
+# BharatFile - Hostinger Web Production Configuration
+DirectoryIndex index.html
+
+# Prevent directory listing
+Options -Indexes
+
+# UTF-8 Encoding
+AddDefaultCharset UTF-8
+
+# Proper MIME types
+<IfModule mod_mime.c>
+  AddType application/manifest+json .json
+  AddType text/javascript .js
+  AddType image/png .png
+</IfModule>
+
+# Service Worker Cache Invalidation
+<IfModule mod_headers.c>
+  <Files "sw.js">
+    Header set Cache-Control "no-cache, no-store, must-revalidate"
+    Header set Pragma "no-cache"
+    Header set Expires 0
+  </Files>
+</IfModule>
