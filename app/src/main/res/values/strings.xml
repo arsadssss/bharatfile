@@ -1,0 +1,46 @@
+<resources>
+    <string name="app_name">BharatFile</string>
+    <string name="tagline">Privacy-First Document Utility</string>
+    <string name="pdf_mode">PDF</string>
+    <string name="image_mode">Image</string>
+    <string name="select_pdf_file">Select PDF File</string>
+    <string name="select_image_file">Select Image File</string>
+    <string name="choose_file">Choose File</string>
+    <string name="or_divider">or</string>
+    <string name="drag_drop_hint">Drag &amp; drop here</string>
+    <string name="compression_level">Compression Level</string>
+    <string name="level_low">Low</string>
+    <string name="level_medium">Medium</string>
+    <string name="level_high">High</string>
+    <string name="compressing">Compressing…</string>
+    <string name="compression_complete">Compression Complete</string>
+    <string name="original">Original</string>
+    <string name="compressed">Compressed</string>
+    <string name="download">Download</string>
+    <string name="compress_another">Compress Another</string>
+    <string name="you_may_also_like">You may also like</string>
+    
+    <!-- Drawer / Menu -->
+    <string name="menu_home">Home</string>
+    <string name="menu_compress_pdf">Compress PDF</string>
+    <string name="menu_compress_image">Compress Image</string>
+    <string name="menu_resize_image">Resize Image</string>
+    <string name="menu_convert_image">Convert Image</string>
+    <string name="menu_more_tools">More Tools</string>
+    <string name="menu_dark_mode">Dark Mode</string>
+    <string name="menu_about">About</string>
+    <string name="menu_privacy">Privacy Policy</string>
+    <string name="menu_terms">Terms of Service</string>
+    <string name="menu_contact">Contact Us</string>
+    
+    <!-- Tools -->
+    <string name="tool_image_to_pdf">Image to PDF</string>
+    <string name="tool_pdf_to_image">PDF to Image</string>
+    <string name="tool_merge_pdf">Merge PDF</string>
+    <string name="tool_split_pdf">Split PDF</string>
+    <string name="tool_organize_pdf">Organize PDF</string>
+    <string name="tool_scan_doc">Scan Document</string>
+    <string name="tool_signature_maker">Signature Maker</string>
+    <string name="tool_passport_photo">Passport Photo Crop</string>
+    <string name="tool_file_reducer">File Size Reducer</string>
+</resources>

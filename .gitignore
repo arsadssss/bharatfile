@@ -1,0 +1,35 @@
+# Gradle cache and builds
+.gradle/
+build/
+app/build/
+*/build/
+
+# Android Studio and IDE files
+.idea/
+*.iml
+.navigation/
+captures/
+.externalNativeBuild/
+.cxx/
+
+# Local configuration and keys
+local.properties
+*.jks
+*.keystore
+signing-keystore.properties
+google-services.json
+
+# Binaries and packages (uncheck if committing release APK)
+# *.apk
+# *.aab
+
+# OS and temporary files
+.DS_Store
+Thumbs.db
+*.swp
+*.bak
+*~
+
+# Unit test and lint outputs
+lint/
+reports/
