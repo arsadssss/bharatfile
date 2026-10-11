@@ -1,14 +1,20 @@
-// DocToolKit Service Worker for Offline PWA - v2.1.0
-const CACHE_NAME = 'doctoolkit-v2.1.0';
+// DocToolKit Service Worker for Offline PWA - v2.2.0
+const CACHE_NAME = 'doctoolkit-v2.2.0';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
   './manifest.json',
-  './favicon.svg',
   './favicon.ico',
+  './favicon.svg',
   './apple-touch-icon.png',
+  './icons/apple-touch-icon.png',
   './icons/icon-192.png',
   './icons/icon-512.png',
+  './icons/favicon-16x16.png',
+  './icons/favicon-32x32.png',
+  './icons/doctoolkit-logo-horizontal.png',
+  './icons/doctoolkit-icon-master.png',
+  './icons/og-image.png',
   './css/style.css',
   './js/app.js',
   './js/pdf-lib.min.js',
@@ -40,7 +46,6 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
-  // Never cache blob or sensitive user object URLs
   const url = event.request.url;
   if (url.startsWith('blob:') || url.startsWith('data:')) return;
 

@@ -119,6 +119,25 @@ html, body {
   cursor: pointer;
 }
 
+.nav-brand img,
+.nav-brand-logo {
+  height: 36px;
+  max-height: 36px;
+  width: auto;
+  max-width: 220px;
+  object-fit: contain;
+  display: block;
+}
+
+@media (max-width: 600px) {
+  .nav-brand img,
+  .nav-brand-logo {
+    height: 28px !important;
+    max-height: 28px !important;
+    max-width: 155px !important;
+  }
+}
+
 .brand-icon-3d {
   width: 38px;
   height: 38px;

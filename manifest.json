@@ -1,7 +1,7 @@
 {
-  "name": "DocToolKit — Free Online PDF & Image Tools",
+  "name": "DocToolKit",
   "short_name": "DocToolKit",
-  "description": "Compress PDFs and images, resize and convert images, merge and split PDFs, scan documents, and organize files with DocToolKit's free online tools.",
+  "description": "Free online PDF and image tools for compression, conversion, page reorganization, document scanning, and digital signatures. 100% on-device processing.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
@@ -20,6 +20,11 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
+    },
+    {
+      "src": "icons/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
     }
   ],
   "categories": ["utilities", "productivity", "education"]
