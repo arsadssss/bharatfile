@@ -7,10 +7,17 @@ Options -Indexes
 # UTF-8 Encoding
 AddDefaultCharset UTF-8
 
-# Canonical Domain Redirection (www -> non-www)
+# Canonical Domain Redirection (www -> non-www) & HTTPS
 <IfModule mod_rewrite.c>
   RewriteEngine On
+  
+  # Redirect www to non-www
   RewriteCond %{HTTP_HOST} ^www\.doctoolkit\.in$ [NC]
+  RewriteRule ^(.*)$ https://doctoolkit.in/$1 [R=301,L]
+  
+  # Enforce HTTPS without redirect loops
+  RewriteCond %{HTTPS} off
+  RewriteCond %{HTTP:X-Forwarded-Proto} !https
   RewriteRule ^(.*)$ https://doctoolkit.in/$1 [R=301,L]
 </IfModule>
 
