@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Passport Photo Maker Online – 3.5x4.5 cm Photo Cropper | DocToolKit</title>
+  <meta name="description" content="Create official passport photos online for free. Crop and format photos to standard 3.5 × 4.5 cm (413 × 531 px) with white border guidance for exam forms.">
+  <link rel="canonical" href="https://doctoolkit.in/tools/passport-photo/">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://doctoolkit.in/tools/passport-photo/">
+  <meta property="og:title" content="Passport Photo Maker Online – 3.5x4.5 cm Photo Cropper | DocToolKit">
+  <meta property="og:description" content="Create official passport photos online for free. Crop and format photos to standard 3.5 × 4.5 cm (413 × 531 px) with white border guidance for exam forms.">
+  <meta property="og:image" content="https://doctoolkit.in/icons/og-image.png">
+
+  <!-- Twitter / X -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://doctoolkit.in/tools/passport-photo/">
+  <meta name="twitter:title" content="Passport Photo Maker Online – 3.5x4.5 cm Photo Cropper | DocToolKit">
+  <meta name="twitter:description" content="Create official passport photos online for free. Crop and format photos to standard 3.5 × 4.5 cm (413 × 531 px) with white border guidance for exam forms.">
+  <meta name="twitter:image" content="https://doctoolkit.in/icons/og-image.png">
+
+  <!-- Icons & PWA -->
+  <meta name="theme-color" content="#0D59F2">
+  <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+  <link rel="icon" type="image/x-icon" href="../../favicon.ico">
+  <link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+  <link rel="manifest" href="../../manifest.json">
+
+  <!-- Shared Stylesheet -->
+  <link rel="stylesheet" href="../../css/style.css">
+
+  <!-- Vendor Libraries for 100% In-Browser Execution -->
+  <script src="../../js/pdf-lib.min.js"></script>
+  <script src="../../js/pdf.min.js"></script>
+  <script src="../../js/app.js"></script>
+
+  <!-- JSON-LD Structured Data -->
+  <script type="application/ld+json">
+  {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://doctoolkit.in/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Tools",
+      "item": "https://doctoolkit.in/#toolsSection"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Passport Photo",
+      "item": "https://doctoolkit.in/tools/passport-photo/"
+    }
+  ]
+}
+  </script>
+  <script type="application/ld+json">
+  {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "DocToolKit Passport Photo",
+  "url": "https://doctoolkit.in/tools/passport-photo/",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "All",
+  "browserRequirements": "Requires JavaScript and HTML5 Canvas support",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  }
+}
+  </script>
+  <script type="application/ld+json">
+  {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Does this meet UPSC and SSC requirements?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. The 3.5 \u00d7 4.5 cm aspect ratio and pixel dimensions match standard requirements for Indian exam portals."
+      }
+    }
+  ]
+}
+  </script>
+</head>
+<body>
+
+  <!-- Background Orbs -->
+  <div class="bg-orbs">
+    <div class="orb-1"></div>
+    <div class="orb-2"></div>
+  </div>
+
+  <!-- Mobile Drawer Backdrop -->
+  <div class="drawer-backdrop" id="drawerBackdrop" onclick="closeDrawer()"></div>
+
+  <!-- Mobile Navigation Drawer -->
+  <aside class="drawer" id="drawer">
+    <div class="drawer-header">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <img src="../../icons/doctoolkit-logo-horizontal.png" alt="DocToolKit" height="28" style="height: 28px; width: auto; display: block;">
+      </div>
+      <button class="btn-close-modal" id="closeDrawerBtn" onclick="closeDrawer()" aria-label="Close Navigation">✕</button>
+    </div>
+
+    <div class="drawer-menu">
+      <a class="drawer-item" href="../../tools/compress-pdf/">📄 Compress PDF</a>
+      <a class="drawer-item" href="../../tools/compress-image/">🖼️ Compress Image</a>
+      <a class="drawer-item" href="../../tools/pdf-scanner/">📸 PDF Scanner</a>
+      <a class="drawer-item" href="../../tools/merge-pdf/">📑 Merge PDF</a>
+      <a class="drawer-item" href="../../tools/split-pdf/">✂️ Split PDF</a>
+      <a class="drawer-item" href="../../tools/organize-pdf/">🗂️ Organize PDF</a>
+      <a class="drawer-item" href="../../tools/pdf-to-image/">🖼️ PDF to Images</a>
+      <a class="drawer-item" href="../../tools/image-to-pdf/">📁 Images to PDF</a>
+      <a class="drawer-item" href="../../tools/resize-image/">📐 Resize Image</a>
+      <a class="drawer-item" href="../../tools/convert-image/">🔄 Convert Image</a>
+      <a class="drawer-item" href="../../tools/crop-image/">✂️ Crop Image</a>
+      <a class="drawer-item" href="../../tools/rotate-image/">🔄 Rotate Image</a>
+      <a class="drawer-item" href="../../tools/passport-photo/">👤 Passport Photo</a>
+      <a class="drawer-item" href="../../tools/signature-maker/">✍️ Signature Maker</a>
+      <a class="drawer-item" href="../../tools/document-organizer/">📂 Document Organizer</a>
+
+      <div class="drawer-divider"></div>
+
+      <button class="drawer-item" onclick="toggleTheme()">🌓 Toggle Dark Mode</button>
+      <a class="drawer-item" href="../../privacy/">🔒 Privacy Policy</a>
+      <a class="drawer-item" href="../../terms/">📜 Terms of Service</a>
+    </div>
+  </aside>
+
+  <!-- Main Application Wrapper -->
+  <div class="app-wrapper">
+
+    <!-- Top Floating Navbar -->
+    <header class="navbar">
+      <a class="nav-brand" href="../../" aria-label="DocToolKit Homepage">
+        <img src="../../icons/doctoolkit-logo-horizontal.png" alt="DocToolKit" height="34" style="height: 34px; max-height: 34px; width: auto; display: block;">
+      </a>
+
+      <!-- Desktop Center Menu -->
+      <nav class="desktop-menu" aria-label="Main Navigation">
+        <a class="menu-btn" href="../../tools/compress-pdf/">📄 Compress PDF</a>
+        <a class="menu-btn" href="../../tools/compress-image/">🖼️ Compress Image</a>
+        <a class="menu-btn" href="../../tools/pdf-scanner/">📸 Scanner</a>
+        <a class="menu-btn" href="../../tools/merge-pdf/">📑 Merge PDF</a>
+        <a class="menu-btn" href="../../tools/document-organizer/">📂 Organizer</a>
+      </nav>
+
+      <!-- Right Actions -->
+      <div class="nav-actions">
+        <button class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()" aria-label="Toggle Dark/Light Mode">🌙</button>
+        <button class="btn-get-started" onclick="location.href='../../tools/document-organizer/'" aria-label="User Profile">
+          <span>👤</span>
+          <span id="navProfileName">User</span>
+        </button>
+        <button class="hamburger-btn" id="hamburgerBtn" onclick="openDrawer()" aria-label="Open Navigation Menu">☰</button>
+      </div>
+    </header>
+
+    <!-- Breadcrumb Navigation -->
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a href="../../">Home</a>
+      <span>&gt;</span>
+      <a href="../../#toolsSection">Tools</a>
+      <span>&gt;</span>
+      <span>Passport Photo</span>
+    </nav>
+
+    <!-- Main Interactive Workbench Card -->
+    <main class="workbench-card">
+      <div class="workbench-header">
+        <h1>Passport Photo Maker Online</h1>
+        <p>Format and crop portrait photos to official passport specifications: 3.5 × 4.5 cm (413 × 531 pixels at 300 DPI). Includes a clean white framing border compliant with UPSC, SSC, visa, and government portal guidelines.</p>
+      </div>
+
+      <!-- Mounted Interactive Tool Interface -->
+      
+        <div style="display:flex; flex-direction:column; gap:16px;">
+          <input type="file" id="passInput" accept="image/*" style="display:none;">
+          <div class="dropzone" onclick="document.getElementById('passInput').click()">
+            <div class="drop-cloud-icon">👤</div>
+            <div style="font-weight:700; font-size:15px;">Choose Front-Facing Portrait</div>
+            <div style="font-size:12px; color:var(--text-muted);" id="passStatus">Standard 3.5 × 4.5 cm (413 × 531 px) with white border</div>
+            <button class="btn-choose-file" type="button">📁 Choose Portrait</button>
+          </div>
+          <button class="btn-choose-file" id="btnDoPassport" style="width:100%;">Generate 3.5×4.5 cm Passport Photo</button>
+        </div>
+        
+    </main>
+
+    <!-- SEO Section 1: Step-by-Step Instructions -->
+    <section class="seo-section">
+      <div>
+        <h2 style="margin-bottom: 8px;">How to Use Passport Photo Online</h2>
+        <p>Follow these quick steps to process your files securely on your device.</p>
+      </div>
+      <div class="steps-list">
+        
+        <div class="step-item">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <h4>Upload Your Portrait</h4>
+            <p>Select a clear front-facing portrait photo.</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <h4>Generate 3.5×4.5 cm Photo</h4>
+            <p>DocToolKit centers and crops the photo to official 3.5 × 4.5 cm dimensions with white framing.</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <h4>Download & Submit</h4>
+            <p>Save the formatted photo with our smart naming convention ready for portal submission.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEO Section 2: Features & Capabilities -->
+    <section class="seo-section">
+      <div>
+        <h2 style="margin-bottom: 8px;">Key Features &amp; Specifications</h2>
+        <p>Why users choose DocToolKit's passport photo utility.</p>
+      </div>
+      <div class="seo-grid">
+        
+        <div class="seo-feature-card">
+          <h4>Official 3.5 × 4.5 cm Sizing</h4>
+          <p>Exact 413 × 531 pixel resolution adhering to government guidelines.</p>
+        </div>
+        <div class="seo-feature-card">
+          <h4>White Border Framing</h4>
+          <p>Adds subtle 8px white framing border required by exam authorities.</p>
+        </div>
+        <div class="seo-feature-card">
+          <h4>Instant Portrait Centering</h4>
+          <p>Proportional cropping keeps head and shoulders in focus.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEO Section 3: Technical Formats & Privacy -->
+    <section class="seo-section">
+      <div>
+        <h2 style="margin-bottom: 8px;">Format Specifications &amp; Client-Side Privacy</h2>
+        <p>Transparent technical details regarding passport photo.</p>
+      </div>
+      <div class="seo-grid">
+        <div class="seo-feature-card">
+          <h4>Supported Input Format</h4>
+          <p>Portrait photo (JPG, PNG, WebP)</p>
+        </div>
+        <div class="seo-feature-card">
+          <h4>Generated Output Format</h4>
+          <p>Official 3.5 × 4.5 cm JPEG photo (.jpg)</p>
+        </div>
+        <div class="seo-feature-card">
+          <h4>Browser Processing Scope</h4>
+          <p>100% on-device client processing. Zero network transmission of your private file bytes.</p>
+        </div>
+        <div class="seo-feature-card">
+          <h4>System Limitations</h4>
+          <p>Ensure your face is well-lit and facing forward with neutral expression.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEO Section 4: Related Tools (Strict Rule: Clean Cards, Icon + Title Only) -->
+    <section class="tools-section">
+      <div class="tools-section-header">
+        <h3>Related Document &amp; Image Tools</h3>
+      </div>
+      <div class="tools-grid">
+        
+            <a class="tool-card" href="../../tools/signature-maker/">
+              <div class="tool-card-icon">✍️</div>
+              <h4>Signature Maker</h4>
+            </a>
+            <a class="tool-card" href="../../tools/crop-image/">
+              <div class="tool-card-icon">✂️</div>
+              <h4>Crop Image</h4>
+            </a>
+            <a class="tool-card" href="../../tools/resize-image/">
+              <div class="tool-card-icon">📐</div>
+              <h4>Resize Image</h4>
+            </a>
+            <a class="tool-card" href="../../tools/compress-image/">
+              <div class="tool-card-icon">🖼️</div>
+              <h4>Compress Image</h4>
+            </a>
+      </div>
+    </section>
+
+    <!-- SEO Section 5: Frequently Asked Questions -->
+    <section class="seo-section">
+      <div>
+        <h2 style="margin-bottom: 8px;">Frequently Asked Questions</h2>
+        <p>Common questions regarding passport photo.</p>
+      </div>
+      <div class="faq-list">
+        
+        <div class="faq-item">
+          <div class="faq-question">Does this meet UPSC and SSC requirements?</div>
+          <div class="faq-answer">Yes. The 3.5 × 4.5 cm aspect ratio and pixel dimensions match standard requirements for Indian exam portals.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      <div class="footer-top">
+        <div class="footer-col">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+            <img src="../../icons/doctoolkit-logo-horizontal.png" alt="DocToolKit" height="28" style="height: 28px; width: auto; display: block;">
+          </div>
+          <p style="font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 12px;">
+            Free, privacy-first online tools for PDF and image compression, conversion, page reorganization, document scanning, and digital signatures. 100% on-device processing.
+          </p>
+          <p style="font-size: 12px; color: var(--text-muted);">
+            Official Domain: <a href="https://doctoolkit.in/" style="color: var(--primary); text-decoration: none; font-weight: 600;">https://doctoolkit.in/</a>
+          </p>
+        </div>
+
+        <div class="footer-col">
+          <h5>PDF Utilities</h5>
+          <ul>
+            <li><a href="../../tools/compress-pdf/">Compress PDF</a></li>
+            <li><a href="../../tools/pdf-scanner/">PDF Scanner</a></li>
+            <li><a href="../../tools/merge-pdf/">Merge PDF</a></li>
+            <li><a href="../../tools/split-pdf/">Split PDF</a></li>
+            <li><a href="../../tools/organize-pdf/">Organize PDF</a></li>
+            <li><a href="../../tools/pdf-to-image/">PDF to Images</a></li>
+            <li><a href="../../tools/image-to-pdf/">Images to PDF</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h5>Image Utilities</h5>
+          <ul>
+            <li><a href="../../tools/compress-image/">Compress Image</a></li>
+            <li><a href="../../tools/resize-image/">Resize Image</a></li>
+            <li><a href="../../tools/convert-image/">Convert Image</a></li>
+            <li><a href="../../tools/crop-image/">Crop Image</a></li>
+            <li><a href="../../tools/rotate-image/">Rotate Image</a></li>
+            <li><a href="../../tools/passport-photo/">Passport Photo</a></li>
+            <li><a href="../../tools/signature-maker/">Signature Maker</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h5>Legal &amp; Privacy</h5>
+          <ul>
+            <li><a href="../../privacy/">Privacy Policy</a></li>
+            <li><a href="../../terms/">Terms of Service</a></li>
+            <li><a href="../../tools/document-organizer/">Document Organizer</a></li>
+            <li><a href="../../sitemap.xml">XML Sitemap</a></li>
+            <li><a href="../../robots.txt">Robots.txt</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>&copy; 2026 DocToolKit. All rights reserved. 100% Client-Side Privacy Guaranteed.</p>
+        <p style="font-size: 11px;">All PDF and image processing occurs locally in browser memory. No files are stored or uploaded.</p>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- Interactive JavaScript for this tool -->
+  <script>
+  
+        let passFile = null;
+        document.getElementById('passInput').onchange = (e) => {
+          if (e.target.files[0]) {
+            passFile = e.target.files[0];
+            document.getElementById('passStatus').textContent = `Selected: ${passFile.name}`;
+          }
+        };
+
+        document.getElementById('btnDoPassport').onclick = () => {
+          if (!passFile) return alert('Please select a photo first.');
+          const img = new Image();
+          img.src = URL.createObjectURL(passFile);
+          img.onload = () => {
+            const c = document.createElement('canvas');
+            c.width = 413; c.height = 531;
+            const ctx = c.getContext('2d');
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(0, 0, c.width, c.height);
+            const r = 413 / 531;
+            let sw = img.width, sh = img.width / r;
+            if (sh > img.height) { sh = img.height; sw = img.height * r; }
+            const sx = (img.width - sw) / 2;
+            const sy = (img.height - sh) / 2;
+            ctx.drawImage(img, sx, sy, sw, sh, 8, 8, 397, 515);
+            c.toBlob(blob => {
+              const name = generateExportFilename(passFile.name, DocToolKit.userProfile.name, 'passport', 'jpg');
+              triggerDownload(blob, name);
+              saveDocumentToDB({ name, origSize: passFile.size, size: blob.size, type: 'Photo' });
+            }, 'image/jpeg', 0.95);
+          };
+        };
+        
+  </script>
+</body>
+</html>

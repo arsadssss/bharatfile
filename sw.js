@@ -1,12 +1,16 @@
-// BharatFile Service Worker for Offline PWA - v2.0.0
-const CACHE_NAME = 'bharatfile-v2.0.0';
+// DocToolKit Service Worker for Offline PWA - v2.1.0
+const CACHE_NAME = 'doctoolkit-v2.1.0';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
   './manifest.json',
-  './sw.js',
+  './favicon.svg',
+  './favicon.ico',
+  './apple-touch-icon.png',
   './icons/icon-192.png',
   './icons/icon-512.png',
+  './css/style.css',
+  './js/app.js',
   './js/pdf-lib.min.js',
   './js/pdf.min.js',
   './js/pdf.worker.min.js'
@@ -36,6 +40,10 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
+  // Never cache blob or sensitive user object URLs
+  const url = event.request.url;
+  if (url.startsWith('blob:') || url.startsWith('data:')) return;
+
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
       if (cachedResponse) {

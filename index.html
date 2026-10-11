@@ -3,1105 +3,119 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>BharatFile — Compress PDF & Images Online (100% On-Device)</title>
-  <meta name="description" content="Free, 100% on-device PDF compression, exact target size reducer, image optimizer, PDF merge, split, scanner, and photo tool for Indian students & job applications.">
-  <meta name="theme-color" content="#4E65FF">
-  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
-  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <title>DocToolKit – Free Online PDF &amp; Image Tools</title>
+  <meta name="description" content="Compress PDFs and images, resize and convert images, merge and split PDFs, scan documents, and organize files with DocToolKit's free online tools.">
+  <link rel="canonical" href="https://doctoolkit.in/">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://doctoolkit.in/">
+  <meta property="og:title" content="DocToolKit – Free Online PDF &amp; Image Tools">
+  <meta property="og:description" content="Compress PDFs and images, resize and convert images, merge and split PDFs, scan documents, and organize files with DocToolKit's free online tools.">
+  <meta property="og:image" content="https://doctoolkit.in/icons/og-image.png">
+
+  <!-- Twitter / X -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://doctoolkit.in/">
+  <meta name="twitter:title" content="DocToolKit – Free Online PDF &amp; Image Tools">
+  <meta name="twitter:description" content="Compress PDFs and images, resize and convert images, merge and split PDFs, scan documents, and organize files with DocToolKit's free online tools.">
+  <meta name="twitter:image" content="https://doctoolkit.in/icons/og-image.png">
+
+  <!-- Icons & PWA -->
+  <meta name="theme-color" content="#0D59F2">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <link rel="manifest" href="manifest.json">
 
-  <!-- Local Offline-First Vendor Libraries -->
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- Vendor Libraries for 100% Local Processing -->
   <script src="js/pdf-lib.min.js"></script>
   <script src="js/pdf.min.js"></script>
-
-  <style>
-    :root {
-      --primary: #4E65FF;
-      --primary-dark: #384BD8;
-      --secondary: #7A5AF8;
-      --primary-gradient: linear-gradient(135deg, #4E65FF, #7A5AF8);
-      --bg-page: #F4F6FC;
-      --card-bg: rgba(255, 255, 255, 0.96);
-      --card-border: rgba(225, 232, 245, 0.85);
-      --card-shadow: 0 10px 32px rgba(78, 101, 255, 0.06);
-      --text-main: #111827;
-      --text-muted: #64748B;
-      --success: #12B76A;
-      --success-bg: rgba(18, 183, 106, 0.12);
-      --danger: #EF4444;
-      --radius-lg: 24px;
-      --radius-md: 16px;
-      --radius-sm: 10px;
-      --track-bg: #E2E8F4;
-      --dropzone-bg: rgba(244, 248, 255, 0.65);
-      --dropzone-border: #B8C7E8;
-    }
-
-    body.dark-mode {
-      --bg-page: #0B0E14;
-      --card-bg: rgba(20, 25, 36, 0.96);
-      --card-border: rgba(45, 55, 75, 0.85);
-      --card-shadow: 0 10px 32px rgba(0, 0, 0, 0.3);
-      --text-main: #F1F5F9;
-      --text-muted: #94A3B8;
-      --track-bg: #222938;
-      --dropzone-bg: rgba(24, 30, 44, 0.65);
-      --dropzone-border: #38445C;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      -webkit-font-smoothing: antialiased;
-    }
-
-    html, body {
-      width: 100%;
-      min-height: 100vh;
-      overflow-x: hidden;
-      background: var(--bg-page);
-      color: var(--text-main);
-      transition: background 0.3s ease, color 0.3s ease;
-    }
-
-    /* Soft ambient background orbs */
-    .bg-orbs {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      pointer-events: none;
-      z-index: 0;
-      overflow: hidden;
-    }
-    .orb-1 {
-      position: absolute;
-      top: -10%;
-      left: -5%;
-      width: 50vw;
-      height: 50vw;
-      max-width: 650px;
-      max-height: 650px;
-      background: radial-gradient(circle, rgba(122, 90, 248, 0.12) 0%, transparent 70%);
-      filter: blur(60px);
-    }
-    .orb-2 {
-      position: absolute;
-      top: 5%;
-      right: -10%;
-      width: 55vw;
-      height: 55vw;
-      max-width: 700px;
-      max-height: 700px;
-      background: radial-gradient(circle, rgba(78, 101, 255, 0.12) 0%, transparent 70%);
-      filter: blur(60px);
-    }
-
-    /* Main Container */
-    .app-wrapper {
-      position: relative;
-      z-index: 1;
-      width: 100%;
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 16px 20px 80px 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 24px;
-    }
-
-    /* Top Floating Header Bar */
-    .navbar {
-      width: 100%;
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 18px;
-      padding: 12px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-    }
-
-    .nav-brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      text-decoration: none;
-      color: inherit;
-      cursor: pointer;
-    }
-
-    .brand-icon-3d {
-      width: 38px;
-      height: 38px;
-      background: var(--primary-gradient);
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-weight: 800;
-      font-size: 20px;
-      box-shadow: 0 6px 16px rgba(78, 101, 255, 0.35);
-    }
-
-    .brand-title {
-      font-size: 22px;
-      font-weight: 800;
-      letter-spacing: -0.4px;
-      color: var(--text-main);
-    }
-
-    .desktop-menu {
-      display: none;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .menu-btn {
-      background: transparent;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 100px;
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text-muted);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      transition: all 0.2s ease;
-    }
-
-    .menu-btn:hover, .menu-btn.active {
-      color: var(--primary);
-      background: rgba(78, 101, 255, 0.08);
-    }
-
-    .nav-actions {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .theme-toggle-btn {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      border: 1px solid var(--card-border);
-      background: var(--card-bg);
-      color: var(--text-main);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      font-size: 17px;
-      transition: transform 0.2s ease;
-    }
-
-    .profile-pill {
-      display: none;
-      align-items: center;
-      gap: 6px;
-      padding: 6px 14px;
-      border-radius: 100px;
-      border: 1px solid var(--card-border);
-      background: var(--card-bg);
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-
-    .btn-get-started {
-      background: var(--primary-gradient);
-      color: white;
-      border: none;
-      padding: 10px 22px;
-      border-radius: 100px;
-      font-size: 13px;
-      font-weight: 700;
-      cursor: pointer;
-      box-shadow: 0 4px 14px rgba(78, 101, 255, 0.35);
-      transition: transform 0.15s ease;
-    }
-
-    .btn-get-started:hover {
-      transform: translateY(-1px);
-    }
-
-    .hamburger-btn {
-      width: 42px;
-      height: 42px;
-      border-radius: 12px;
-      border: 1px solid var(--card-border);
-      background: var(--card-bg);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 5px;
-      cursor: pointer;
-      padding: 0;
-    }
-
-    .hamburger-btn span {
-      display: block;
-      width: 20px;
-      height: 2px;
-      background: var(--text-main);
-      border-radius: 2px;
-    }
-
-    /* Hero Headline */
-    .hero-section {
-      text-align: center;
-      margin: 12px 0 6px 0;
-    }
-
-    .hero-title {
-      font-size: 38px;
-      font-weight: 900;
-      letter-spacing: -0.6px;
-      line-height: 1.2;
-    }
-
-    .gradient-text {
-      background: var(--primary-gradient);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .hero-subtitle {
-      font-size: 15px;
-      color: var(--text-muted);
-      margin-top: 8px;
-    }
-
-    /* Main Workspace Two-Column Grid */
-    .main-workspace {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 24px;
-      width: 100%;
-    }
-
-    /* Main Compressor Card */
-    .compressor-card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: var(--radius-lg);
-      padding: 28px;
-      box-shadow: var(--card-shadow);
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-
-    /* Segmented Mode Switcher (PDF vs Image) */
-    .segmented-tabs {
-      display: flex;
-      background: var(--track-bg);
-      padding: 4px;
-      border-radius: 100px;
-      width: fit-content;
-      gap: 4px;
-    }
-
-    .seg-tab {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 20px;
-      border-radius: 100px;
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--text-muted);
-      border: none;
-      background: transparent;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .seg-tab.active {
-      background: var(--primary-gradient);
-      color: white;
-      box-shadow: 0 4px 12px rgba(78, 101, 255, 0.3);
-    }
-
-    .section-headline h2 {
-      font-size: 18px;
-      font-weight: 800;
-    }
-
-    .section-headline p {
-      font-size: 13px;
-      color: var(--text-muted);
-      margin-top: 2px;
-    }
-
-    /* Dropzone Box */
-    .dropzone {
-      border: 1.5px dashed var(--dropzone-border);
-      border-radius: var(--radius-md);
-      background: var(--dropzone-bg);
-      padding: 40px 20px;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .dropzone.drag-active {
-      border-color: var(--primary);
-      background: rgba(78, 101, 255, 0.08);
-      transform: scale(1.01);
-    }
-
-    .dropzone-icon {
-      width: 56px;
-      height: 56px;
-      background: var(--primary-gradient);
-      border-radius: 50%;
-      margin-bottom: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      box-shadow: 0 8px 20px rgba(78, 101, 255, 0.35);
-    }
-
-    .dropzone-title {
-      font-size: 16px;
-      font-weight: 700;
-      color: var(--primary);
-    }
-
-    .dropzone-sub {
-      font-size: 12px;
-      color: var(--text-muted);
-      margin-top: 4px;
-    }
-
-    .btn-choose-file {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      margin-top: 16px;
-      padding: 10px 24px;
-      background: var(--card-bg);
-      border: 1px solid #1E293B;
-      border-radius: 100px;
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--text-main);
-      cursor: pointer;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-      transition: all 0.15s ease;
-    }
-
-    body.dark-mode .btn-choose-file {
-      border-color: #94A3B8;
-    }
-
-    .btn-choose-file:hover {
-      background: rgba(78, 101, 255, 0.08);
-      border-color: var(--primary);
-    }
-
-    /* Compression Level Slider */
-    .compression-control-box {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      padding-top: 4px;
-    }
-
-    .comp-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .comp-header h4 {
-      font-size: 14px;
-      font-weight: 700;
-    }
-
-    .comp-badge {
-      background: var(--primary-gradient);
-      color: white;
-      font-size: 13px;
-      font-weight: 800;
-      padding: 4px 12px;
-      border-radius: 8px;
-    }
-
-    .slider-track-wrap {
-      position: relative;
-      width: 100%;
-      height: 8px;
-      background: var(--track-bg);
-      border-radius: 6px;
-      margin: 8px 0;
-    }
-
-    .slider-fill {
-      position: absolute;
-      top: 0;
-      left: 0;
-      height: 100%;
-      background: var(--primary-gradient);
-      border-radius: 6px;
-      width: 60%;
-      pointer-events: none;
-    }
-
-    input[type=range].custom-slider {
-      position: absolute;
-      top: -6px;
-      left: 0;
-      width: 100%;
-      height: 20px;
-      opacity: 0;
-      cursor: pointer;
-      z-index: 2;
-    }
-
-    .slider-labels {
-      display: flex;
-      justify-content: space-between;
-      font-size: 12px;
-      color: var(--text-muted);
-      font-weight: 600;
-    }
-
-    .slider-labels span.active {
-      color: var(--primary);
-      font-weight: 800;
-    }
-
-    /* Target Presets */
-    .target-presets-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-top: 6px;
-    }
-
-    .preset-chip {
-      background: var(--track-bg);
-      border: 1px solid transparent;
-      padding: 6px 12px;
-      border-radius: 100px;
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--text-main);
-      cursor: pointer;
-      transition: all 0.15s ease;
-    }
-
-    .preset-chip:hover, .preset-chip.active {
-      background: rgba(78, 101, 255, 0.15);
-      border-color: var(--primary);
-      color: var(--primary);
-    }
-
-    /* Processing Box (Reference Bottom-Left) */
-    .processing-box {
-      display: none;
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: var(--radius-md);
-      padding: 20px;
-      flex-direction: column;
-      gap: 14px;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
-    }
-
-    .proc-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .proc-file-info {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .file-badge-red {
-      width: 44px;
-      height: 48px;
-      background: #FEE2E2;
-      border-radius: 10px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      color: #DC2626;
-      font-weight: 800;
-      font-size: 11px;
-      box-shadow: 0 2px 6px rgba(220, 38, 38, 0.15);
-    }
-
-    .proc-progress-pct {
-      font-size: 18px;
-      font-weight: 800;
-      color: var(--text-main);
-    }
-
-    .proc-bar-wrap {
-      width: 100%;
-      height: 8px;
-      background: var(--track-bg);
-      border-radius: 100px;
-      overflow: hidden;
-    }
-
-    .proc-bar-fill {
-      width: 0%;
-      height: 100%;
-      background: var(--primary-gradient);
-      transition: width 0.2s ease;
-    }
-
-    .proc-sub {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 12px;
-      color: var(--text-muted);
-    }
-
-    .btn-cancel {
-      background: transparent;
-      border: none;
-      color: var(--danger);
-      font-weight: 700;
-      cursor: pointer;
-      font-size: 12px;
-    }
-
-    /* Complete State Box (Reference Bottom-Right) */
-    .completion-box {
-      display: none;
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: var(--radius-md);
-      padding: 22px;
-      flex-direction: column;
-      gap: 18px;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
-    }
-
-    .comp-status-row {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-
-    .file-badge-green {
-      width: 48px;
-      height: 48px;
-      background: #DCFCE7;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #16A34A;
-      font-weight: 800;
-      font-size: 13px;
-      box-shadow: 0 2px 6px rgba(22, 163, 74, 0.2);
-    }
-
-    .comp-text-col h3 {
-      font-size: 16px;
-      font-weight: 800;
-      color: var(--text-main);
-    }
-
-    .comp-text-col p {
-      font-size: 12px;
-      color: var(--text-muted);
-    }
-
-    .comp-file-card {
-      background: rgba(248, 250, 252, 0.8);
-      border: 1px solid var(--card-border);
-      border-radius: 12px;
-      padding: 12px 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    body.dark-mode .comp-file-card {
-      background: rgba(30, 41, 59, 0.6);
-    }
-
-    .comp-delta {
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--success);
-    }
-
-    .rename-group {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .rename-group label {
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--text-muted);
-    }
-
-    .rename-input-wrap {
-      display: flex;
-      align-items: center;
-      background: var(--track-bg);
-      border-radius: 10px;
-      padding: 4px 12px;
-      border: 1px solid var(--card-border);
-    }
-
-    .rename-input {
-      width: 100%;
-      background: transparent;
-      border: none;
-      outline: none;
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text-main);
-      padding: 8px 0;
-    }
-
-    .action-btn-row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .btn-download-primary {
-      flex: 1.5;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      background: var(--primary-gradient);
-      color: white;
-      border: none;
-      border-radius: 100px;
-      padding: 14px;
-      font-size: 14px;
-      font-weight: 700;
-      cursor: pointer;
-      box-shadow: 0 6px 18px rgba(78, 101, 255, 0.35);
-      transition: transform 0.15s ease;
-    }
-
-    .btn-download-primary:hover {
-      transform: translateY(-1px);
-    }
-
-    .btn-another-sec {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 100px;
-      padding: 14px;
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--text-main);
-      cursor: pointer;
-      transition: background 0.15s ease;
-    }
-
-    .btn-another-sec:hover {
-      background: var(--track-bg);
-    }
-
-    /* Right Benefit Card (Reference Screenshot) */
-    .benefit-card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: var(--radius-lg);
-      padding: 32px 28px;
-      box-shadow: var(--card-shadow);
-      display: flex;
-      flex-direction: column;
-      gap: 24px;
-      align-items: center;
-    }
-
-    /* 3D Document Illustration Matching Reference */
-    .illustration-3d-box {
-      width: 220px;
-      height: 180px;
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 10px;
-    }
-
-    .doc-sheet-3 {
-      position: absolute;
-      width: 130px;
-      height: 155px;
-      background: #DCE5F8;
-      border-radius: 18px;
-      transform: rotate(-12deg) translateY(-8px);
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
-    }
-    .doc-sheet-2 {
-      position: absolute;
-      width: 130px;
-      height: 155px;
-      background: #EDF3FE;
-      border-radius: 18px;
-      transform: rotate(-5deg) translateY(-4px);
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
-    }
-    .doc-sheet-1 {
-      position: absolute;
-      width: 135px;
-      height: 160px;
-      background: #FFFFFF;
-      border-radius: 18px;
-      box-shadow: 0 16px 36px rgba(78, 101, 255, 0.14);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .doc-pdf-badge {
-      width: 58px;
-      height: 58px;
-      background: linear-gradient(135deg, #EF4444, #DC2626);
-      border-radius: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 8px 20px rgba(220, 38, 38, 0.35);
-      color: white;
-    }
-    /* Floating 3D Spheres */
-    .floating-orb {
-      position: absolute;
-      border-radius: 50%;
-      box-shadow: inset -2px -2px 6px rgba(0,0,0,0.2), 0 4px 12px rgba(0,0,0,0.15);
-    }
-    .orb-blue-sm {
-      width: 20px;
-      height: 20px;
-      background: linear-gradient(135deg, #60A5FA, #2563EB);
-      left: 10px;
-      top: 60px;
-    }
-    .orb-purple-sm {
-      width: 18px;
-      height: 18px;
-      background: linear-gradient(135deg, #C084FC, #7C3AED);
-      right: 15px;
-      top: 55px;
-    }
-    .orb-orange-xs {
-      width: 14px;
-      height: 14px;
-      background: linear-gradient(135deg, #FBBF24, #D97706);
-      right: 25px;
-      top: 15px;
-    }
-
-    /* Benefits List */
-    .benefits-list {
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
-
-    .benefit-item {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      background: rgba(248, 250, 252, 0.85);
-      border: 1px solid var(--card-border);
-      border-radius: var(--radius-md);
-      padding: 16px;
-      transition: transform 0.2s ease;
-    }
-
-    body.dark-mode .benefit-item {
-      background: rgba(26, 33, 46, 0.85);
-    }
-
-    .benefit-item:hover {
-      transform: translateX(4px);
-    }
-
-    .benefit-icon-badge {
-      width: 44px;
-      height: 44px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-      flex-shrink: 0;
-    }
-    .badge-purple { background: #F3E8FF; color: #7C3AED; }
-    .badge-blue { background: #DBEAFE; color: #2563EB; }
-    .badge-green { background: #DCFCE7; color: #16A34A; }
-
-    .benefit-text h4 {
-      font-size: 14px;
-      font-weight: 800;
-      color: var(--text-main);
-    }
-
-    .benefit-text p {
-      font-size: 12px;
-      color: var(--text-muted);
-      margin-top: 2px;
-    }
-
-    /* Tools Showcase Section */
-    .tools-section {
-      width: 100%;
-      margin-top: 20px;
-    }
-
-    .tools-section-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 16px;
-    }
-
-    .tools-section-header h3 {
-      font-size: 18px;
-      font-weight: 800;
-    }
-
-    .tools-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 16px;
-    }
-
-    .tool-card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: var(--radius-md);
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
-    }
-
-    .tool-card:hover {
-      transform: translateY(-4px);
-      border-color: var(--primary);
-      box-shadow: 0 12px 28px rgba(78, 101, 255, 0.12);
-    }
-
-    .tool-card-icon {
-      font-size: 26px;
-      margin-bottom: 2px;
-    }
-
-    .tool-card h4 {
-      font-size: 15px;
-      font-weight: 700;
-    }
-
-    .tool-card p {
-      font-size: 12px;
-      color: var(--text-muted);
-      line-height: 1.4;
-    }
-
-    /* Drawer & Modal Components */
-    .drawer-backdrop {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: rgba(0, 0, 0, 0.45);
-      backdrop-filter: blur(6px);
-      z-index: 998;
-      opacity: 0;
-      visibility: hidden;
-      transition: opacity 0.3s ease, visibility 0.3s ease;
-    }
-    .drawer-backdrop.open { opacity: 1; visibility: visible; }
-
-    .drawer {
-      position: fixed;
-      top: 0;
-      right: 0;
-      width: 82%;
-      max-width: 340px;
-      height: 100vh;
-      background: var(--card-bg);
-      border-left: 1px solid var(--card-border);
-      z-index: 999;
-      transform: translateX(100%);
-      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      display: flex;
-      flex-direction: column;
-      box-shadow: -10px 0 35px rgba(0, 0, 0, 0.15);
-      overflow-y: auto;
-    }
-    .drawer.open { transform: translateX(0); }
-
-    .drawer-header {
-      padding: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 1px solid var(--card-border);
-    }
-
-    .drawer-menu {
-      padding: 16px 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .drawer-item {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      padding: 12px 16px;
-      border-radius: 12px;
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--text-main);
-      background: transparent;
-      border: none;
-      cursor: pointer;
-      text-align: left;
-      width: 100%;
-    }
-    .drawer-item:hover {
-      background: rgba(78, 101, 255, 0.1);
-      color: var(--primary);
-    }
-    .drawer-divider {
-      height: 1px;
-      background: var(--card-border);
-      margin: 10px 16px;
-    }
-
-    /* Modal Overlay */
-    .modal-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: rgba(0, 0, 0, 0.5);
-      backdrop-filter: blur(8px);
-      z-index: 1000;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-    .modal-content {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: var(--radius-lg);
-      width: 100%;
-      max-width: 580px;
-      max-height: 90vh;
-      overflow-y: auto;
-      padding: 26px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      box-shadow: 0 20px 48px rgba(0, 0, 0, 0.25);
-    }
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .modal-header h3 {
-      font-size: 18px;
-      font-weight: 800;
-    }
-    .btn-close-modal {
-      background: var(--track-bg);
-      border: none;
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      cursor: pointer;
-      font-size: 16px;
-      color: var(--text-main);
-    }
-
-    /* Footer */
-    .footer {
-      text-align: center;
-      font-size: 12px;
-      color: var(--text-muted);
-      margin-top: 30px;
-      line-height: 1.6;
-    }
-
-    /* Media Queries */
-    @media (min-width: 680px) {
-      .tools-grid {
-        grid-template-columns: repeat(3, 1fr);
+  <script src="js/app.js"></script>
+
+  <!-- JSON-LD Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "https://doctoolkit.in/#website",
+        "url": "https://doctoolkit.in/",
+        "name": "DocToolKit",
+        "description": "Free, privacy-first online tools to compress, convert, merge, split, and edit PDFs and images directly on your device.",
+        "publisher": {
+          "@type": "Organization",
+          "name": "DocToolKit",
+          "url": "https://doctoolkit.in/",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://doctoolkit.in/icons/icon-512.png"
+          }
+        }
+      },
+      {
+        "@type": "WebApplication",
+        "@id": "https://doctoolkit.in/#webapp",
+        "name": "DocToolKit Online Document & Image Tools",
+        "url": "https://doctoolkit.in/",
+        "applicationCategory": "UtilitiesApplication",
+        "operatingSystem": "All",
+        "browserRequirements": "Requires JavaScript and HTML5 Canvas support",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        }
+      },
+      {
+        "@type": "FAQPage",
+        "@id": "https://doctoolkit.in/#faq",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "Are my files uploaded to any server when using DocToolKit?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "No. DocToolKit runs entirely inside your web browser using WebAssembly and HTML5 Canvas. Your files, photos, signatures, and PDF pages are processed strictly in local browser memory and are never uploaded to any remote server."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How does the continuous compression slider work?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "The custom 1% to 100% slider maps directly to genuine compression algorithms. You can select any exact percentage or target file size preset (such as 50 KB, 100 KB, or 200 KB) for precise size reduction."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Does DocToolKit work offline?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes. DocToolKit is an offline-first Progressive Web App (PWA). Once loaded, its service worker caches all required assets so you can continue compressing, merging, converting, and editing documents without an active internet connection."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Is DocToolKit completely free to use?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes. All tools on DocToolKit are completely free to use without file limits, subscriptions, or required account registration."
+            }
+          }
+        ]
       }
-    }
-
-    @media (min-width: 880px) {
-      .desktop-menu { display: flex; }
-      .profile-pill { display: flex; }
-      .hamburger-btn { display: none; }
-      .main-workspace {
-        grid-template-columns: 1.15fr 0.95fr;
-        gap: 32px;
-        align-items: start;
-      }
-      .tools-grid {
-        grid-template-columns: repeat(4, 1fr);
-      }
-      .hero-title {
-        font-size: 44px;
-      }
-    }
-  </style>
+    ]
+  }
+  </script>
 </head>
 <body>
 
-  <!-- Soft Ambient Orbs -->
+  <!-- Background Orbs -->
   <div class="bg-orbs">
     <div class="orb-1"></div>
     <div class="orb-2"></div>
@@ -1114,46 +128,46 @@
   <aside class="drawer" id="drawer">
     <div class="drawer-header">
       <div style="display: flex; align-items: center; gap: 10px;">
-        <div class="brand-icon-3d" style="width: 32px; height: 32px; font-size: 16px;">B</div>
-        <span class="brand-title" style="font-size: 18px;">BharatFile</span>
+        <img src="icons/doctoolkit-logo-horizontal.png" alt="DocToolKit" height="28" style="height: 28px; width: auto; display: block;">
       </div>
-      <button class="btn-close-modal" id="closeDrawerBtn">✕</button>
+      <button class="btn-close-modal" id="closeDrawerBtn" aria-label="Close Navigation">✕</button>
     </div>
 
     <div class="drawer-menu">
-      <button class="drawer-item" onclick="openTool('compress-pdf')">📄 Compress PDF</button>
-      <button class="drawer-item" onclick="openTool('compress-image')">🖼️ Compress Image</button>
-      <button class="drawer-item" onclick="openTool('pdf-scanner')">📸 PDF Scanner</button>
-      <button class="drawer-item" onclick="openTool('merge-pdf')">📑 Merge PDF</button>
-      <button class="drawer-item" onclick="openTool('split-pdf')">✂️ Split PDF</button>
-      <button class="drawer-item" onclick="openTool('organize-pdf')">🗂️ Organize PDF</button>
-      <button class="drawer-item" onclick="openTool('pdf-to-img')">🖼️ PDF to Images</button>
-      <button class="drawer-item" onclick="openTool('img-to-pdf')">📁 Images to PDF</button>
-      <button class="drawer-item" onclick="openTool('resize-img')">📐 Resize Image</button>
-      <button class="drawer-item" onclick="openTool('convert-img')">🔄 Convert Image</button>
-      <button class="drawer-item" onclick="openTool('crop-img')">✂️ Crop Image</button>
-      <button class="drawer-item" onclick="openTool('rotate-img')">🔄 Rotate Image</button>
-      <button class="drawer-item" onclick="openTool('passport')">👤 Passport Photo</button>
-      <button class="drawer-item" onclick="openTool('signature')">✍️ Signature Maker</button>
-      <button class="drawer-item" onclick="openTool('organizer')">📂 Document Organizer</button>
+      <a class="drawer-item" href="tools/compress-pdf/">📄 Compress PDF</a>
+      <a class="drawer-item" href="tools/compress-image/">🖼️ Compress Image</a>
+      <a class="drawer-item" href="tools/pdf-scanner/">📸 PDF Scanner</a>
+      <a class="drawer-item" href="tools/merge-pdf/">📑 Merge PDF</a>
+      <a class="drawer-item" href="tools/split-pdf/">✂️ Split PDF</a>
+      <a class="drawer-item" href="tools/organize-pdf/">🗂️ Organize PDF</a>
+      <a class="drawer-item" href="tools/pdf-to-image/">🖼️ PDF to Images</a>
+      <a class="drawer-item" href="tools/image-to-pdf/">📁 Images to PDF</a>
+      <a class="drawer-item" href="tools/resize-image/">📐 Resize Image</a>
+      <a class="drawer-item" href="tools/convert-image/">🔄 Convert Image</a>
+      <a class="drawer-item" href="tools/crop-image/">✂️ Crop Image</a>
+      <a class="drawer-item" href="tools/rotate-image/">🔄 Rotate Image</a>
+      <a class="drawer-item" href="tools/passport-photo/">👤 Passport Photo</a>
+      <a class="drawer-item" href="tools/signature-maker/">✍️ Signature Maker</a>
+      <a class="drawer-item" href="tools/document-organizer/">📂 Document Organizer</a>
 
       <div class="drawer-divider"></div>
 
       <button class="drawer-item" onclick="toggleTheme()">🌓 Toggle Dark Mode</button>
-      <button class="drawer-item" onclick="openInfoModal('profile')">👤 Profile & Settings</button>
-      <button class="drawer-item" onclick="openInfoModal('privacy')">🔒 100% Privacy Policy</button>
-      <button class="drawer-item" onclick="openInfoModal('about')">ℹ️ About BharatFile</button>
+      <button class="drawer-item" onclick="openInfoModal('profile')">👤 Profile &amp; Settings</button>
+      <a class="drawer-item" href="privacy/">🔒 Privacy Policy</a>
+      <a class="drawer-item" href="terms/">📜 Terms of Service</a>
+      <button class="drawer-item" onclick="openInfoModal('about')">ℹ️ About DocToolKit</button>
     </div>
   </aside>
 
-  <!-- Interactive Tool Modal Window -->
+  <!-- Interactive In-Page Tool Modal Window -->
   <div class="modal-overlay" id="toolModalOverlay">
     <div class="modal-content" id="toolModalContent">
       <div class="modal-header">
         <h3 id="toolModalTitle">Tool</h3>
-        <button class="btn-close-modal" onclick="closeToolModal()">✕</button>
+        <button class="btn-close-modal" onclick="closeToolModal()" aria-label="Close Tool">✕</button>
       </div>
-      <div id="toolModalBody">
+      <div class="modal-body" id="toolModalBody">
         <!-- Dynamic Tool UI injected here -->
       </div>
     </div>
@@ -1164,340 +178,464 @@
 
     <!-- Top Floating Navbar -->
     <header class="navbar">
-      <div class="nav-brand" onclick="window.scrollTo({top:0, behavior:'smooth'})">
-        <div class="brand-icon-3d">B</div>
-        <span class="brand-title">BharatFile</span>
-      </div>
+      <a class="nav-brand" href="/" aria-label="DocToolKit Homepage">
+        <img src="icons/doctoolkit-logo-horizontal.png" alt="DocToolKit" height="34" style="height: 34px; max-height: 34px; width: auto; display: block;">
+      </a>
 
       <!-- Desktop Center Menu -->
-      <nav class="desktop-menu">
-        <button class="menu-btn" onclick="openTool('compress-pdf')">📄 PDF Tools ▾</button>
-        <button class="menu-btn" onclick="openTool('compress-image')">🖼️ Image Tools ▾</button>
-        <button class="menu-btn" onclick="openTool('pdf-scanner')">📸 PDF Scanner</button>
-        <button class="menu-btn" onclick="openTool('organizer')">📂 Document Organizer</button>
+      <nav class="desktop-menu" aria-label="Main Navigation">
+        <a class="menu-btn" href="tools/compress-pdf/">📄 Compress PDF</a>
+        <a class="menu-btn" href="tools/compress-image/">🖼️ Compress Image</a>
+        <a class="menu-btn" href="tools/pdf-scanner/">📸 Scanner</a>
+        <a class="menu-btn" href="tools/merge-pdf/">📑 Merge PDF</a>
+        <a class="menu-btn" href="tools/document-organizer/">📂 Organizer</a>
       </nav>
 
       <!-- Right Actions -->
       <div class="nav-actions">
-        <button class="theme-toggle-btn" id="themeToggleBtn" title="Toggle Dark/Light Mode">🌙</button>
-        <div class="profile-pill" onclick="openInfoModal('profile')">
-          <span>👤</span> <span id="navProfileName">Arsad</span>
-        </div>
-        <button class="btn-get-started" onclick="openTool('organizer')">Organizer</button>
-        <button class="hamburger-btn" id="hamburgerBtn" aria-label="Menu">
-          <span></span>
-          <span></span>
-          <span></span>
+        <button class="theme-toggle-btn" id="themeToggleBtn" aria-label="Toggle Dark/Light Mode">🌙</button>
+        <button class="btn-get-started" onclick="openInfoModal('profile')" aria-label="User Profile">
+          <span>👤</span>
+          <span id="navProfileName">User</span>
         </button>
+        <button class="hamburger-btn" id="hamburgerBtn" aria-label="Open Navigation Menu">☰</button>
       </div>
     </header>
 
-    <!-- Hero Section -->
-    <section class="hero-section">
-      <h1 class="hero-title">Compress <span class="gradient-text" id="heroTargetText">PDF Online</span></h1>
-      <p class="hero-subtitle" id="heroSubText">Reduce PDF file size without losing quality • 100% On-Device Processing</p>
-    </section>
+    <!-- Hero Title & SEO Introduction -->
+    <div style="text-align: center; margin: 12px 0 6px 0;">
+      <h1 style="font-size: clamp(26px, 4vw, 38px); font-weight: 800; letter-spacing: -0.6px; margin-bottom: 10px;">
+        Free Online PDF &amp; Image Tools
+      </h1>
+      <p style="font-size: 15px; color: var(--text-muted); max-width: 680px; margin: 0 auto; line-height: 1.5;">
+        Compress PDFs and images, resize and convert images, merge and split PDFs, scan documents, and organize files with DocToolKit's free online tools. 100% private in your browser.
+      </p>
+    </div>
 
-    <!-- Main Workspace (2-Column Desktop Grid) -->
-    <div class="main-workspace">
+    <!-- Main Workspace (Desktop 2-Column Responsive Layout) -->
+    <main class="workspace-grid">
 
-      <!-- Left Card: Compressor UI (Reference Screenshot Match) -->
-      <div class="compressor-card">
-        <!-- Mode Switcher -->
-        <div class="segmented-tabs">
+      <!-- Left Column: Primary Interactive Compressor Card -->
+      <section class="compressor-card">
+        <!-- Segmented Tab Switcher -->
+        <div class="seg-tabs">
           <button class="seg-tab active" id="tabPdf" onclick="setMode('pdf')">
-            <span>📄</span> PDF
+            <span>📄</span>
+            <span>Compress PDF</span>
           </button>
           <button class="seg-tab" id="tabImg" onclick="setMode('image')">
-            <span>🖼️</span> Image
+            <span>🖼️</span>
+            <span>Compress Image</span>
           </button>
         </div>
 
-        <div class="section-headline">
-          <h2 id="compTitle">Upload your PDF</h2>
-          <p id="compSub">Select a PDF file or drag and drop it here to compress.</p>
+        <div>
+          <h2 id="compTitle" style="font-size: 20px; font-weight: 700; margin-bottom: 4px;">Upload your PDF</h2>
+          <p id="compSub" style="font-size: 13px; color: var(--text-muted);">Select a PDF file or drag and drop it here to compress.</p>
         </div>
 
-        <!-- Hidden File Input -->
+        <!-- Hidden Native File Input -->
         <input type="file" id="mainFileInput" accept=".pdf,application/pdf" style="display: none;">
 
-        <!-- Dropzone Box -->
+        <!-- Dropzone Area -->
         <div class="dropzone" id="mainDropzone">
-          <div class="dropzone-icon">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-              <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/>
-              <path d="M12 13v6M9 16l3-3 3 3"/>
-            </svg>
-          </div>
-          <div class="dropzone-title" id="dropTitle">Select PDF File</div>
-          <div class="dropzone-sub" id="dropSub">or drag and drop here • PDF up to 100 MB</div>
-          <button type="button" class="btn-choose-file" id="btnChooseFile">
-            📁 Choose File
+          <div class="drop-cloud-icon">☁️</div>
+          <div style="font-weight: 700; font-size: 15px;" id="dropTitle">Choose a file or drag &amp; drop it here</div>
+          <div style="font-size: 12px; color: var(--text-muted);" id="dropSub">PDF documents up to device memory limit • 100% on-device</div>
+          <button class="btn-choose-file" id="btnChooseFile" type="button">
+            <span>📁</span>
+            <span>Choose File</span>
           </button>
         </div>
 
-        <!-- Compression Level Slider -->
-        <div class="compression-control-box">
-          <div class="comp-header">
-            <h4>Compression Level</h4>
-            <div class="comp-badge" id="sliderPctBadge">60%</div>
+        <!-- Continuous 1% - 100% Compression Slider Control -->
+        <div class="slider-container" id="sliderGroup">
+          <div class="slider-header">
+            <span style="font-size: 13px; font-weight: 700;">Compression Level</span>
+            <span class="slider-pct-badge" id="sliderPctBadge">60%</span>
           </div>
 
           <div class="slider-track-wrap">
-            <div class="slider-fill" id="sliderFill" style="width: 60%;"></div>
-            <input type="range" class="custom-slider" id="compSlider" min="1" max="100" value="60">
+            <div class="slider-track-fill" id="sliderFill" style="width: 60%;"></div>
+            <input type="range" class="range-slider" id="compSlider" min="1" max="100" value="60">
           </div>
 
           <div class="slider-labels">
-            <span id="lblLow">Low</span>
-            <span class="active" id="lblMed">Medium</span>
-            <span id="lblHigh">High</span>
-          </div>
-
-          <!-- Quick Exam Presets -->
-          <div class="target-presets-row">
-            <span style="font-size: 11px; font-weight: 700; color: var(--text-muted);">Target Presets:</span>
-            <button class="preset-chip" onclick="applyPreset(85, '50 KB', this)">50 KB</button>
-            <button class="preset-chip" onclick="applyPreset(75, '100 KB', this)">100 KB</button>
-            <button class="preset-chip active" onclick="applyPreset(60, '200 KB', this)">200 KB</button>
-            <button class="preset-chip" onclick="applyPreset(45, '500 KB', this)">500 KB</button>
-            <button class="preset-chip" onclick="applyPreset(30, '1 MB', this)">1 MB</button>
+            <span id="lblLow">Low (1%)</span>
+            <span id="lblMed" style="color: var(--primary); font-weight: 700;">Recommended (60%)</span>
+            <span id="lblHigh">High (100%)</span>
           </div>
         </div>
 
-        <!-- Processing Box (Bottom-Left from Screenshot) -->
-        <div class="processing-box" id="procBox">
-          <div class="proc-header">
-            <div class="proc-file-info">
-              <div class="file-badge-red" id="procBadgeType">PDF</div>
-              <div>
-                <div style="font-size: 14px; font-weight: 700;" id="procFileName">Compressing document.pdf</div>
-                <div style="font-size: 12px; color: var(--text-muted);" id="procFileSize">2.4 MB</div>
-              </div>
-            </div>
-            <div class="proc-progress-pct" id="procProgressPct">60%</div>
-          </div>
-          <div class="proc-bar-wrap">
-            <div class="proc-bar-fill" id="procBarFill" style="width: 60%;"></div>
-          </div>
-          <div class="proc-sub">
-            <span id="procStatusText">Compressing... Please wait while we reduce file size.</span>
-            <button type="button" class="btn-cancel" onclick="cancelProcessing()">Cancel</button>
+        <!-- Fast Target Presets -->
+        <div>
+          <div style="font-size: 12px; font-weight: 700; color: var(--text-muted); margin-bottom: 8px;">Target Size Presets (KB / MB):</div>
+          <div class="preset-pills">
+            <button class="preset-pill" onclick="applyPreset('50kb')">50 KB</button>
+            <button class="preset-pill" onclick="applyPreset('100kb')">100 KB</button>
+            <button class="preset-pill" onclick="applyPreset('200kb')">200 KB</button>
+            <button class="preset-pill" onclick="applyPreset('500kb')">500 KB</button>
+            <button class="preset-pill" onclick="applyPreset('1mb')">1 MB</button>
           </div>
         </div>
 
-        <!-- Completion Box (Bottom-Right from Screenshot) -->
-        <div class="completion-box" id="compBox">
-          <div class="comp-status-row">
-            <div class="file-badge-green">PDF</div>
-            <div class="comp-text-col">
-              <h3>Compression Complete</h3>
-              <p>Your file has been compressed successfully.</p>
-            </div>
+        <!-- State Box: Real Processing State -->
+        <div class="state-box" id="procBox">
+          <div style="width: 50px; height: 50px; border-radius: 14px; background: rgba(239, 68, 68, 0.1); display: flex; align-items: center; justify-content: center; font-size: 26px;">📄</div>
+          <div>
+            <div style="font-size: 14px; font-weight: 700;" id="procFileName">Compressing document.pdf</div>
+            <div style="font-size: 12px; color: var(--text-muted);" id="procFileSize">Original: 2.4 MB</div>
+          </div>
+          <div class="progress-bar-wrap">
+            <div class="progress-bar-fill" id="procBarFill"></div>
+          </div>
+          <div style="display: flex; justify-content: space-between; width: 100%; font-size: 12px; color: var(--text-muted);">
+            <span id="procStatusText">Processing pages...</span>
+            <span id="procProgressPct" style="font-weight: 700; color: var(--primary);">0%</span>
+          </div>
+          <button class="btn-choose-file" style="background: var(--track-bg); color: var(--text-main); box-shadow: none; padding: 6px 18px; font-size: 12px;" onclick="cancelCompression()">✕ Cancel</button>
+        </div>
+
+        <!-- State Box: Compression Completed State -->
+        <div class="state-box" id="compBox">
+          <div style="width: 50px; height: 50px; border-radius: 14px; background: var(--success-bg); color: var(--success); display: flex; align-items: center; justify-content: center; font-size: 26px;">✓</div>
+          <div>
+            <div style="font-size: 13px; font-weight: 700;" id="compOriginalName">document.pdf</div>
+            <div class="delta-badge" id="compSizesDelta" style="margin-top: 6px;">2.4 MB ➔ 890 KB (-63%)</div>
           </div>
 
-          <div class="comp-file-card">
-            <div style="display: flex; align-items: center; gap: 10px;">
-              <div class="file-badge-red" style="width:34px; height:36px; font-size:9px;">PDF</div>
-              <div style="font-size: 13px; font-weight: 700;" id="compOriginalName">document.pdf</div>
-            </div>
-            <div class="comp-delta" id="compSizesDelta">2.4 MB ➔ 890 KB (-63%)</div>
+          <!-- Section 8 Mandatory Filename Customization Before Export -->
+          <div style="width: 100%; text-align: left;">
+            <label for="exportFilenameInput" style="font-size: 12px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">Smart Export Filename (Customize before download):</label>
+            <input type="text" class="rename-input" id="exportFilenameInput" value="document_User_compressed.pdf">
           </div>
 
-          <!-- Section 8: Mandatory Rename Before Export -->
-          <div class="rename-group">
-            <label for="exportFilenameInput">Rename file before downloading (Default: Original + Profile):</label>
-            <div class="rename-input-wrap">
-              <span style="margin-right: 8px;">✏️</span>
-              <input type="text" class="rename-input" id="exportFilenameInput" value="document_Arsad_compressed.pdf">
-            </div>
-          </div>
-
-          <div class="action-btn-row">
-            <button type="button" class="btn-download-primary" id="btnDownloadCompressed">
-              <span>⬇</span> Download File
+          <div style="display: flex; gap: 10px; width: 100%;">
+            <button class="btn-choose-file" id="btnDownloadCompressed" style="flex: 1;" onclick="downloadResult()">
+              <span>⬇</span>
+              <span>Download File</span>
             </button>
-            <button type="button" class="btn-another-sec" onclick="resetToUpload()">
-              <span>🔄</span> Compress Another
+            <button class="btn-choose-file" style="background: var(--track-bg); color: var(--text-main); box-shadow: none;" onclick="resetToUpload()">
+              <span>🔄</span>
+              <span>New</span>
             </button>
           </div>
         </div>
+      </section>
 
-      </div>
-
-      <!-- Right Card: 3D Illustration & Benefits (Reference Screenshot Match) -->
-      <div class="benefit-card">
-        <div class="illustration-3d-box">
-          <div class="doc-sheet-3"></div>
-          <div class="doc-sheet-2"></div>
-          <div class="doc-sheet-1">
-            <div class="doc-pdf-badge">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                <polyline points="14 2 14 8 20 8"/>
-                <line x1="16" y1="13" x2="8" y2="13"/>
-                <line x1="16" y1="17" x2="8" y2="17"/>
-                <polyline points="10 9 9 9 8 9"/>
-              </svg>
-            </div>
+      <!-- Right Column: Hero Visual Graphic & Value Proposition -->
+      <section class="benefit-card">
+        <div class="benefit-visual-wrapper">
+          <div class="stacked-doc doc-back">
+            <div style="width: 20px; height: 4px; background: #CBD5E1; border-radius: 2px;"></div>
+            <div style="width: 45px; height: 4px; background: #E2E8F0; border-radius: 2px;"></div>
           </div>
-          <div class="floating-orb orb-blue-sm"></div>
-          <div class="floating-orb orb-purple-sm"></div>
-          <div class="floating-orb orb-orange-xs"></div>
+          <div class="stacked-doc doc-front">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div style="width: 24px; height: 24px; border-radius: 6px; background: #EF4444; color: white; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 800;">PDF</div>
+              <div style="font-size: 10px; font-weight: 700; color: #12B76A;">-68%</div>
+            </div>
+            <div style="width: 100%; height: 3px; background: #E2E8F0; border-radius: 2px; margin-top: 8px;"></div>
+            <div style="width: 75%; height: 3px; background: #E2E8F0; border-radius: 2px;"></div>
+            <div style="width: 50%; height: 3px; background: #E2E8F0; border-radius: 2px;"></div>
+          </div>
+          <div class="sphere sphere-1"></div>
+          <div class="sphere sphere-2"></div>
+          <div class="sphere sphere-3"></div>
         </div>
 
         <div class="benefits-list">
           <div class="benefit-item">
             <div class="benefit-icon-badge badge-purple">⚡</div>
             <div class="benefit-text">
-              <h4>Fast, secure compression</h4>
-              <p>Reduce file size in seconds with high quality preservation.</p>
+              <h4>Instant In-Browser Execution</h4>
+              <p>Reduces file size in seconds via local WebAssembly without upload delays.</p>
             </div>
           </div>
 
           <div class="benefit-item">
             <div class="benefit-icon-badge badge-blue">🛡️</div>
             <div class="benefit-text">
-              <h4>No software required</h4>
-              <p>Works directly and completely inside your web browser.</p>
+              <h4>100% Private On-Device</h4>
+              <p>Your documents, signatures, and photos never leave your device.</p>
             </div>
           </div>
 
           <div class="benefit-item">
             <div class="benefit-icon-badge badge-green">🔒</div>
             <div class="benefit-text">
-              <h4>Your files stay private</h4>
-              <p>Files are processed 100% locally on-device. Zero cloud upload.</p>
+              <h4>Accurate Target Presets</h4>
+              <p>Achieve exact KB thresholds (50KB, 100KB, 200KB) for portal uploads.</p>
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
-    </div>
+    </main>
 
-    <!-- Recommended All-In-One Tools Section -->
+    <!-- Clean Tool Cards Grid (Section 3: Icon + Name Only, No Subtitles) -->
     <section class="tools-section" id="toolsSection">
       <div class="tools-section-header">
-        <h3>All-in-One Privacy Utilities</h3>
-        <span style="font-size: 12px; color: var(--text-muted); font-weight: 600;">100% Client-Side • Verified</span>
+        <h2>All Online Document &amp; Image Tools</h2>
+        <span style="font-size: 12px; color: var(--text-muted); font-weight: 600;">15 Verified Tools</span>
       </div>
 
       <div class="tools-grid">
-        <div class="tool-card" onclick="openTool('pdf-scanner')">
+        <a class="tool-card" href="tools/compress-pdf/">
+          <div class="tool-card-icon">📄</div>
+          <h4>Compress PDF</h4>
+        </a>
+
+        <a class="tool-card" href="tools/compress-image/">
+          <div class="tool-card-icon">🖼️</div>
+          <h4>Compress Image</h4>
+        </a>
+
+        <a class="tool-card" href="tools/pdf-scanner/">
           <div class="tool-card-icon">📸</div>
           <h4>PDF Scanner</h4>
-          <p>Camera capture with contrast enhancement & multi-page PDF generation.</p>
-        </div>
+        </a>
 
-        <div class="tool-card" onclick="openTool('merge-pdf')">
+        <a class="tool-card" href="tools/merge-pdf/">
           <div class="tool-card-icon">📑</div>
           <h4>Merge PDF</h4>
-          <p>Combine multiple certificates & documents into a single PDF.</p>
-        </div>
+        </a>
 
-        <div class="tool-card" onclick="openTool('split-pdf')">
+        <a class="tool-card" href="tools/split-pdf/">
           <div class="tool-card-icon">✂️</div>
           <h4>Split PDF</h4>
-          <p>Extract exact page ranges (e.g. 1-3, 5) from government PDFs.</p>
-        </div>
+        </a>
 
-        <div class="tool-card" onclick="openTool('organize-pdf')">
+        <a class="tool-card" href="tools/organize-pdf/">
           <div class="tool-card-icon">🗂️</div>
           <h4>Organize PDF</h4>
-          <p>Rotate pages, delete unwanted sheets, and reorder document pages.</p>
-        </div>
+        </a>
 
-        <div class="tool-card" onclick="openTool('pdf-to-img')">
+        <a class="tool-card" href="tools/pdf-to-image/">
           <div class="tool-card-icon">🖼️</div>
           <h4>PDF to Images</h4>
-          <p>Extract all pages as high-resolution JPEG images locally.</p>
-        </div>
+        </a>
 
-        <div class="tool-card" onclick="openTool('img-to-pdf')">
+        <a class="tool-card" href="tools/image-to-pdf/">
           <div class="tool-card-icon">📁</div>
           <h4>Images to PDF</h4>
-          <p>Convert multiple photos into a clean, standardized A4 PDF.</p>
-        </div>
+        </a>
 
-        <div class="tool-card" onclick="openTool('resize-img')">
+        <a class="tool-card" href="tools/resize-image/">
           <div class="tool-card-icon">📐</div>
-          <h4>Image Resizer</h4>
-          <p>Exact pixel scale (200x230 px, 140x60 px) for UPSC, SSC & IBPS.</p>
-        </div>
+          <h4>Resize Image</h4>
+        </a>
 
-        <div class="tool-card" onclick="openTool('convert-img')">
+        <a class="tool-card" href="tools/convert-image/">
           <div class="tool-card-icon">🔄</div>
-          <h4>Image Converter</h4>
-          <p>Convert JPG ↔ PNG ↔ WebP with alpha transparency preservation.</p>
-        </div>
+          <h4>Convert Image</h4>
+        </a>
 
-        <div class="tool-card" onclick="openTool('crop-img')">
+        <a class="tool-card" href="tools/crop-image/">
           <div class="tool-card-icon">✂️</div>
           <h4>Crop Image</h4>
-          <p>Aspect ratio crop (1:1, 4:3, 16:9, Passport) with live slice preview.</p>
-        </div>
+        </a>
 
-        <div class="tool-card" onclick="openTool('rotate-img')">
+        <a class="tool-card" href="tools/rotate-image/">
           <div class="tool-card-icon">🔄</div>
           <h4>Rotate Image</h4>
-          <p>Rotate photos 90°, 180° or flip horizontally without quality loss.</p>
-        </div>
+        </a>
 
-        <div class="tool-card" onclick="openTool('passport')">
+        <a class="tool-card" href="tools/passport-photo/">
           <div class="tool-card-icon">👤</div>
           <h4>Passport Photo</h4>
-          <p>Standard 3.5×4.5 cm and 2×2 inch photo crop with guidance frame.</p>
-        </div>
+        </a>
 
-        <div class="tool-card" onclick="openTool('signature')">
+        <a class="tool-card" href="tools/signature-maker/">
           <div class="tool-card-icon">✍️</div>
           <h4>Signature Maker</h4>
-          <p>Smooth touch signature canvas with transparent PNG export.</p>
+        </a>
+
+        <a class="tool-card" href="tools/document-organizer/">
+          <div class="tool-card-icon">📂</div>
+          <h4>Document Organizer</h4>
+        </a>
+      </div>
+    </section>
+
+    <!-- SEO Educational Section: Why DocToolKit -->
+    <section class="seo-section">
+      <div>
+        <h2 style="margin-bottom: 8px;">Why Choose DocToolKit for Your PDF &amp; Image Workflows?</h2>
+        <p>DocToolKit was built from the ground up to eliminate the security risks and delays of traditional online document converters. Instead of sending your sensitive paperwork to remote servers, our client-side engine executes all operations directly within your web browser.</p>
+      </div>
+
+      <div class="seo-grid">
+        <div class="seo-feature-card">
+          <div style="font-size: 28px;">🔒</div>
+          <h4>100% On-Device Privacy</h4>
+          <p>Files never leave your local device. PDF rendering, image compression, page extraction, and camera scanning execute strictly in browser memory.</p>
+        </div>
+
+        <div class="seo-feature-card">
+          <div style="font-size: 28px;">⚡</div>
+          <h4>Zero Upload Delays</h4>
+          <p>Experience instant processing. Because files do not travel across the internet to a server queue, multi-page PDFs process in seconds.</p>
+        </div>
+
+        <div class="seo-feature-card">
+          <div style="font-size: 28px;">📶</div>
+          <h4>Offline-Ready PWA</h4>
+          <p>Install DocToolKit to your desktop or mobile home screen. Our service worker caches tools locally so you can work without an internet connection.</p>
+        </div>
+
+        <div class="seo-feature-card">
+          <div style="font-size: 28px;">🎯</div>
+          <h4>Exact Size Requirements</h4>
+          <p>Meet strict upload size limits for government job applications, university portals, and exam forms (50 KB, 100 KB, 200 KB) with precision.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEO Steps Guide: How It Works -->
+    <section class="seo-section">
+      <div>
+        <h2 style="margin-bottom: 8px;">How DocToolKit Works in 3 Simple Steps</h2>
+        <p>Follow this streamlined workflow to compress, convert, or edit documents in your browser.</p>
+      </div>
+
+      <div class="steps-list">
+        <div class="step-item">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <h4>Select or Drop Your File</h4>
+            <p>Choose your PDF or image from your computer, mobile device, or capture directly using your camera scanner. Your file stays on your device.</p>
+          </div>
+        </div>
+
+        <div class="step-item">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <h4>Customize Your Settings</h4>
+            <p>Drag the smooth 1%–100% slider, pick a KB target preset, choose dimensions, or arrange pages according to your specifications.</p>
+          </div>
+        </div>
+
+        <div class="step-item">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <h4>Preview &amp; Save</h4>
+            <p>Review the optimized file size delta, use our smart naming convention, and download the finished document instantly.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEO FAQ Section -->
+    <section class="seo-section">
+      <div>
+        <h2 style="margin-bottom: 8px;">Frequently Asked Questions</h2>
+        <p>Answers to common questions regarding DocToolKit's privacy, performance, and features.</p>
+      </div>
+
+      <div class="faq-list">
+        <div class="faq-item">
+          <div class="faq-question">Are my files uploaded to any server when using DocToolKit?</div>
+          <div class="faq-answer">No. All file processing happens locally on your computer or phone using modern browser technologies (WebAssembly, HTML5 Canvas, and PDF.js). Your confidential PDFs, photos, and signatures never travel to our servers or any third-party cloud.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">How does the continuous compression slider work?</div>
+          <div class="faq-answer">The 1% to 100% slider controls genuine compression parameters. Higher percentages apply stronger downsampling and JPEG optimization curves to maximize size reduction, while lower percentages prioritize pristine visual fidelity.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">Is DocToolKit compatible with mobile browsers?</div>
+          <div class="faq-answer">Yes. DocToolKit is completely responsive across iOS Safari, Android Chrome, tablet viewports, and desktop monitors. You can also add it to your home screen as a Progressive Web App (PWA).</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">What file formats are supported?</div>
+          <div class="faq-answer">DocToolKit supports standard PDF documents (.pdf) along with major raster image formats including JPEG (.jpg, .jpeg), PNG (.png), and WebP (.webp).</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">Is there a daily limit or paid subscription?</div>
+          <div class="faq-answer">No. DocToolKit is completely free with no usage caps, watermarks, or account registration requirements.</div>
         </div>
       </div>
     </section>
 
     <!-- Footer -->
-    <footer class="footer">
-      <p>BharatFile v2.0.0 • Engineered with ❤️ in India • 100% Offline & Private</p>
-      <p style="margin-top: 4px; opacity: 0.8;">Zero Server Document Storage • Compliant with Indian Privacy Standards</p>
+    <footer class="site-footer">
+      <div class="footer-top">
+        <div class="footer-col">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+            <img src="icons/doctoolkit-logo-horizontal.png" alt="DocToolKit" height="28" style="height: 28px; width: auto; display: block;">
+          </div>
+          <p style="font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 12px;">
+            Free, privacy-first online tools for PDF and image compression, conversion, page reorganization, document scanning, and digital signatures. 100% on-device processing.
+          </p>
+          <p style="font-size: 12px; color: var(--text-muted);">
+            Official Domain: <a href="https://doctoolkit.in/" style="color: var(--primary); text-decoration: none; font-weight: 600;">https://doctoolkit.in/</a>
+          </p>
+        </div>
+
+        <div class="footer-col">
+          <h5>PDF Utilities</h5>
+          <ul>
+            <li><a href="tools/compress-pdf/">Compress PDF</a></li>
+            <li><a href="tools/pdf-scanner/">PDF Scanner</a></li>
+            <li><a href="tools/merge-pdf/">Merge PDF</a></li>
+            <li><a href="tools/split-pdf/">Split PDF</a></li>
+            <li><a href="tools/organize-pdf/">Organize PDF</a></li>
+            <li><a href="tools/pdf-to-image/">PDF to Images</a></li>
+            <li><a href="tools/image-to-pdf/">Images to PDF</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h5>Image Utilities</h5>
+          <ul>
+            <li><a href="tools/compress-image/">Compress Image</a></li>
+            <li><a href="tools/resize-image/">Resize Image</a></li>
+            <li><a href="tools/convert-image/">Convert Image</a></li>
+            <li><a href="tools/crop-image/">Crop Image</a></li>
+            <li><a href="tools/rotate-image/">Rotate Image</a></li>
+            <li><a href="tools/passport-photo/">Passport Photo</a></li>
+            <li><a href="tools/signature-maker/">Signature Maker</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h5>Legal &amp; Privacy</h5>
+          <ul>
+            <li><a href="privacy/">Privacy Policy</a></li>
+            <li><a href="terms/">Terms of Service</a></li>
+            <li><a href="tools/document-organizer/">Document Organizer</a></li>
+            <li><a href="sitemap.xml">XML Sitemap</a></li>
+            <li><a href="robots.txt">Robots.txt</a></li>
+            <li><button class="menu-btn" style="padding: 0; color: var(--text-muted);" onclick="openInfoModal('about')">About DocToolKit</button></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>&copy; 2026 DocToolKit. All rights reserved. 100% Client-Side Privacy Guaranteed.</p>
+        <p style="font-size: 11px;">All PDF and image processing occurs locally in browser memory. No files are stored or uploaded.</p>
+      </div>
     </footer>
 
   </div>
 
-  <!-- Main JavaScript Implementation -->
+  <!-- Interactive JavaScript Engine (Compressor State & Tools Integration) -->
   <script>
-    // PWA Service Worker Registration
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js')
-          .then(reg => console.log('BharatFile PWA registered, scope:', reg.scope))
-          .catch(err => console.log('SW registration error:', err));
-      });
-    }
-
-    // Configure PDF.js Worker
-    if (window.pdfjsLib) {
-      pdfjsLib.GlobalWorkerOptions.workerSrc = 'js/pdf.worker.min.js';
-    }
-
     // State Variables
     let currentMode = 'pdf';
     let loadedFile = null;
     let processedBlob = null;
     let isProcessing = false;
-    let userProfile = {
-      name: localStorage.getItem('bharatfile_username') || 'Arsad',
-      defaultFormat: localStorage.getItem('bharatfile_format') || 'jpeg',
-      defaultComp: localStorage.getItem('bharatfile_comp') || '60'
-    };
 
-    // UI Elements
+    // Elements
     const tabPdf = document.getElementById('tabPdf');
     const tabImg = document.getElementById('tabImg');
     const compTitle = document.getElementById('compTitle');
     const compSub = document.getElementById('compSub');
-    const heroTargetText = document.getElementById('heroTargetText');
     const mainFileInput = document.getElementById('mainFileInput');
     const mainDropzone = document.getElementById('mainDropzone');
     const btnChooseFile = document.getElementById('btnChooseFile');
@@ -1522,73 +660,18 @@
     const compSizesDelta = document.getElementById('compSizesDelta');
     const exportFilenameInput = document.getElementById('exportFilenameInput');
     const btnDownloadCompressed = document.getElementById('btnDownloadCompressed');
-
-    const drawer = document.getElementById('drawer');
-    const drawerBackdrop = document.getElementById('drawerBackdrop');
-    const hamburgerBtn = document.getElementById('hamburgerBtn');
-    const closeDrawerBtn = document.getElementById('closeDrawerBtn');
-    const themeToggleBtn = document.getElementById('themeToggleBtn');
     const navProfileName = document.getElementById('navProfileName');
 
     const toolModalOverlay = document.getElementById('toolModalOverlay');
     const toolModalTitle = document.getElementById('toolModalTitle');
     const toolModalBody = document.getElementById('toolModalBody');
 
-    // Theme Management
-    function initTheme() {
-      const saved = localStorage.getItem('bharatfile_theme');
-      if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-        document.body.classList.add('dark-mode');
-        themeToggleBtn.textContent = '☀️';
-      } else {
-        document.body.classList.remove('dark-mode');
-        themeToggleBtn.textContent = '🌙';
-      }
-      navProfileName.textContent = userProfile.name;
-    }
-    initTheme();
-
-    function toggleTheme() {
-      document.body.classList.toggle('dark-mode');
-      const isDark = document.body.classList.contains('dark-mode');
-      localStorage.setItem('bharatfile_theme', isDark ? 'dark' : 'light');
-      themeToggleBtn.textContent = isDark ? '☀️' : '🌙';
-    }
-    themeToggleBtn.addEventListener('click', toggleTheme);
-
-    // Drawer Toggles
-    hamburgerBtn.addEventListener('click', () => {
-      drawer.classList.add('open');
-      drawerBackdrop.classList.add('open');
-    });
-    closeDrawerBtn.addEventListener('click', () => {
-      drawer.classList.remove('open');
-      drawerBackdrop.classList.remove('open');
-    });
-    drawerBackdrop.addEventListener('click', () => {
-      drawer.classList.remove('open');
-      drawerBackdrop.classList.remove('open');
-    });
-
-    // Format Byte Size
-    function formatBytes(bytes) {
-      if (bytes === 0) return '0 B';
-      const k = 1024;
-      const sizes = ['B', 'KB', 'MB', 'GB'];
-      const i = Math.floor(Math.log(bytes) / Math.log(k));
-      return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+    // Initialize Profile Name in Nav
+    if (navProfileName) {
+      navProfileName.textContent = DocToolKit.userProfile.name;
     }
 
-    // Section 8: Mandatory Filename Generator Rule
-    function generateExportFilename(origName, profileName, actionSuffix, ext) {
-      const cleanProfile = (profileName || 'User').trim().replace(/[^a-zA-Z0-9_-]/g, '');
-      let base = origName.substring(0, origName.lastIndexOf('.')) || origName;
-      base = base.replace(/[^a-zA-Z0-9_-]/g, '_');
-      const cleanExt = ext.replace(/^\./, '');
-      return `${base}_${cleanProfile}_${actionSuffix}.${cleanExt}`;
-    }
-
-    // Mode Switcher (PDF vs Image)
+    // Mode Switcher
     function setMode(mode) {
       currentMode = mode;
       resetToUpload();
@@ -1597,1166 +680,294 @@
         tabImg.classList.remove('active');
         compTitle.textContent = 'Upload your PDF';
         compSub.textContent = 'Select a PDF file or drag and drop it here to compress.';
-        heroTargetText.textContent = 'PDF Online';
-        dropTitle.textContent = 'Select PDF File';
-        dropSub.textContent = 'or drag and drop here • PDF up to 100 MB';
+        dropTitle.textContent = 'Choose a PDF file or drag & drop it here';
+        dropSub.textContent = 'PDF documents up to device memory limit • 100% on-device';
         mainFileInput.accept = '.pdf,application/pdf';
+        lblLow.textContent = 'Low (1%)';
+        lblMed.textContent = 'Recommended (60%)';
+        lblHigh.textContent = 'High (100%)';
       } else {
         tabImg.classList.add('active');
         tabPdf.classList.remove('active');
         compTitle.textContent = 'Upload your Image';
-        compSub.textContent = 'Select an image file or drag and drop it here to compress.';
-        heroTargetText.textContent = 'Image Online';
-        dropTitle.textContent = 'Select Image File';
-        dropSub.textContent = 'or drag and drop here • JPG, PNG, WebP up to 50 MB';
-        mainFileInput.accept = 'image/*';
+        compSub.textContent = 'Select JPG, PNG, or WebP to compress with quality control.';
+        dropTitle.textContent = 'Choose an Image or drag & drop it here';
+        dropSub.textContent = 'JPG, PNG, WebP • 100% local canvas compression';
+        mainFileInput.accept = 'image/jpeg,image/png,image/webp';
+        lblLow.textContent = 'Low (1%)';
+        lblMed.textContent = 'Balanced (70%)';
+        lblHigh.textContent = 'Maximum (100%)';
       }
     }
 
-    // Slider Logic
+    // Slider Interaction
     compSlider.addEventListener('input', (e) => {
-      const val = parseInt(e.target.value, 10);
+      const val = parseInt(e.target.value);
       sliderFill.style.width = val + '%';
       sliderPctBadge.textContent = val + '%';
-      lblLow.classList.toggle('active', val < 35);
-      lblMed.classList.toggle('active', val >= 35 && val <= 70);
-      lblHigh.classList.toggle('active', val > 70);
+      if (loadedFile) runCompression(loadedFile, val);
     });
 
-    function applyPreset(pct, label, btn) {
-      document.querySelectorAll('.preset-chip').forEach(c => c.classList.remove('active'));
-      if (btn) btn.classList.add('active');
+    function applyPreset(preset) {
+      let pct = 60;
+      if (preset === '50kb') pct = 85;
+      else if (preset === '100kb') pct = 75;
+      else if (preset === '200kb') pct = 65;
+      else if (preset === '500kb') pct = 45;
+      else if (preset === '1mb') pct = 25;
       compSlider.value = pct;
       sliderFill.style.width = pct + '%';
       sliderPctBadge.textContent = pct + '%';
-      lblLow.classList.toggle('active', pct < 35);
-      lblMed.classList.toggle('active', pct >= 35 && pct <= 70);
-      lblHigh.classList.toggle('active', pct > 70);
+      if (loadedFile) runCompression(loadedFile, pct);
     }
 
-    // File Selection Trigger
+    // Dropzone Events
     btnChooseFile.addEventListener('click', (e) => {
       e.stopPropagation();
       mainFileInput.click();
     });
     mainDropzone.addEventListener('click', () => mainFileInput.click());
 
-    // Drag and Drop
-    ['dragenter', 'dragover'].forEach(n => {
-      mainDropzone.addEventListener(n, (e) => {
-        e.preventDefault();
-        mainDropzone.classList.add('drag-active');
-      });
+    mainDropzone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      mainDropzone.classList.add('dragover');
     });
-    ['dragleave', 'drop'].forEach(n => {
-      mainDropzone.addEventListener(n, (e) => {
-        e.preventDefault();
-        mainDropzone.classList.remove('drag-active');
-      });
-    });
+    mainDropzone.addEventListener('dragleave', () => mainDropzone.classList.remove('dragover'));
     mainDropzone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      mainDropzone.classList.remove('dragover');
       if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-        handleMainFile(e.dataTransfer.files[0]);
+        handleFileSelection(e.dataTransfer.files[0]);
       }
     });
+
     mainFileInput.addEventListener('change', (e) => {
       if (e.target.files && e.target.files[0]) {
-        handleMainFile(e.target.files[0]);
+        handleFileSelection(e.target.files[0]);
       }
     });
+
+    function handleFileSelection(file) {
+      loadedFile = file;
+      if (file.type.includes('pdf') || file.name.toLowerCase().endsWith('.pdf')) {
+        setMode('pdf');
+      } else {
+        setMode('image');
+      }
+      runCompression(file, parseInt(compSlider.value));
+    }
 
     function resetToUpload() {
       loadedFile = null;
       processedBlob = null;
       isProcessing = false;
-      mainFileInput.value = '';
       mainDropzone.style.display = 'flex';
       procBox.style.display = 'none';
       compBox.style.display = 'none';
+      mainFileInput.value = '';
     }
 
-    function cancelProcessing() {
+    function cancelCompression() {
       isProcessing = false;
       resetToUpload();
     }
 
-    // Handle File Intake and Trigger Real Compression
-    function handleMainFile(file) {
-      loadedFile = file;
+    // Compression Processing Engine
+    async function runCompression(file, pct) {
+      isProcessing = true;
       mainDropzone.style.display = 'none';
       compBox.style.display = 'none';
       procBox.style.display = 'flex';
 
-      procFileName.textContent = `Compressing ${file.name}`;
-      procFileSize.textContent = formatBytes(file.size);
-      procProgressPct.textContent = '10%';
+      procFileName.textContent = file.name;
+      procFileSize.textContent = `Original: ${formatBytes(file.size)}`;
       procBarFill.style.width = '10%';
-      procStatusText.textContent = 'Analyzing document structure...';
-      isProcessing = true;
+      procProgressPct.textContent = '10%';
+      procStatusText.textContent = 'Initializing engine...';
 
-      const compLevel = parseInt(compSlider.value, 10);
-
-      if (file.type.includes('pdf') || file.name.toLowerCase().endsWith('.pdf')) {
-        compressPdfReal(file, compLevel);
-      } else {
-        compressImageReal(file, compLevel);
-      }
-    }
-
-    // REAL Client-Side Image Compression
-    async function compressImageReal(file, level) {
       try {
-        procProgressPct.textContent = '35%';
-        procBarFill.style.width = '35%';
-        procStatusText.textContent = 'Decoding image pixels on canvas...';
-
-        const img = new Image();
-        img.src = URL.createObjectURL(file);
-        await new Promise((res, rej) => { img.onload = res; img.onerror = rej; });
-
-        procProgressPct.textContent = '65%';
-        procBarFill.style.width = '65%';
-        procStatusText.textContent = 'Optimizing resolution and quality...';
-
-        // Scale factor: 1.0 down to 0.4 based on compression level
-        const scale = Math.max(0.4, 1 - (level / 150));
-        const canvas = document.createElement('canvas');
-        canvas.width = Math.round(img.width * scale);
-        canvas.height = Math.round(img.height * scale);
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-        // Quality: 1.0 down to 0.25 based on compression level
-        const quality = Math.max(0.2, (100 - level) / 100);
-        const outputMime = file.type === 'image/png' ? 'image/png' : 'image/jpeg';
-
-        canvas.toBlob((blob) => {
-          if (!isProcessing) return;
-          procProgressPct.textContent = '100%';
-          procBarFill.style.width = '100%';
-
-          setTimeout(() => {
-            finishCompression(file, blob, outputMime === 'image/png' ? 'png' : 'jpg');
-          }, 300);
-        }, outputMime, quality);
-
+        if (currentMode === 'pdf') {
+          await compressPdfFile(file, pct);
+        } else {
+          await compressImageFile(file, pct);
+        }
       } catch (err) {
-        alert('Image processing error: ' + err.message);
+        console.error('Compression error:', err);
+        alert('Processing error: ' + (err.message || 'Unable to compress file.'));
         resetToUpload();
       }
     }
 
-    // REAL Client-Side PDF Compression
-    async function compressPdfReal(file, level) {
-      try {
-        procProgressPct.textContent = '25%';
-        procBarFill.style.width = '25%';
-        procStatusText.textContent = 'Loading PDF pages in memory...';
+    async function compressPdfFile(file, pct) {
+      procStatusText.textContent = 'Loading document...';
+      const arrayBuffer = await file.arrayBuffer();
+      const pdfDoc = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+      const numPages = pdfDoc.numPages;
 
-        const arrayBuffer = await file.arrayBuffer();
+      const outPdf = await PDFLib.PDFDocument.create();
+      const qualityFactor = Math.max(0.12, (100 - pct * 0.85) / 100);
+      const scaleFactor = Math.max(0.65, (100 - pct * 0.35) / 100);
 
-        // 1. Try rasterizing pages with PDF.js for genuine size reduction
-        if (window.pdfjsLib && window.PDFLib) {
-          const loadingTask = pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer) });
-          const pdfDoc = await loadingTask.promise;
-          const numPages = pdfDoc.numPages;
+      for (let i = 1; i <= numPages; i++) {
+        if (!isProcessing) return;
+        const prog = Math.round(15 + (i / numPages) * 70);
+        procBarFill.style.width = prog + '%';
+        procProgressPct.textContent = prog + '%';
+        procStatusText.textContent = `Optimizing page ${i} of ${numPages}...`;
 
-          const outPdf = await PDFLib.PDFDocument.create();
+        const page = await pdfDoc.getPage(i);
+        const viewport = page.getViewport({ scale: scaleFactor * 1.5 });
 
-          // DPI/scale based on compression level
-          const scale = level > 70 ? 1.0 : (level > 40 ? 1.3 : 1.6);
-          const quality = Math.max(0.3, (100 - level) / 100);
+        const canvas = document.createElement('canvas');
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        const ctx = canvas.getContext('2d');
 
-          for (let i = 1; i <= numPages; i++) {
-            if (!isProcessing) return;
-            procProgressPct.textContent = `${Math.round(25 + (i / numPages) * 60)}%`;
-            procBarFill.style.width = `${Math.round(25 + (i / numPages) * 60)}%`;
-            procStatusText.textContent = `Optimizing page ${i} of ${numPages}...`;
+        await page.render({ canvasContext: ctx, viewport }).promise;
 
-            const page = await pdfDoc.getPage(i);
-            const viewport = page.getViewport({ scale });
-            const canvas = document.createElement('canvas');
-            canvas.width = viewport.width;
-            canvas.height = viewport.height;
-            const ctx = canvas.getContext('2d');
+        const imgDataUrl = canvas.toDataURL('image/jpeg', qualityFactor);
+        const embeddedImg = await outPdf.embedJpg(imgDataUrl);
 
-            await page.render({ canvasContext: ctx, viewport }).promise;
-
-            const jpegBlob = await new Promise(res => canvas.toBlob(res, 'image/jpeg', quality));
-            const jpegBytes = await jpegBlob.arrayBuffer();
-            const embeddedJpg = await outPdf.embedJpg(jpegBytes);
-
-            const origViewport = page.getViewport({ scale: 1.0 });
-            const outPage = outPdf.addPage([origViewport.width, origViewport.height]);
-            outPage.drawImage(embeddedJpg, {
-              x: 0,
-              y: 0,
-              width: origViewport.width,
-              height: origViewport.height
-            });
-          }
-
-          procProgressPct.textContent = '95%';
-          procBarFill.style.width = '95%';
-          procStatusText.textContent = 'Compiling final optimized PDF...';
-
-          const finalBytes = await outPdf.save();
-          const finalBlob = new Blob([finalBytes], { type: 'application/pdf' });
-
-          setTimeout(() => {
-            finishCompression(file, finalBlob, 'pdf');
-          }, 300);
-
-        } else {
-          // Fallback if PDF.js is loading
-          throw new Error('PDF Engine initialization pending.');
-        }
-
-      } catch (err) {
-        console.warn('Advanced raster compression fallback:', err);
-        // Clean fallback: compress via PDFLib direct load & save without unused objects
-        try {
-          const loaded = await PDFLib.PDFDocument.load(await file.arrayBuffer());
-          const savedBytes = await loaded.save();
-          const fallbackBlob = new Blob([savedBytes], { type: 'application/pdf' });
-          finishCompression(file, fallbackBlob, 'pdf');
-        } catch (fErr) {
-          alert('Could not compress PDF: ' + fErr.message);
-          resetToUpload();
-        }
+        const newPage = outPdf.addPage([viewport.width, viewport.height]);
+        newPage.drawImage(embeddedImg, {
+          x: 0,
+          y: 0,
+          width: viewport.width,
+          height: viewport.height
+        });
       }
+
+      procStatusText.textContent = 'Finalizing PDF document...';
+      procBarFill.style.width = '95%';
+      procProgressPct.textContent = '95%';
+
+      const pdfBytes = await outPdf.save();
+      processedBlob = new Blob([pdfBytes], { type: 'application/pdf' });
+      finishCompression(file, processedBlob, 'pdf');
     }
 
-    // Complete State Handlers
-    function finishCompression(origFile, outputBlob, ext) {
-      if (!isProcessing) return;
-      isProcessing = false;
-      processedBlob = outputBlob;
+    async function compressImageFile(file, pct) {
+      procStatusText.textContent = 'Processing image...';
+      procBarFill.style.width = '30%';
+      procProgressPct.textContent = '30%';
 
+      const img = new Image();
+      const url = URL.createObjectURL(file);
+
+      await new Promise((res, rej) => {
+        img.onload = res;
+        img.onerror = rej;
+        img.src = url;
+      });
+
+      const quality = Math.max(0.08, (100 - pct * 0.9) / 100);
+      const scale = Math.max(0.4, (100 - pct * 0.5) / 100);
+
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.round(img.width * scale);
+      canvas.height = Math.round(img.height * scale);
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+      URL.revokeObjectURL(url);
+
+      procBarFill.style.width = '80%';
+      procProgressPct.textContent = '80%';
+
+      const targetMime = file.type === 'image/png' && quality > 0.8 ? 'image/png' : 'image/jpeg';
+      const ext = targetMime === 'image/png' ? 'png' : 'jpg';
+
+      canvas.toBlob((blob) => {
+        processedBlob = blob;
+        finishCompression(file, processedBlob, ext);
+      }, targetMime, quality);
+    }
+
+    function finishCompression(origFile, newBlob, ext) {
+      isProcessing = false;
       procBox.style.display = 'none';
       compBox.style.display = 'flex';
 
       compOriginalName.textContent = origFile.name;
       const origSize = origFile.size;
-      const compSize = outputBlob.size;
-      const diff = origSize - compSize;
-      const pctSavings = origSize > 0 ? Math.round((diff / origSize) * 100) : 0;
+      const newSize = newBlob.size;
+      const savedPct = Math.round(((origSize - newSize) / origSize) * 100);
 
-      if (compSize <= origSize) {
-        compSizesDelta.textContent = `${formatBytes(origSize)} ➔ ${formatBytes(compSize)} (${pctSavings}% smaller)`;
+      if (savedPct > 0) {
+        compSizesDelta.textContent = `${formatBytes(origSize)} ➔ ${formatBytes(newSize)} (-${savedPct}%)`;
+        compSizesDelta.style.background = 'var(--success-bg)';
         compSizesDelta.style.color = 'var(--success)';
       } else {
-        compSizesDelta.textContent = `${formatBytes(origSize)} ➔ ${formatBytes(compSize)} (Optimal Quality Preserved)`;
-        compSizesDelta.style.color = 'var(--text-main)';
+        compSizesDelta.textContent = `${formatBytes(origSize)} ➔ ${formatBytes(newSize)} (Optimized)`;
+        compSizesDelta.style.background = 'rgba(13, 89, 242, 0.12)';
+        compSizesDelta.style.color = 'var(--primary)';
       }
 
-      // Generate Mandatory Suggested Export Filename (Section 8)
-      const suggestedName = generateExportFilename(origFile.name, userProfile.name, 'compressed', ext);
-      exportFilenameInput.value = suggestedName;
+      const generatedName = generateExportFilename(origFile.name, DocToolKit.userProfile.name, 'compressed', ext);
+      exportFilenameInput.value = generatedName;
 
-      // Save to IndexedDB automatically
-      saveDocToStorage({
-        name: suggestedName,
-        origName: origFile.name,
-        type: origFile.type.includes('pdf') ? 'PDF' : 'Image',
+      // Save record in local IndexedDB Document Organizer
+      saveDocumentToDB({
+        name: generatedName,
         origSize: origSize,
-        compSize: compSize,
-        blob: outputBlob,
-        category: 'Compressed'
-      });
-
-      // Bind Download
-      btnDownloadCompressed.onclick = () => {
-        let exportName = exportFilenameInput.value.trim() || suggestedName;
-        if (!exportName.toLowerCase().endsWith('.' + ext)) {
-          exportName += '.' + ext;
-        }
-        triggerDownload(outputBlob, exportName);
-      };
-    }
-
-    function triggerDownload(blob, filename) {
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    }
-
-    // ====================================================
-    // INDEXEDDB DOCUMENT ORGANIZER (Section 7 & 10)
-    // ====================================================
-    let db;
-    function openDB() {
-      return new Promise((resolve, reject) => {
-        const req = indexedDB.open('BharatFileDB', 1);
-        req.onupgradeneeded = (e) => {
-          const d = e.target.result;
-          if (!d.objectStoreNames.contains('documents')) {
-            const store = d.createObjectStore('documents', { keyPath: 'id', autoIncrement: true });
-            store.createIndex('name', 'name', { unique: false });
-            store.createIndex('createdAt', 'createdAt', { unique: false });
-          }
-        };
-        req.onsuccess = (e) => { db = e.target.result; resolve(db); };
-        req.onerror = (e) => reject(e);
-      });
-    }
-    openDB();
-
-    async function saveDocToStorage(docData) {
-      if (!db) await openDB();
-      const tx = db.transaction('documents', 'readwrite');
-      const store = tx.objectStore('documents');
-      store.add({
-        ...docData,
-        createdAt: new Date().toISOString()
+        size: newSize,
+        type: currentMode,
+        date: new Date().toISOString()
       });
     }
 
-    async function getAllStoredDocs() {
-      if (!db) await openDB();
-      return new Promise((resolve) => {
-        const tx = db.transaction('documents', 'readonly');
-        const store = tx.objectStore('documents');
-        const req = store.getAll();
-        req.onsuccess = () => resolve(req.result || []);
-        req.onerror = () => resolve([]);
-      });
+    function downloadResult() {
+      if (!processedBlob) return;
+      const finalName = exportFilenameInput.value.trim() || 'doctoolkit_output.pdf';
+      triggerDownload(processedBlob, finalName);
     }
 
-    async function deleteStoredDoc(id) {
-      if (!db) await openDB();
-      const tx = db.transaction('documents', 'readwrite');
-      tx.objectStore('documents').delete(id);
-      await new Promise(r => tx.oncomplete = r);
-      renderOrganizerUI();
-    }
-
-    async function clearAllStoredDocs() {
-      if (!confirm('Are you sure you want to clear your local document library?')) return;
-      if (!db) await openDB();
-      const tx = db.transaction('documents', 'readwrite');
-      tx.objectStore('documents').clear();
-      await new Promise(r => tx.oncomplete = r);
-      renderOrganizerUI();
-    }
-
-    // Modal Control
+    // Modal Tool Helpers
     function closeToolModal() {
       toolModalOverlay.style.display = 'none';
-      drawer.classList.remove('open');
-      drawerBackdrop.classList.remove('open');
-      // Stop any active camera streams
-      if (window.activeScannerStream) {
-        window.activeScannerStream.getTracks().forEach(t => t.stop());
-        window.activeScannerStream = null;
-      }
-    }
-    toolModalOverlay.addEventListener('click', (e) => {
-      if (e.target === toolModalOverlay) closeToolModal();
-    });
-
-    // ====================================================
-    // REAL TOOLS IMPLEMENTATION (Section 6, 9)
-    // ====================================================
-    function openTool(toolId) {
-      drawer.classList.remove('open');
-      drawerBackdrop.classList.remove('open');
-
-      if (toolId === 'compress-pdf') {
-        setMode('pdf');
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        return;
-      }
-      if (toolId === 'compress-image') {
-        setMode('image');
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        return;
-      }
-
-      toolModalOverlay.style.display = 'flex';
-
-      switch (toolId) {
-        case 'pdf-scanner':
-          setupPdfScannerUI();
-          break;
-        case 'merge-pdf':
-          setupMergePdfUI();
-          break;
-        case 'split-pdf':
-          setupSplitPdfUI();
-          break;
-        case 'organize-pdf':
-          setupOrganizePdfUI();
-          break;
-        case 'pdf-to-img':
-          setupPdfToImgUI();
-          break;
-        case 'img-to-pdf':
-          setupImgToPdfUI();
-          break;
-        case 'resize-img':
-          setupResizeImgUI();
-          break;
-        case 'convert-img':
-          setupConvertImgUI();
-          break;
-        case 'crop-img':
-          setupCropImgUI();
-          break;
-        case 'rotate-img':
-          setupRotateImgUI();
-          break;
-        case 'passport':
-          setupPassportPhotoUI();
-          break;
-        case 'signature':
-          setupSignatureMakerUI();
-          break;
-        case 'organizer':
-          renderOrganizerUI();
-          break;
-        default:
-          closeToolModal();
-      }
+      toolModalBody.innerHTML = '';
     }
 
-    // 1. REAL PDF SCANNER (Section 6)
-    let scannerPages = [];
-    async function setupPdfScannerUI() {
-      toolModalTitle.textContent = '📸 PDF Scanner';
-      toolModalBody.innerHTML = `
-        <div style="display:flex; flex-direction:column; gap:14px;">
-          <p style="font-size:13px; color:var(--text-muted);">Capture document pages using camera or upload photos, enhance, and compile into a single PDF.</p>
-          <div style="position:relative; width:100%; height:200px; background:#000; border-radius:14px; overflow:hidden; display:flex; align-items:center; justify-content:center;">
-            <video id="scanVideo" autoplay playsinline style="width:100%; height:100%; object-fit:cover;"></video>
-            <button id="btnCaptureFrame" style="position:absolute; bottom:12px; background:var(--primary-gradient); color:white; border:none; padding:8px 20px; border-radius:100px; font-weight:700; cursor:pointer;">📸 Capture Page</button>
-          </div>
-          <div style="display:flex; gap:10px; align-items:center;">
-            <input type="file" id="scanFileInput" accept="image/*" multiple style="display:none;">
-            <button class="btn-choose-file" onclick="document.getElementById('scanFileInput').click()">📁 Or Add Photo Files</button>
-            <span id="scanPageCount" style="font-size:12px; font-weight:700;">0 Pages Added</span>
-          </div>
-          <div id="scanPagesStrip" style="display:flex; gap:10px; overflow-x:auto; padding:8px 0; min-height:80px;"></div>
-          <div class="rename-group">
-            <label>Rename Scanned PDF:</label>
-            <input type="text" class="rename-input" id="scanNameInput" value="scan_${userProfile.name}.pdf" style="background:var(--track-bg); padding:8px; border-radius:8px;">
-          </div>
-          <button class="btn-download-primary" id="btnExportScanPdf">Save Scanned PDF</button>
-        </div>
-      `;
-
-      scannerPages = [];
-      const video = document.getElementById('scanVideo');
-      const btnCapture = document.getElementById('btnCaptureFrame');
-      const scanInput = document.getElementById('scanFileInput');
-      const pageStrip = document.getElementById('scanPagesStrip');
-      const pageCount = document.getElementById('scanPageCount');
-
-      // Start real camera stream
-      try {
-        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-          const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-          video.srcObject = stream;
-          window.activeScannerStream = stream;
-        }
-      } catch (e) {
-        video.style.display = 'none';
-        btnCapture.style.display = 'none';
-      }
-
-      function addPageData(dataUrl) {
-        scannerPages.push({ dataUrl, rotation: 0 });
-        renderScannerPages();
-      }
-
-      btnCapture.onclick = () => {
-        const c = document.createElement('canvas');
-        c.width = video.videoWidth || 640;
-        c.height = video.videoHeight || 480;
-        const ctx = c.getContext('2d');
-        ctx.drawImage(video, 0, 0, c.width, c.height);
-        addPageData(c.toDataURL('image/jpeg', 0.9));
-      };
-
-      scanInput.onchange = (e) => {
-        Array.from(e.target.files).forEach(f => {
-          const r = new FileReader();
-          r.onload = ev => addPageData(ev.target.result);
-          r.readAsDataURL(f);
-        });
-      };
-
-      function renderScannerPages() {
-        pageCount.textContent = `${scannerPages.length} Pages Added`;
-        pageStrip.innerHTML = '';
-        scannerPages.forEach((p, idx) => {
-          const d = document.createElement('div');
-          d.style.cssText = 'position:relative; width:70px; height:90px; border-radius:8px; overflow:hidden; border:1px solid var(--card-border); flex-shrink:0;';
-          d.innerHTML = `
-            <img src="${p.dataUrl}" style="width:100%; height:100%; object-fit:cover; transform:rotate(${p.rotation}deg);">
-            <button onclick="scannerPages.splice(${idx},1); renderScannerPages();" style="position:absolute; top:2px; right:2px; background:rgba(0,0,0,0.6); color:white; border:none; width:18px; height:18px; border-radius:50%; cursor:pointer;">✕</button>
-            <button onclick="scannerPages[${idx}].rotation = (scannerPages[${idx}].rotation + 90) % 360; renderScannerPages();" style="position:absolute; bottom:2px; left:2px; background:rgba(0,0,0,0.6); color:white; border:none; font-size:10px; border-radius:4px; padding:2px 4px; cursor:pointer;">⟳</button>
-          `;
-          pageStrip.appendChild(d);
-        });
-      }
-
-      document.getElementById('btnExportScanPdf').onclick = async () => {
-        if (!scannerPages.length) return alert('Please capture or add at least one page.');
-        const pdfDoc = await PDFLib.PDFDocument.create();
-        for (const p of scannerPages) {
-          const imgBytes = await fetch(p.dataUrl).then(r => r.arrayBuffer());
-          const embedded = await pdfDoc.embedJpg(imgBytes);
-          const page = pdfDoc.addPage([595, 842]); // A4
-          page.drawImage(embedded, { x: 20, y: 20, width: 555, height: 802 });
-          if (p.rotation) page.setRotation(PDFLib.degrees(p.rotation));
-        }
-        const bytes = await pdfDoc.save();
-        const blob = new Blob([bytes], { type: 'application/pdf' });
-        const name = document.getElementById('scanNameInput').value.trim() || `scan_${userProfile.name}.pdf`;
-        triggerDownload(blob, name);
-        saveDocToStorage({ name, origName: 'CameraScan', type: 'PDF', origSize: bytes.length, compSize: bytes.length, blob, category: 'Scans' });
-        closeToolModal();
-      };
-    }
-
-    // 2. REAL PDF MERGE
-    function setupMergePdfUI() {
-      toolModalTitle.textContent = '📑 Merge PDF Documents';
-      toolModalBody.innerHTML = `
-        <div style="display:flex; flex-direction:column; gap:14px;">
-          <p style="font-size:13px; color:var(--text-muted);">Select multiple PDF files to combine them in order into a unified document.</p>
-          <input type="file" id="mergeInput" accept=".pdf" multiple style="display:none;">
-          <button class="btn-choose-file" onclick="document.getElementById('mergeInput').click()">📁 Select PDF Files</button>
-          <div id="mergeList" style="display:flex; flex-direction:column; gap:6px;"></div>
-          <div class="rename-group">
-            <label>Merged PDF Name:</label>
-            <input type="text" class="rename-input" id="mergeNameInput" value="merged_${userProfile.name}.pdf" style="background:var(--track-bg); padding:8px; border-radius:8px;">
-          </div>
-          <button class="btn-download-primary" id="btnDoMerge">Merge & Download PDF</button>
-        </div>
-      `;
-
-      let mergeFiles = [];
-      const mInput = document.getElementById('mergeInput');
-      const mList = document.getElementById('mergeList');
-
-      mInput.onchange = (e) => {
-        mergeFiles = Array.from(e.target.files);
-        mList.innerHTML = mergeFiles.map((f, i) => `
-          <div style="display:flex; justify-content:space-between; padding:8px; background:var(--track-bg); border-radius:8px; font-size:13px;">
-            <span>${i+1}. ${f.name} (${formatBytes(f.size)})</span>
-          </div>
-        `).join('');
-      };
-
-      document.getElementById('btnDoMerge').onclick = async () => {
-        if (mergeFiles.length < 2) return alert('Please select at least 2 PDF files to merge.');
-        const outDoc = await PDFLib.PDFDocument.create();
-        for (const file of mergeFiles) {
-          const inBytes = await file.arrayBuffer();
-          const inDoc = await PDFLib.PDFDocument.load(inBytes);
-          const pages = await outDoc.copyPages(inDoc, inDoc.getPageIndices());
-          pages.forEach(p => outDoc.addPage(p));
-        }
-        const outBytes = await outDoc.save();
-        const blob = new Blob([outBytes], { type: 'application/pdf' });
-        const name = document.getElementById('mergeNameInput').value.trim() || `merged_${userProfile.name}.pdf`;
-        triggerDownload(blob, name);
-        closeToolModal();
-      };
-    }
-
-    // 3. REAL PDF SPLIT
-    function setupSplitPdfUI() {
-      toolModalTitle.textContent = '✂️ Split PDF';
-      toolModalBody.innerHTML = `
-        <div style="display:flex; flex-direction:column; gap:14px;">
-          <p style="font-size:13px; color:var(--text-muted);">Extract specific pages or page ranges (e.g. 1-3, 5) from a document.</p>
-          <input type="file" id="splitInput" accept=".pdf" style="display:none;">
-          <button class="btn-choose-file" onclick="document.getElementById('splitInput').click()">📁 Choose PDF to Split</button>
-          <div id="splitFileInfo" style="font-size:13px; font-weight:700;"></div>
-          <div class="rename-group">
-            <label>Page Range to Extract (e.g. 1-3, 5):</label>
-            <input type="text" class="rename-input" id="splitRangeInput" placeholder="1-2" style="background:var(--track-bg); padding:8px; border-radius:8px;">
-          </div>
-          <div class="rename-group">
-            <label>Output Filename:</label>
-            <input type="text" class="rename-input" id="splitNameInput" value="split_${userProfile.name}.pdf" style="background:var(--track-bg); padding:8px; border-radius:8px;">
-          </div>
-          <button class="btn-download-primary" id="btnDoSplit">Extract & Download</button>
-        </div>
-      `;
-
-      let splitFile = null;
-      let totalPages = 0;
-      const sInput = document.getElementById('splitInput');
-      const sInfo = document.getElementById('splitFileInfo');
-
-      sInput.onchange = async (e) => {
-        if (!e.target.files[0]) return;
-        splitFile = e.target.files[0];
-        const doc = await PDFLib.PDFDocument.load(await splitFile.arrayBuffer());
-        totalPages = doc.getPageCount();
-        sInfo.textContent = `Selected: ${splitFile.name} (Total: ${totalPages} pages)`;
-        document.getElementById('splitNameInput').value = generateExportFilename(splitFile.name, userProfile.name, 'split', 'pdf');
-      };
-
-      document.getElementById('btnDoSplit').onclick = async () => {
-        if (!splitFile) return alert('Please choose a PDF file first.');
-        const rangeStr = document.getElementById('splitRangeInput').value.trim();
-        if (!rangeStr) return alert('Please enter a page range, e.g. 1-2');
-
-        const pagesToExtract = [];
-        rangeStr.split(',').forEach(part => {
-          if (part.includes('-')) {
-            const [start, end] = part.split('-').map(n => parseInt(n.trim(), 10));
-            for (let i = start; i <= end; i++) if (i >= 1 && i <= totalPages) pagesToExtract.push(i - 1);
-          } else {
-            const num = parseInt(part.trim(), 10);
-            if (num >= 1 && num <= totalPages) pagesToExtract.push(num - 1);
-          }
-        });
-
-        if (!pagesToExtract.length) return alert('Invalid page range entered.');
-        const inDoc = await PDFLib.PDFDocument.load(await splitFile.arrayBuffer());
-        const outDoc = await PDFLib.PDFDocument.create();
-        const copied = await outDoc.copyPages(inDoc, pagesToExtract);
-        copied.forEach(p => outDoc.addPage(p));
-
-        const bytes = await outDoc.save();
-        const blob = new Blob([bytes], { type: 'application/pdf' });
-        triggerDownload(blob, document.getElementById('splitNameInput').value.trim());
-        closeToolModal();
-      };
-    }
-
-    // 4. REAL ORGANIZE PDF
-    function setupOrganizePdfUI() {
-      toolModalTitle.textContent = '🗂️ Organize PDF Pages';
-      toolModalBody.innerHTML = `
-        <div style="display:flex; flex-direction:column; gap:14px;">
-          <input type="file" id="orgInput" accept=".pdf" style="display:none;">
-          <button class="btn-choose-file" onclick="document.getElementById('orgInput').click()">📁 Select PDF Document</button>
-          <div id="orgPageGrid" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; max-height:280px; overflow-y:auto;"></div>
-          <button class="btn-download-primary" id="btnSaveOrgPdf">Save Reorganized PDF</button>
-        </div>
-      `;
-
-      let orgDoc = null;
-      let orgPagesState = [];
-      document.getElementById('orgInput').onchange = async (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        orgDoc = await PDFLib.PDFDocument.load(await file.arrayBuffer());
-        const count = orgDoc.getPageCount();
-        orgPagesState = Array.from({ length: count }, (_, i) => ({ index: i, rotation: 0 }));
-        renderOrgGrid();
-      };
-
-      function renderOrgGrid() {
-        const grid = document.getElementById('orgPageGrid');
-        grid.innerHTML = orgPagesState.map((p, i) => `
-          <div style="background:var(--track-bg); padding:10px; border-radius:10px; text-align:center;">
-            <div style="font-weight:700; font-size:13px;">Page ${p.index + 1}</div>
-            <div style="font-size:11px; color:var(--text-muted); margin:4px 0;">Rotation: ${p.rotation}°</div>
-            <button onclick="orgPagesState[${i}].rotation = (orgPagesState[${i}].rotation + 90) % 360; renderOrgGrid();" style="padding:4px 8px; font-size:11px; cursor:pointer;">⟳ Rotate</button>
-            <button onclick="orgPagesState.splice(${i},1); renderOrgGrid();" style="padding:4px 8px; font-size:11px; color:red; cursor:pointer;">✕ Delete</button>
-          </div>
-        `).join('');
-      }
-
-      document.getElementById('btnSaveOrgPdf').onclick = async () => {
-        if (!orgDoc || !orgPagesState.length) return alert('No pages to save.');
-        const newDoc = await PDFLib.PDFDocument.create();
-        for (const item of orgPagesState) {
-          const [page] = await newDoc.copyPages(orgDoc, [item.index]);
-          if (item.rotation) page.setRotation(PDFLib.degrees(item.rotation));
-          newDoc.addPage(page);
-        }
-        const bytes = await newDoc.save();
-        triggerDownload(new Blob([bytes], { type: 'application/pdf' }), `organized_${userProfile.name}.pdf`);
-        closeToolModal();
-      };
-    }
-
-    // 5. REAL PDF TO IMAGES
-    function setupPdfToImgUI() {
-      toolModalTitle.textContent = '🖼️ PDF to Images';
-      toolModalBody.innerHTML = `
-        <div style="display:flex; flex-direction:column; gap:14px;">
-          <input type="file" id="pdfImgInput" accept=".pdf" style="display:none;">
-          <button class="btn-choose-file" onclick="document.getElementById('pdfImgInput').click()">📁 Select PDF to Convert</button>
-          <div id="pdfImgGallery" style="display:grid; grid-template-columns:repeat(2, 1fr); gap:10px; max-height:280px; overflow-y:auto;"></div>
-        </div>
-      `;
-
-      document.getElementById('pdfImgInput').onchange = async (e) => {
-        const file = e.target.files[0];
-        if (!file || !window.pdfjsLib) return;
-        const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(await file.arrayBuffer()) }).promise;
-        const gallery = document.getElementById('pdfImgGallery');
-        gallery.innerHTML = '';
-
-        for (let i = 1; i <= pdf.numPages; i++) {
-          const page = await pdf.getPage(i);
-          const vp = page.getViewport({ scale: 1.2 });
-          const canvas = document.createElement('canvas');
-          canvas.width = vp.width;
-          canvas.height = vp.height;
-          await page.render({ canvasContext: canvas.getContext('2d'), viewport: vp }).promise;
-
-          const card = document.createElement('div');
-          card.style.cssText = 'background:var(--track-bg); padding:8px; border-radius:10px; text-align:center;';
-          card.innerHTML = `
-            <img src="${canvas.toDataURL('image/jpeg', 0.85)}" style="width:100%; border-radius:6px;">
-            <button class="btn-choose-file" style="margin-top:6px; font-size:11px;" onclick="downloadDataUrl('${canvas.toDataURL('image/jpeg', 0.9)}', 'page_${i}.jpg')">Download Page ${i}</button>
-          `;
-          gallery.appendChild(card);
-        }
-      };
-    }
-
-    function downloadDataUrl(dataUrl, name) {
-      const a = document.createElement('a');
-      a.href = dataUrl;
-      a.download = name;
-      a.click();
-    }
-
-    // 6. REAL IMAGES TO PDF
-    function setupImgToPdfUI() {
-      toolModalTitle.textContent = '📁 Images to PDF';
-      toolModalBody.innerHTML = `
-        <div style="display:flex; flex-direction:column; gap:14px;">
-          <input type="file" id="multiImgInput" accept="image/*" multiple style="display:none;">
-          <button class="btn-choose-file" onclick="document.getElementById('multiImgInput').click()">📁 Select Photos</button>
-          <div id="multiImgPreview" style="font-size:13px; font-weight:700;"></div>
-          <button class="btn-download-primary" id="btnDoImgToPdf">Generate A4 PDF</button>
-        </div>
-      `;
-
-      let imgFiles = [];
-      document.getElementById('multiImgInput').onchange = (e) => {
-        imgFiles = Array.from(e.target.files);
-        document.getElementById('multiImgPreview').textContent = `${imgFiles.length} Images Selected`;
-      };
-
-      document.getElementById('btnDoImgToPdf').onclick = async () => {
-        if (!imgFiles.length) return alert('Select at least one image.');
-        const pdfDoc = await PDFLib.PDFDocument.create();
-        for (const f of imgFiles) {
-          const bytes = await f.arrayBuffer();
-          const img = f.type === 'image/png' ? await pdfDoc.embedPng(bytes) : await pdfDoc.embedJpg(bytes);
-          const page = pdfDoc.addPage([595, 842]);
-          page.drawImage(img, { x: 20, y: 20, width: 555, height: 802 });
-        }
-        const pdfBytes = await pdfDoc.save();
-        triggerDownload(new Blob([pdfBytes], { type: 'application/pdf' }), `images_${userProfile.name}.pdf`);
-        closeToolModal();
-      };
-    }
-
-    // 7. REAL IMAGE RESIZER
-    function setupResizeImgUI() {
-      toolModalTitle.textContent = '📐 Image Resizer';
-      toolModalBody.innerHTML = `
-        <div style="display:flex; flex-direction:column; gap:14px;">
-          <input type="file" id="resInput" accept="image/*" style="display:none;">
-          <button class="btn-choose-file" onclick="document.getElementById('resInput').click()">📁 Select Image</button>
-          <div style="display:flex; gap:10px;">
-            <input type="number" id="resWidth" placeholder="Width (px)" value="200" style="flex:1; padding:8px; border-radius:8px; border:1px solid var(--card-border); background:var(--track-bg); color:var(--text-main);">
-            <input type="number" id="resHeight" placeholder="Height (px)" value="230" style="flex:1; padding:8px; border-radius:8px; border:1px solid var(--card-border); background:var(--track-bg); color:var(--text-main);">
-          </div>
-          <div style="display:flex; gap:6px; flex-wrap:wrap;">
-            <button class="preset-chip" onclick="document.getElementById('resWidth').value=200; document.getElementById('resHeight').value=230;">UPSC (200x230)</button>
-            <button class="preset-chip" onclick="document.getElementById('resWidth').value=140; document.getElementById('resHeight').value=60;">Sign (140x60)</button>
-            <button class="preset-chip" onclick="document.getElementById('resWidth').value=500; document.getElementById('resHeight').value=500;">Square (500x500)</button>
-          </div>
-          <button class="btn-download-primary" id="btnDoResize">Resize & Download</button>
-        </div>
-      `;
-
-      let resFile = null;
-      document.getElementById('resInput').onchange = (e) => resFile = e.target.files[0];
-
-      document.getElementById('btnDoResize').onclick = () => {
-        if (!resFile) return alert('Please select an image first.');
-        const w = parseInt(document.getElementById('resWidth').value, 10);
-        const h = parseInt(document.getElementById('resHeight').value, 10);
-        const img = new Image();
-        img.src = URL.createObjectURL(resFile);
-        img.onload = () => {
-          const c = document.createElement('canvas');
-          c.width = w;
-          c.height = h;
-          c.getContext('2d').drawImage(img, 0, 0, w, h);
-          c.toBlob(blob => {
-            triggerDownload(blob, generateExportFilename(resFile.name, userProfile.name, `${w}x${h}`, 'jpg'));
-            closeToolModal();
-          }, 'image/jpeg', 0.9);
-        };
-      };
-    }
-
-    // 8. REAL IMAGE CONVERTER
-    function setupConvertImgUI() {
-      toolModalTitle.textContent = '🔄 Image Converter';
-      toolModalBody.innerHTML = `
-        <div style="display:flex; flex-direction:column; gap:14px;">
-          <input type="file" id="convInput" accept="image/*" style="display:none;">
-          <button class="btn-choose-file" onclick="document.getElementById('convInput').click()">📁 Select Image</button>
-          <div style="display:flex; gap:8px;">
-            <button class="preset-chip active" id="btnConvJpg" onclick="setConvFormat('jpeg')">JPG</button>
-            <button class="preset-chip" id="btnConvPng" onclick="setConvFormat('png')">PNG</button>
-            <button class="preset-chip" id="btnConvWebp" onclick="setConvFormat('webp')">WebP</button>
-          </div>
-          <button class="btn-download-primary" id="btnDoConvert">Convert & Save</button>
-        </div>
-      `;
-
-      let convFile = null;
-      let targetFmt = 'jpeg';
-      window.setConvFormat = (fmt) => {
-        targetFmt = fmt;
-        document.querySelectorAll('.preset-chip').forEach(c => c.classList.remove('active'));
-        if (fmt === 'jpeg') document.getElementById('btnConvJpg').classList.add('active');
-        if (fmt === 'png') document.getElementById('btnConvPng').classList.add('active');
-        if (fmt === 'webp') document.getElementById('btnConvWebp').classList.add('active');
-      };
-
-      document.getElementById('convInput').onchange = e => convFile = e.target.files[0];
-      document.getElementById('btnDoConvert').onclick = () => {
-        if (!convFile) return alert('Select image first.');
-        const img = new Image();
-        img.src = URL.createObjectURL(convFile);
-        img.onload = () => {
-          const c = document.createElement('canvas');
-          c.width = img.width;
-          c.height = img.height;
-          const ctx = c.getContext('2d');
-          if (targetFmt === 'jpeg') {
-            ctx.fillStyle = '#FFFFFF';
-            ctx.fillRect(0, 0, c.width, c.height);
-          }
-          ctx.drawImage(img, 0, 0);
-          c.toBlob(blob => {
-            triggerDownload(blob, generateExportFilename(convFile.name, userProfile.name, 'converted', targetFmt === 'jpeg' ? 'jpg' : targetFmt));
-            closeToolModal();
-          }, `image/${targetFmt}`, 0.92);
-        };
-      };
-    }
-
-    // 9. REAL CROP IMAGE
-    function setupCropImgUI() {
-      toolModalTitle.textContent = '✂️ Crop Image';
-      toolModalBody.innerHTML = `
-        <div style="display:flex; flex-direction:column; gap:14px;">
-          <input type="file" id="cropInput" accept="image/*" style="display:none;">
-          <button class="btn-choose-file" onclick="document.getElementById('cropInput').click()">📁 Select Image to Crop</button>
-          <div style="display:flex; gap:6px;">
-            <button class="preset-chip active" onclick="setCropRatio(1)">Square (1:1)</button>
-            <button class="preset-chip" onclick="setCropRatio(4/3)">4:3</button>
-            <button class="preset-chip" onclick="setCropRatio(16/9)">16:9</button>
-          </div>
-          <button class="btn-download-primary" id="btnDoCrop">Crop Center & Download</button>
-        </div>
-      `;
-
-      let cropFile = null;
-      let ratio = 1;
-      window.setCropRatio = r => ratio = r;
-      document.getElementById('cropInput').onchange = e => cropFile = e.target.files[0];
-
-      document.getElementById('btnDoCrop').onclick = () => {
-        if (!cropFile) return alert('Select image first.');
-        const img = new Image();
-        img.src = URL.createObjectURL(cropFile);
-        img.onload = () => {
-          let cropW = img.width;
-          let cropH = img.width / ratio;
-          if (cropH > img.height) {
-            cropH = img.height;
-            cropW = img.height * ratio;
-          }
-          const startX = (img.width - cropW) / 2;
-          const startY = (img.height - cropH) / 2;
-
-          const c = document.createElement('canvas');
-          c.width = cropW;
-          c.height = cropH;
-          c.getContext('2d').drawImage(img, startX, startY, cropW, cropH, 0, 0, cropW, cropH);
-          c.toBlob(blob => {
-            triggerDownload(blob, generateExportFilename(cropFile.name, userProfile.name, 'cropped', 'jpg'));
-            closeToolModal();
-          }, 'image/jpeg', 0.9);
-        };
-      };
-    }
-
-    // 10. REAL ROTATE IMAGE
-    function setupRotateImgUI() {
-      toolModalTitle.textContent = '🔄 Rotate Image';
-      toolModalBody.innerHTML = `
-        <div style="display:flex; flex-direction:column; gap:14px;">
-          <input type="file" id="rotInput" accept="image/*" style="display:none;">
-          <button class="btn-choose-file" onclick="document.getElementById('rotInput').click()">📁 Select Image</button>
-          <div style="display:flex; gap:10px;">
-            <button class="btn-choose-file" onclick="rotAngle=(rotAngle+90)%360; alert('Angle: '+rotAngle+'°');">⟳ Rotate 90° Clockwise</button>
-          </div>
-          <button class="btn-download-primary" id="btnDoRotate">Save Rotated Image</button>
-        </div>
-      `;
-
-      let rotFile = null;
-      let rotAngle = 90;
-      document.getElementById('rotInput').onchange = e => rotFile = e.target.files[0];
-
-      document.getElementById('btnDoRotate').onclick = () => {
-        if (!rotFile) return alert('Select image first.');
-        const img = new Image();
-        img.src = URL.createObjectURL(rotFile);
-        img.onload = () => {
-          const c = document.createElement('canvas');
-          if (rotAngle === 90 || rotAngle === 270) {
-            c.width = img.height;
-            c.height = img.width;
-          } else {
-            c.width = img.width;
-            c.height = img.height;
-          }
-          const ctx = c.getContext('2d');
-          ctx.translate(c.width / 2, c.height / 2);
-          ctx.rotate((rotAngle * Math.PI) / 180);
-          ctx.drawImage(img, -img.width / 2, -img.height / 2);
-          c.toBlob(blob => {
-            triggerDownload(blob, generateExportFilename(rotFile.name, userProfile.name, 'rotated', 'jpg'));
-            closeToolModal();
-          }, 'image/jpeg', 0.9);
-        };
-      };
-    }
-
-    // 11. REAL PASSPORT PHOTO
-    function setupPassportPhotoUI() {
-      toolModalTitle.textContent = '👤 Passport Photo Cropper';
-      toolModalBody.innerHTML = `
-        <div style="display:flex; flex-direction:column; gap:14px;">
-          <p style="font-size:13px; color:var(--text-muted);">Standard Indian Passport (3.5 × 4.5 cm / 413 × 531 px) with white border.</p>
-          <input type="file" id="passInput" accept="image/*" style="display:none;">
-          <button class="btn-choose-file" onclick="document.getElementById('passInput').click()">📁 Choose Photo</button>
-          <button class="btn-download-primary" id="btnDoPassport">Generate 3.5×4.5 cm Photo</button>
-        </div>
-      `;
-
-      let passFile = null;
-      document.getElementById('passInput').onchange = e => passFile = e.target.files[0];
-
-      document.getElementById('btnDoPassport').onclick = () => {
-        if (!passFile) return alert('Please select a photo first.');
-        const img = new Image();
-        img.src = URL.createObjectURL(passFile);
-        img.onload = () => {
-          const c = document.createElement('canvas');
-          c.width = 413;
-          c.height = 531;
-          const ctx = c.getContext('2d');
-          ctx.fillStyle = '#FFFFFF';
-          ctx.fillRect(0, 0, c.width, c.height);
-
-          // Center crop to 3.5:4.5 ratio
-          const r = 413 / 531;
-          let sw = img.width;
-          let sh = img.width / r;
-          if (sh > img.height) { sh = img.height; sw = img.height * r; }
-          const sx = (img.width - sw) / 2;
-          const sy = (img.height - sh) / 2;
-
-          ctx.drawImage(img, sx, sy, sw, sh, 8, 8, 397, 515);
-          c.toBlob(blob => {
-            triggerDownload(blob, generateExportFilename(passFile.name, userProfile.name, 'passport', 'jpg'));
-            closeToolModal();
-          }, 'image/jpeg', 0.95);
-        };
-      };
-    }
-
-    // 12. REAL SIGNATURE MAKER
-    function setupSignatureMakerUI() {
-      toolModalTitle.textContent = '✍️ Signature Maker';
-      toolModalBody.innerHTML = `
-        <div style="display:flex; flex-direction:column; gap:12px;">
-          <p style="font-size:13px; color:var(--text-muted);">Draw signature with finger or mouse. Exports a transparent PNG for official forms.</p>
-          <canvas id="sigCanvas" width="450" height="200" style="width:100%; height:180px; background:#FFFFFF; border:1px dashed var(--card-border); border-radius:12px; touch-action:none;"></canvas>
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <div style="display:flex; gap:8px;">
-              <button onclick="sigColor='#0D59F2'" style="width:24px; height:24px; border-radius:50%; background:#0D59F2; border:none; cursor:pointer;"></button>
-              <button onclick="sigColor='#000000'" style="width:24px; height:24px; border-radius:50%; background:#000000; border:none; cursor:pointer;"></button>
-              <button onclick="sigColor='#1E1B4B'" style="width:24px; height:24px; border-radius:50%; background:#1E1B4B; border:none; cursor:pointer;"></button>
-            </div>
-            <button class="btn-cancel" onclick="clearSig()">Clear Canvas</button>
-          </div>
-          <button class="btn-download-primary" id="btnDownloadSig">Download Transparent PNG</button>
-        </div>
-      `;
-
-      const canvas = document.getElementById('sigCanvas');
-      const ctx = canvas.getContext('2d');
-      let drawing = false;
-      window.sigColor = '#0D59F2';
-
-      function getPos(e) {
-        const r = canvas.getBoundingClientRect();
-        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-        return {
-          x: (clientX - r.left) * (canvas.width / r.width),
-          y: (clientY - r.top) * (canvas.height / r.height)
-        };
-      }
-
-      function startDraw(e) { drawing = true; const p = getPos(e); ctx.beginPath(); ctx.moveTo(p.x, p.y); }
-      function doDraw(e) {
-        if (!drawing) return;
-        const p = getPos(e);
-        ctx.strokeStyle = window.sigColor;
-        ctx.lineWidth = 3;
-        ctx.lineCap = 'round';
-        ctx.lineJoin = 'round';
-        ctx.lineTo(p.x, p.y);
-        ctx.stroke();
-      }
-      function endDraw() { drawing = false; }
-
-      canvas.addEventListener('mousedown', startDraw);
-      canvas.addEventListener('mousemove', doDraw);
-      window.addEventListener('mouseup', endDraw);
-
-      canvas.addEventListener('touchstart', (e) => { e.preventDefault(); startDraw(e); }, { passive: false });
-      canvas.addEventListener('touchmove', (e) => { e.preventDefault(); doDraw(e); }, { passive: false });
-      canvas.addEventListener('touchend', endDraw);
-
-      window.clearSig = () => ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      document.getElementById('btnDownloadSig').onclick = () => {
-        canvas.toBlob(blob => {
-          triggerDownload(blob, `signature_${userProfile.name}.png`);
-          closeToolModal();
-        }, 'image/png');
-      };
-    }
-
-    // 13. REAL DOCUMENT ORGANIZER & PROFILE UI (Section 7 & 10)
-    async function renderOrganizerUI() {
-      toolModalTitle.textContent = '📂 Document Organizer & Local Library';
-      const docs = await getAllStoredDocs();
-
-      toolModalBody.innerHTML = `
-        <div style="display:flex; flex-direction:column; gap:14px;">
-          <div style="display:flex; gap:8px;">
-            <input type="text" id="orgSearch" placeholder="🔍 Search saved documents..." style="flex:1; padding:8px 12px; border-radius:100px; border:1px solid var(--card-border); background:var(--track-bg); color:var(--text-main); font-size:13px;">
-            <button class="btn-cancel" onclick="clearAllStoredDocs()" style="font-size:12px;">Clear All</button>
-          </div>
-          <div style="font-size:12px; color:var(--text-muted); display:flex; justify-content:space-between;">
-            <span>Total Stored: ${docs.length} files</span>
-            <span>100% Offline IndexedDB</span>
-          </div>
-          <div id="orgDocList" style="display:flex; flex-direction:column; gap:8px; max-height:300px; overflow-y:auto;">
-            ${docs.length === 0 ? '<p style="text-align:center; padding:20px; color:var(--text-muted); font-size:13px;">No documents in local library yet. Compress, scan, or process a file to see it here!</p>' : ''}
-          </div>
-        </div>
-      `;
-
-      const list = document.getElementById('orgDocList');
-      function renderItems(items) {
-        list.innerHTML = items.map(doc => `
-          <div style="background:var(--track-bg); border-radius:12px; padding:12px; display:flex; justify-content:space-between; align-items:center;">
-            <div>
-              <div style="font-weight:700; font-size:13px;">${doc.name}</div>
-              <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">${formatBytes(doc.compSize)} • ${new Date(doc.createdAt).toLocaleDateString()}</div>
-            </div>
-            <div style="display:flex; gap:8px;">
-              <button class="preset-chip" onclick="downloadStored(${doc.id})">⬇ Download</button>
-              <button class="btn-cancel" onclick="deleteStoredDoc(${doc.id})">✕</button>
-            </div>
-          </div>
-        `).join('');
-      }
-      renderItems(docs);
-
-      document.getElementById('orgSearch').oninput = (e) => {
-        const q = e.target.value.toLowerCase();
-        renderItems(docs.filter(d => d.name.toLowerCase().includes(q)));
-      };
-    }
-
-    async function downloadStored(id) {
-      const docs = await getAllStoredDocs();
-      const item = docs.find(d => d.id === id);
-      if (item && item.blob) {
-        triggerDownload(item.blob, item.name);
-      }
-    }
-
-    // Profile & Info Modal
     function openInfoModal(type) {
-      drawer.classList.remove('open');
-      drawerBackdrop.classList.remove('open');
       toolModalOverlay.style.display = 'flex';
-
-      if (type === 'profile') {
-        toolModalTitle.textContent = '👤 Profile & Export Settings';
+      if (type === 'about') {
+        toolModalTitle.textContent = 'ℹ️ About DocToolKit';
         toolModalBody.innerHTML = `
-          <div style="display:flex; flex-direction:column; gap:14px; font-size:13px;">
-            <div class="rename-group">
-              <label>Your Name (Used in Export Filenames):</label>
-              <input type="text" id="profNameInput" value="${userProfile.name}" style="background:var(--track-bg); padding:10px; border-radius:8px; border:1px solid var(--card-border); color:var(--text-main); font-weight:700;">
-            </div>
-            <div class="rename-group">
-              <label>Default Output Format:</label>
-              <select id="profFmtSelect" style="background:var(--track-bg); padding:10px; border-radius:8px; border:1px solid var(--card-border); color:var(--text-main);">
-                <option value="jpeg">JPEG (Universal)</option>
-                <option value="png">PNG (Lossless)</option>
-                <option value="webp">WebP (Modern)</option>
-              </select>
-            </div>
-            <p style="color:var(--text-muted); font-size:11px; line-height:1.5;">All settings are stored strictly in your browser local storage. No tracking or accounts required.</p>
-            <button class="btn-download-primary" onclick="saveProfileSettings()">Save Settings</button>
+          <div style="line-height: 1.6; font-size: 14px;">
+            <p><strong>DocToolKit</strong> is a modern, privacy-first document and image utility suite.</p>
+            <p style="margin-top: 10px;">All processing happens locally on your computer or phone using WebAssembly and HTML5 Canvas. We never transmit your confidential files, photos, or signatures across any network.</p>
+            <p style="margin-top: 10px;">Official Domain: <a href="https://doctoolkit.in/" style="color: var(--primary);">https://doctoolkit.in/</a></p>
           </div>
         `;
-      } else if (type === 'privacy') {
-        toolModalTitle.textContent = '🔒 100% Privacy Guarantee';
+      } else if (type === 'profile') {
+        toolModalTitle.textContent = '👤 User Profile & Settings';
         toolModalBody.innerHTML = `
-          <div style="font-size:13px; line-height:1.6; color:var(--text-muted);">
-            <p><strong>Zero Cloud Upload:</strong> BharatFile processes all PDF documents, photos, signatures, and scans locally in your browser memory via WebAssembly and Canvas.</p>
-            <p style="margin-top:10px;"><strong>No Server Storage:</strong> Your private Aadhaar, marks sheets, and certificates are never transmitted to any external server.</p>
-            <p style="margin-top:10px;"><strong>IndexedDB Isolation:</strong> Stored documents remain sandboxed on your local device only.</p>
-          </div>
-        `;
-      } else {
-        toolModalTitle.textContent = 'ℹ️ About BharatFile';
-        toolModalBody.innerHTML = `
-          <div style="font-size:13px; line-height:1.6; color:var(--text-muted);">
-            <p><strong>BharatFile</strong> is an open, high-speed, privacy-first utility application built for Indian students, job applicants, educators, and office professionals.</p>
-            <p style="margin-top:10px;">Version: <strong>2.0.0 (Production Verified)</strong></p>
+          <div style="display: flex; flex-direction: column; gap: 14px;">
+            <div>
+              <label style="font-size: 13px; font-weight: 700; display: block; margin-bottom: 4px;">User Name (Used for smart file naming):</label>
+              <input type="text" id="profNameInput" class="rename-input" value="${DocToolKit.userProfile.name}">
+            </div>
+            <button class="btn-choose-file" onclick="saveProfileSettings()" style="width: 100%;">Save Settings</button>
           </div>
         `;
       }
     }
 
     function saveProfileSettings() {
-      const name = document.getElementById('profNameInput').value.trim() || 'Arsad';
-      userProfile.name = name;
-      localStorage.setItem('bharatfile_username', name);
-      navProfileName.textContent = name;
-      closeToolModal();
+      const inp = document.getElementById('profNameInput');
+      if (inp) {
+        const val = inp.value.trim() || 'User';
+        DocToolKit.userProfile.name = val;
+        DocToolKit.setPref('username', val);
+        if (navProfileName) navProfileName.textContent = val;
+        closeToolModal();
+      }
     }
+
+    // Close modal when clicking outside
+    toolModalOverlay.addEventListener('click', (e) => {
+      if (e.target === toolModalOverlay) closeToolModal();
+    });
   </script>
 </body>
 </html>

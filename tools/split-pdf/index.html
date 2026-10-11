@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Split PDF Online – Extract Pages from PDF | DocToolKit</title>
+  <meta name="description" content="Split PDF documents online for free. Extract specific pages or custom page ranges (e.g., 1-3, 5) from any PDF file without server uploads.">
+  <link rel="canonical" href="https://doctoolkit.in/tools/split-pdf/">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://doctoolkit.in/tools/split-pdf/">
+  <meta property="og:title" content="Split PDF Online – Extract Pages from PDF | DocToolKit">
+  <meta property="og:description" content="Split PDF documents online for free. Extract specific pages or custom page ranges (e.g., 1-3, 5) from any PDF file without server uploads.">
+  <meta property="og:image" content="https://doctoolkit.in/icons/og-image.png">
+
+  <!-- Twitter / X -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://doctoolkit.in/tools/split-pdf/">
+  <meta name="twitter:title" content="Split PDF Online – Extract Pages from PDF | DocToolKit">
+  <meta name="twitter:description" content="Split PDF documents online for free. Extract specific pages or custom page ranges (e.g., 1-3, 5) from any PDF file without server uploads.">
+  <meta name="twitter:image" content="https://doctoolkit.in/icons/og-image.png">
+
+  <!-- Icons & PWA -->
+  <meta name="theme-color" content="#0D59F2">
+  <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+  <link rel="icon" type="image/x-icon" href="../../favicon.ico">
+  <link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+  <link rel="manifest" href="../../manifest.json">
+
+  <!-- Shared Stylesheet -->
+  <link rel="stylesheet" href="../../css/style.css">
+
+  <!-- Vendor Libraries for 100% In-Browser Execution -->
+  <script src="../../js/pdf-lib.min.js"></script>
+  <script src="../../js/pdf.min.js"></script>
+  <script src="../../js/app.js"></script>
+
+  <!-- JSON-LD Structured Data -->
+  <script type="application/ld+json">
+  {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://doctoolkit.in/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Tools",
+      "item": "https://doctoolkit.in/#toolsSection"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Split PDF",
+      "item": "https://doctoolkit.in/tools/split-pdf/"
+    }
+  ]
+}
+  </script>
+  <script type="application/ld+json">
+  {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "DocToolKit Split PDF",
+  "url": "https://doctoolkit.in/tools/split-pdf/",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "All",
+  "browserRequirements": "Requires JavaScript and HTML5 Canvas support",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  }
+}
+  </script>
+  <script type="application/ld+json">
+  {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Can I extract pages from a 100-page document?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. DocToolKit reads page references and copies only your requested indices into a new PDF."
+      }
+    }
+  ]
+}
+  </script>
+</head>
+<body>
+
+  <!-- Background Orbs -->
+  <div class="bg-orbs">
+    <div class="orb-1"></div>
+    <div class="orb-2"></div>
+  </div>
+
+  <!-- Mobile Drawer Backdrop -->
+  <div class="drawer-backdrop" id="drawerBackdrop" onclick="closeDrawer()"></div>
+
+  <!-- Mobile Navigation Drawer -->
+  <aside class="drawer" id="drawer">
+    <div class="drawer-header">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <img src="../../icons/doctoolkit-logo-horizontal.png" alt="DocToolKit" height="28" style="height: 28px; width: auto; display: block;">
+      </div>
+      <button class="btn-close-modal" id="closeDrawerBtn" onclick="closeDrawer()" aria-label="Close Navigation">✕</button>
+    </div>
+
+    <div class="drawer-menu">
+      <a class="drawer-item" href="../../tools/compress-pdf/">📄 Compress PDF</a>
+      <a class="drawer-item" href="../../tools/compress-image/">🖼️ Compress Image</a>
+      <a class="drawer-item" href="../../tools/pdf-scanner/">📸 PDF Scanner</a>
+      <a class="drawer-item" href="../../tools/merge-pdf/">📑 Merge PDF</a>
+      <a class="drawer-item" href="../../tools/split-pdf/">✂️ Split PDF</a>
+      <a class="drawer-item" href="../../tools/organize-pdf/">🗂️ Organize PDF</a>
+      <a class="drawer-item" href="../../tools/pdf-to-image/">🖼️ PDF to Images</a>
+      <a class="drawer-item" href="../../tools/image-to-pdf/">📁 Images to PDF</a>
+      <a class="drawer-item" href="../../tools/resize-image/">📐 Resize Image</a>
+      <a class="drawer-item" href="../../tools/convert-image/">🔄 Convert Image</a>
+      <a class="drawer-item" href="../../tools/crop-image/">✂️ Crop Image</a>
+      <a class="drawer-item" href="../../tools/rotate-image/">🔄 Rotate Image</a>
+      <a class="drawer-item" href="../../tools/passport-photo/">👤 Passport Photo</a>
+      <a class="drawer-item" href="../../tools/signature-maker/">✍️ Signature Maker</a>
+      <a class="drawer-item" href="../../tools/document-organizer/">📂 Document Organizer</a>
+
+      <div class="drawer-divider"></div>
+
+      <button class="drawer-item" onclick="toggleTheme()">🌓 Toggle Dark Mode</button>
+      <a class="drawer-item" href="../../privacy/">🔒 Privacy Policy</a>
+      <a class="drawer-item" href="../../terms/">📜 Terms of Service</a>
+    </div>
+  </aside>
+
+  <!-- Main Application Wrapper -->
+  <div class="app-wrapper">
+
+    <!-- Top Floating Navbar -->
+    <header class="navbar">
+      <a class="nav-brand" href="../../" aria-label="DocToolKit Homepage">
+        <img src="../../icons/doctoolkit-logo-horizontal.png" alt="DocToolKit" height="34" style="height: 34px; max-height: 34px; width: auto; display: block;">
+      </a>
+
+      <!-- Desktop Center Menu -->
+      <nav class="desktop-menu" aria-label="Main Navigation">
+        <a class="menu-btn" href="../../tools/compress-pdf/">📄 Compress PDF</a>
+        <a class="menu-btn" href="../../tools/compress-image/">🖼️ Compress Image</a>
+        <a class="menu-btn" href="../../tools/pdf-scanner/">📸 Scanner</a>
+        <a class="menu-btn" href="../../tools/merge-pdf/">📑 Merge PDF</a>
+        <a class="menu-btn" href="../../tools/document-organizer/">📂 Organizer</a>
+      </nav>
+
+      <!-- Right Actions -->
+      <div class="nav-actions">
+        <button class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()" aria-label="Toggle Dark/Light Mode">🌙</button>
+        <button class="btn-get-started" onclick="location.href='../../tools/document-organizer/'" aria-label="User Profile">
+          <span>👤</span>
+          <span id="navProfileName">User</span>
+        </button>
+        <button class="hamburger-btn" id="hamburgerBtn" onclick="openDrawer()" aria-label="Open Navigation Menu">☰</button>
+      </div>
+    </header>
+
+    <!-- Breadcrumb Navigation -->
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a href="../../">Home</a>
+      <span>&gt;</span>
+      <a href="../../#toolsSection">Tools</a>
+      <span>&gt;</span>
+      <span>Split PDF</span>
+    </nav>
+
+    <!-- Main Interactive Workbench Card -->
+    <main class="workbench-card">
+      <div class="workbench-header">
+        <h1>Split PDF Online</h1>
+        <p>Extract specific pages or custom page ranges from multi-page PDF documents. Enter page numbers (e.g., "1-3, 5") to extract only the sections you need into a new, compact PDF file.</p>
+      </div>
+
+      <!-- Mounted Interactive Tool Interface -->
+      
+        <div style="display:flex; flex-direction:column; gap:16px;">
+          <input type="file" id="splitInput" accept=".pdf" style="display:none;">
+          <div class="dropzone" onclick="document.getElementById('splitInput').click()">
+            <div class="drop-cloud-icon">✂️</div>
+            <div style="font-weight:700; font-size:15px;">Choose PDF to Split</div>
+            <div style="font-size:12px; color:var(--text-muted);" id="splitFileInfo">Extract pages locally on your device</div>
+            <button class="btn-choose-file" type="button">📁 Select PDF</button>
+          </div>
+          <div>
+            <label style="font-size:12px; font-weight:700; color:var(--text-muted); display:block; margin-bottom:4px;">Page Range to Extract (e.g. 1-3, 5):</label>
+            <input type="text" class="rename-input" id="splitRangeInput" placeholder="1-2">
+          </div>
+          <div>
+            <label style="font-size:12px; font-weight:700; color:var(--text-muted); display:block; margin-bottom:4px;">Output Filename:</label>
+            <input type="text" class="rename-input" id="splitNameInput" value="split_document.pdf">
+          </div>
+          <button class="btn-choose-file" id="btnDoSplit" style="width:100%;">Extract & Download PDF</button>
+        </div>
+        
+    </main>
+
+    <!-- SEO Section 1: Step-by-Step Instructions -->
+    <section class="seo-section">
+      <div>
+        <h2 style="margin-bottom: 8px;">How to Use Split PDF Online</h2>
+        <p>Follow these quick steps to process your files securely on your device.</p>
+      </div>
+      <div class="steps-list">
+        
+        <div class="step-item">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <h4>Upload Your PDF</h4>
+            <p>Select the PDF document you wish to split.</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <h4>Specify Page Range</h4>
+            <p>Type page ranges like "1-2" or comma-separated pages like "1, 3, 5".</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <h4>Extract & Save</h4>
+            <p>Click Extract & Download to generate your trimmed PDF instantly.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEO Section 2: Features & Capabilities -->
+    <section class="seo-section">
+      <div>
+        <h2 style="margin-bottom: 8px;">Key Features &amp; Specifications</h2>
+        <p>Why users choose DocToolKit's split pdf utility.</p>
+      </div>
+      <div class="seo-grid">
+        
+        <div class="seo-feature-card">
+          <h4>Flexible Range Syntax</h4>
+          <p>Supports individual pages (2, 4) and ranges (1-5) in any combination.</p>
+        </div>
+        <div class="seo-feature-card">
+          <h4>Instant Page Count Detection</h4>
+          <p>Automatically inspects and displays total page count upon selection.</p>
+        </div>
+        <div class="seo-feature-card">
+          <h4>Pure In-Memory Extraction</h4>
+          <p>Extracts pages in milliseconds without sending any data over the internet.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEO Section 3: Technical Formats & Privacy -->
+    <section class="seo-section">
+      <div>
+        <h2 style="margin-bottom: 8px;">Format Specifications &amp; Client-Side Privacy</h2>
+        <p>Transparent technical details regarding split pdf.</p>
+      </div>
+      <div class="seo-grid">
+        <div class="seo-feature-card">
+          <h4>Supported Input Format</h4>
+          <p>Multi-page PDF document (.pdf)</p>
+        </div>
+        <div class="seo-feature-card">
+          <h4>Generated Output Format</h4>
+          <p>Extracted PDF document (.pdf)</p>
+        </div>
+        <div class="seo-feature-card">
+          <h4>Browser Processing Scope</h4>
+          <p>100% on-device client processing. Zero network transmission of your private file bytes.</p>
+        </div>
+        <div class="seo-feature-card">
+          <h4>System Limitations</h4>
+          <p>Page numbers must fall within the range of total pages in the source document.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEO Section 4: Related Tools (Strict Rule: Clean Cards, Icon + Title Only) -->
+    <section class="tools-section">
+      <div class="tools-section-header">
+        <h3>Related Document &amp; Image Tools</h3>
+      </div>
+      <div class="tools-grid">
+        
+            <a class="tool-card" href="../../tools/organize-pdf/">
+              <div class="tool-card-icon">🗂️</div>
+              <h4>Organize PDF</h4>
+            </a>
+            <a class="tool-card" href="../../tools/merge-pdf/">
+              <div class="tool-card-icon">📑</div>
+              <h4>Merge PDF</h4>
+            </a>
+            <a class="tool-card" href="../../tools/compress-pdf/">
+              <div class="tool-card-icon">📄</div>
+              <h4>Compress PDF</h4>
+            </a>
+            <a class="tool-card" href="../../tools/pdf-to-image/">
+              <div class="tool-card-icon">🖼️</div>
+              <h4>PDF to Images</h4>
+            </a>
+      </div>
+    </section>
+
+    <!-- SEO Section 5: Frequently Asked Questions -->
+    <section class="seo-section">
+      <div>
+        <h2 style="margin-bottom: 8px;">Frequently Asked Questions</h2>
+        <p>Common questions regarding split pdf.</p>
+      </div>
+      <div class="faq-list">
+        
+        <div class="faq-item">
+          <div class="faq-question">Can I extract pages from a 100-page document?</div>
+          <div class="faq-answer">Yes. DocToolKit reads page references and copies only your requested indices into a new PDF.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      <div class="footer-top">
+        <div class="footer-col">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+            <img src="../../icons/doctoolkit-logo-horizontal.png" alt="DocToolKit" height="28" style="height: 28px; width: auto; display: block;">
+          </div>
+          <p style="font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 12px;">
+            Free, privacy-first online tools for PDF and image compression, conversion, page reorganization, document scanning, and digital signatures. 100% on-device processing.
+          </p>
+          <p style="font-size: 12px; color: var(--text-muted);">
+            Official Domain: <a href="https://doctoolkit.in/" style="color: var(--primary); text-decoration: none; font-weight: 600;">https://doctoolkit.in/</a>
+          </p>
+        </div>
+
+        <div class="footer-col">
+          <h5>PDF Utilities</h5>
+          <ul>
+            <li><a href="../../tools/compress-pdf/">Compress PDF</a></li>
+            <li><a href="../../tools/pdf-scanner/">PDF Scanner</a></li>
+            <li><a href="../../tools/merge-pdf/">Merge PDF</a></li>
+            <li><a href="../../tools/split-pdf/">Split PDF</a></li>
+            <li><a href="../../tools/organize-pdf/">Organize PDF</a></li>
+            <li><a href="../../tools/pdf-to-image/">PDF to Images</a></li>
+            <li><a href="../../tools/image-to-pdf/">Images to PDF</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h5>Image Utilities</h5>
+          <ul>
+            <li><a href="../../tools/compress-image/">Compress Image</a></li>
+            <li><a href="../../tools/resize-image/">Resize Image</a></li>
+            <li><a href="../../tools/convert-image/">Convert Image</a></li>
+            <li><a href="../../tools/crop-image/">Crop Image</a></li>
+            <li><a href="../../tools/rotate-image/">Rotate Image</a></li>
+            <li><a href="../../tools/passport-photo/">Passport Photo</a></li>
+            <li><a href="../../tools/signature-maker/">Signature Maker</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h5>Legal &amp; Privacy</h5>
+          <ul>
+            <li><a href="../../privacy/">Privacy Policy</a></li>
+            <li><a href="../../terms/">Terms of Service</a></li>
+            <li><a href="../../tools/document-organizer/">Document Organizer</a></li>
+            <li><a href="../../sitemap.xml">XML Sitemap</a></li>
+            <li><a href="../../robots.txt">Robots.txt</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>&copy; 2026 DocToolKit. All rights reserved. 100% Client-Side Privacy Guaranteed.</p>
+        <p style="font-size: 11px;">All PDF and image processing occurs locally in browser memory. No files are stored or uploaded.</p>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- Interactive JavaScript for this tool -->
+  <script>
+  
+        let splitFile = null, totalPages = 0;
+        const sInput = document.getElementById('splitInput');
+        const sInfo = document.getElementById('splitFileInfo');
+
+        sInput.onchange = async (e) => {
+          if (!e.target.files[0]) return;
+          splitFile = e.target.files[0];
+          const doc = await PDFLib.PDFDocument.load(await splitFile.arrayBuffer());
+          totalPages = doc.getPageCount();
+          sInfo.textContent = `Selected: ${splitFile.name} (${totalPages} pages)`;
+          document.getElementById('splitNameInput').value = generateExportFilename(splitFile.name, DocToolKit.userProfile.name, 'split', 'pdf');
+        };
+
+        document.getElementById('btnDoSplit').onclick = async () => {
+          if (!splitFile) return alert('Please choose a PDF file first.');
+          const rangeStr = document.getElementById('splitRangeInput').value.trim();
+          if (!rangeStr) return alert('Please enter a page range, e.g. 1-2');
+
+          const pagesToExtract = [];
+          rangeStr.split(',').forEach(part => {
+            if (part.includes('-')) {
+              const [start, end] = part.split('-').map(n => parseInt(n.trim(), 10));
+              for (let i = start; i <= end; i++) if (i >= 1 && i <= totalPages) pagesToExtract.push(i - 1);
+            } else {
+              const num = parseInt(part.trim(), 10);
+              if (num >= 1 && num <= totalPages) pagesToExtract.push(num - 1);
+            }
+          });
+
+          if (!pagesToExtract.length) return alert('Invalid page range entered.');
+          const inDoc = await PDFLib.PDFDocument.load(await splitFile.arrayBuffer());
+          const outDoc = await PDFLib.PDFDocument.create();
+          const copied = await outDoc.copyPages(inDoc, pagesToExtract);
+          copied.forEach(p => outDoc.addPage(p));
+          const bytes = await outDoc.save();
+          triggerDownload(new Blob([bytes], { type: 'application/pdf' }), document.getElementById('splitNameInput').value);
+          saveDocumentToDB({ name: document.getElementById('splitNameInput').value, origSize: splitFile.size, size: bytes.length, type: 'PDF' });
+        };
+        
+  </script>
+</body>
+</html>
