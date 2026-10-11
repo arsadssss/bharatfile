@@ -121,7 +121,7 @@
   <aside class="drawer" id="drawer">
     <div class="drawer-header">
       <div style="display: flex; align-items: center; gap: 10px;">
-        <img src="../../icons/doctoolkit-logo-horizontal.png" alt="DocToolKit" height="28" style="height: 28px; width: auto; display: block;">
+        <img src="../../icons/doctoolkit-logo-horizontal.png" alt="DocToolKit" width="155" height="28" style="height: 28px; width: auto; display: block;">
       </div>
       <button class="btn-close-modal" id="closeDrawerBtn" onclick="closeDrawer()" aria-label="Close Navigation">✕</button>
     </div>
@@ -146,6 +146,8 @@
       <div class="drawer-divider"></div>
 
       <button class="drawer-item" onclick="toggleTheme()">🌓 Toggle Dark Mode</button>
+      <a class="drawer-item" href="../../about/">ℹ️ About DocToolKit</a>
+      <a class="drawer-item" href="../../contact/">✉️ Contact Us</a>
       <a class="drawer-item" href="../../privacy/">🔒 Privacy Policy</a>
       <a class="drawer-item" href="../../terms/">📜 Terms of Service</a>
     </div>
@@ -157,7 +159,7 @@
     <!-- Top Floating Navbar -->
     <header class="navbar">
       <a class="nav-brand" href="../../" aria-label="DocToolKit Homepage">
-        <img src="../../icons/doctoolkit-logo-horizontal.png" alt="DocToolKit" height="36" class="nav-brand-logo">
+        <img src="../../icons/doctoolkit-logo-horizontal.png" alt="DocToolKit" width="199" height="36" class="nav-brand-logo">
       </a>
 
       <!-- Desktop Center Menu -->
@@ -349,7 +351,7 @@
       <div class="footer-top">
         <div class="footer-col">
           <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
-            <img src="../../icons/doctoolkit-logo-horizontal.png" alt="DocToolKit" height="28" style="height: 28px; width: auto; display: block;">
+            <img src="../../icons/doctoolkit-logo-horizontal.png" alt="DocToolKit" width="155" height="28" style="height: 28px; width: auto; display: block;">
           </div>
           <p style="font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 12px;">
             Free, privacy-first online tools for PDF and image compression, conversion, page reorganization, document scanning, and digital signatures. 100% on-device processing.
@@ -388,6 +390,8 @@
         <div class="footer-col">
           <h5>Legal &amp; Privacy</h5>
           <ul>
+            <li><a href="../../about/">About DocToolKit</a></li>
+            <li><a href="../../contact/">Contact Us</a></li>
             <li><a href="../../privacy/">Privacy Policy</a></li>
             <li><a href="../../terms/">Terms of Service</a></li>
             <li><a href="../../tools/document-organizer/">Document Organizer</a></li>
@@ -456,7 +460,7 @@
             const d = document.createElement('div');
             d.style.cssText = 'position:relative; width:80px; height:100px; border-radius:8px; overflow:hidden; border:1px solid var(--card-border); flex-shrink:0;';
             d.innerHTML = `
-              <img src="${p.dataUrl}" style="width:100%; height:100%; object-fit:cover; transform:rotate(${p.rotation}deg);">
+              <img src="${p.dataUrl}" alt="Scanned Document Page ${idx+1}" style="width:100%; height:100%; object-fit:cover; transform:rotate(${p.rotation}deg);">
               <button onclick="scannerPages.splice(${idx},1); renderPages();" style="position:absolute; top:2px; right:2px; background:rgba(0,0,0,0.6); color:white; border:none; width:20px; height:20px; border-radius:50%; cursor:pointer;">✕</button>
               <button onclick="scannerPages[${idx}].rotation = (scannerPages[${idx}].rotation + 90) % 360; renderPages();" style="position:absolute; bottom:2px; left:2px; background:rgba(0,0,0,0.6); color:white; border:none; font-size:11px; border-radius:4px; padding:2px 6px; cursor:pointer;">⟳</button>
             `;
