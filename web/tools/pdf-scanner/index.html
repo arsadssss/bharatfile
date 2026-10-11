@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Online PDF Scanner – Scan Documents with Camera to PDF | DocToolKit</title>
+  <meta name="description" content="Scan documents to PDF online for free using your phone or laptop camera. Capture pages, rotate, reorder, and compile into a multi-page A4 PDF.">
+  <link rel="canonical" href="https://doctoolkit.in/tools/pdf-scanner/">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://doctoolkit.in/tools/pdf-scanner/">
+  <meta property="og:title" content="Online PDF Scanner – Scan Documents with Camera to PDF | DocToolKit">
+  <meta property="og:description" content="Scan documents to PDF online for free using your phone or laptop camera. Capture pages, rotate, reorder, and compile into a multi-page A4 PDF.">
+  <meta property="og:image" content="https://doctoolkit.in/icons/og-image.png">
+
+  <!-- Twitter / X -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://doctoolkit.in/tools/pdf-scanner/">
+  <meta name="twitter:title" content="Online PDF Scanner – Scan Documents with Camera to PDF | DocToolKit">
+  <meta name="twitter:description" content="Scan documents to PDF online for free using your phone or laptop camera. Capture pages, rotate, reorder, and compile into a multi-page A4 PDF.">
+  <meta name="twitter:image" content="https://doctoolkit.in/icons/og-image.png">
+
+  <!-- Icons & PWA -->
+  <meta name="theme-color" content="#0D59F2">
+  <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+  <link rel="icon" type="image/x-icon" href="../../favicon.ico">
+  <link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+  <link rel="manifest" href="../../manifest.json">
+
+  <!-- Shared Stylesheet -->
+  <link rel="stylesheet" href="../../css/style.css">
+
+  <!-- Vendor Libraries for 100% In-Browser Execution -->
+  <script src="../../js/pdf-lib.min.js"></script>
+  <script src="../../js/pdf.min.js"></script>
+  <script src="../../js/app.js"></script>
+
+  <!-- JSON-LD Structured Data -->
+  <script type="application/ld+json">
+  {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://doctoolkit.in/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Tools",
+      "item": "https://doctoolkit.in/#toolsSection"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "PDF Scanner",
+      "item": "https://doctoolkit.in/tools/pdf-scanner/"
+    }
+  ]
+}
+  </script>
+  <script type="application/ld+json">
+  {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "DocToolKit PDF Scanner",
+  "url": "https://doctoolkit.in/tools/pdf-scanner/",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "All",
+  "browserRequirements": "Requires JavaScript and HTML5 Canvas support",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  }
+}
+  </script>
+  <script type="application/ld+json">
+  {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Does DocToolKit save my camera photos?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. Camera frames are processed only in browser memory and written directly into PDF bytes on your device."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I use this on mobile phones?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, the scanner defaults to the rear camera on mobile devices for easy document scanning."
+      }
+    }
+  ]
+}
+  </script>
+</head>
+<body>
+
+  <!-- Background Orbs -->
+  <div class="bg-orbs">
+    <div class="orb-1"></div>
+    <div class="orb-2"></div>
+  </div>
+
+  <!-- Mobile Drawer Backdrop -->
+  <div class="drawer-backdrop" id="drawerBackdrop" onclick="closeDrawer()"></div>
+
+  <!-- Mobile Navigation Drawer -->
+  <aside class="drawer" id="drawer">
+    <div class="drawer-header">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <img src="../../icons/doctoolkit-logo-horizontal.png" alt="DocToolKit" height="28" style="height: 28px; width: auto; display: block;">
+      </div>
+      <button class="btn-close-modal" id="closeDrawerBtn" onclick="closeDrawer()" aria-label="Close Navigation">✕</button>
+    </div>
+
+    <div class="drawer-menu">
+      <a class="drawer-item" href="../../tools/compress-pdf/">📄 Compress PDF</a>
+      <a class="drawer-item" href="../../tools/compress-image/">🖼️ Compress Image</a>
+      <a class="drawer-item" href="../../tools/pdf-scanner/">📸 PDF Scanner</a>
+      <a class="drawer-item" href="../../tools/merge-pdf/">📑 Merge PDF</a>
+      <a class="drawer-item" href="../../tools/split-pdf/">✂️ Split PDF</a>
+      <a class="drawer-item" href="../../tools/organize-pdf/">🗂️ Organize PDF</a>
+      <a class="drawer-item" href="../../tools/pdf-to-image/">🖼️ PDF to Images</a>
+      <a class="drawer-item" href="../../tools/image-to-pdf/">📁 Images to PDF</a>
+      <a class="drawer-item" href="../../tools/resize-image/">📐 Resize Image</a>
+      <a class="drawer-item" href="../../tools/convert-image/">🔄 Convert Image</a>
+      <a class="drawer-item" href="../../tools/crop-image/">✂️ Crop Image</a>
+      <a class="drawer-item" href="../../tools/rotate-image/">🔄 Rotate Image</a>
+      <a class="drawer-item" href="../../tools/passport-photo/">👤 Passport Photo</a>
+      <a class="drawer-item" href="../../tools/signature-maker/">✍️ Signature Maker</a>
+      <a class="drawer-item" href="../../tools/document-organizer/">📂 Document Organizer</a>
+
+      <div class="drawer-divider"></div>
+
+      <button class="drawer-item" onclick="toggleTheme()">🌓 Toggle Dark Mode</button>
+      <a class="drawer-item" href="../../privacy/">🔒 Privacy Policy</a>
+      <a class="drawer-item" href="../../terms/">📜 Terms of Service</a>
+    </div>
+  </aside>
+
+  <!-- Main Application Wrapper -->
+  <div class="app-wrapper">
+
+    <!-- Top Floating Navbar -->
+    <header class="navbar">
+      <a class="nav-brand" href="../../" aria-label="DocToolKit Homepage">
+        <img src="../../icons/doctoolkit-logo-horizontal.png" alt="DocToolKit" height="34" style="height: 34px; max-height: 34px; width: auto; display: block;">
+      </a>
+
+      <!-- Desktop Center Menu -->
+      <nav class="desktop-menu" aria-label="Main Navigation">
+        <a class="menu-btn" href="../../tools/compress-pdf/">📄 Compress PDF</a>
+        <a class="menu-btn" href="../../tools/compress-image/">🖼️ Compress Image</a>
+        <a class="menu-btn" href="../../tools/pdf-scanner/">📸 Scanner</a>
+        <a class="menu-btn" href="../../tools/merge-pdf/">📑 Merge PDF</a>
+        <a class="menu-btn" href="../../tools/document-organizer/">📂 Organizer</a>
+      </nav>
+
+      <!-- Right Actions -->
+      <div class="nav-actions">
+        <button class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()" aria-label="Toggle Dark/Light Mode">🌙</button>
+        <button class="btn-get-started" onclick="location.href='../../tools/document-organizer/'" aria-label="User Profile">
+          <span>👤</span>
+          <span id="navProfileName">User</span>
+        </button>
+        <button class="hamburger-btn" id="hamburgerBtn" onclick="openDrawer()" aria-label="Open Navigation Menu">☰</button>
+      </div>
+    </header>
+
+    <!-- Breadcrumb Navigation -->
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a href="../../">Home</a>
+      <span>&gt;</span>
+      <a href="../../#toolsSection">Tools</a>
+      <span>&gt;</span>
+      <span>PDF Scanner</span>
+    </nav>
+
+    <!-- Main Interactive Workbench Card -->
+    <main class="workbench-card">
+      <div class="workbench-header">
+        <h1>Online PDF Scanner</h1>
+        <p>Turn your phone or webcam into an instant document scanner. Take snapshots of printed notes, certificates, ID cards, or receipts, rotate pages, and compile them into a single standardized A4 PDF document.</p>
+      </div>
+
+      <!-- Mounted Interactive Tool Interface -->
+      
+        <div style="display:flex; flex-direction:column; gap:16px;">
+          <div style="position:relative; width:100%; height:260px; background:#000; border-radius:14px; overflow:hidden; display:flex; align-items:center; justify-content:center;">
+            <video id="scanVideo" autoplay playsinline style="width:100%; height:100%; object-fit:cover;"></video>
+            <button id="btnCaptureFrame" style="position:absolute; bottom:14px; background:var(--primary-gradient); color:white; border:none; padding:10px 24px; border-radius:100px; font-weight:700; cursor:pointer; box-shadow:0 4px 16px rgba(0,0,0,0.4);">📸 Capture Document Page</button>
+          </div>
+          <div style="display:flex; gap:12px; align-items:center;">
+            <input type="file" id="scanFileInput" accept="image/*" multiple style="display:none;">
+            <button class="btn-choose-file" onclick="document.getElementById('scanFileInput').click()">📁 Or Add Photo Files</button>
+            <span id="scanPageCount" style="font-size:13px; font-weight:700;">0 Pages Added</span>
+          </div>
+          <div id="scanPagesStrip" style="display:flex; gap:10px; overflow-x:auto; padding:10px 0; min-height:90px;"></div>
+          <div style="display:flex; flex-direction:column; gap:6px;">
+            <label style="font-size:12px; font-weight:700; color:var(--text-muted);">PDF Document Name:</label>
+            <input type="text" class="rename-input" id="scanNameInput" value="scan_document.pdf">
+          </div>
+          <button class="btn-choose-file" id="btnExportScanPdf" style="width:100%;">Save Scanned A4 PDF</button>
+        </div>
+        
+    </main>
+
+    <!-- SEO Section 1: Step-by-Step Instructions -->
+    <section class="seo-section">
+      <div>
+        <h2 style="margin-bottom: 8px;">How to Use PDF Scanner Online</h2>
+        <p>Follow these quick steps to process your files securely on your device.</p>
+      </div>
+      <div class="steps-list">
+        
+        <div class="step-item">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <h4>Capture Document Pages</h4>
+            <p>Allow camera access and point at your document, or upload pre-existing photos.</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <h4>Rotate & Organize Pages</h4>
+            <p>Use the page strip to delete blurry shots or rotate pages 90 degrees.</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <h4>Generate A4 PDF</h4>
+            <p>Click Save Scanned PDF to compile all captured pages into a professional PDF.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEO Section 2: Features & Capabilities -->
+    <section class="seo-section">
+      <div>
+        <h2 style="margin-bottom: 8px;">Key Features &amp; Specifications</h2>
+        <p>Why users choose DocToolKit's pdf scanner utility.</p>
+      </div>
+      <div class="seo-grid">
+        
+        <div class="seo-feature-card">
+          <h4>Instant Camera Viewfinder</h4>
+          <p>High-frame rate live camera preview with one-tap page capture.</p>
+        </div>
+        <div class="seo-feature-card">
+          <h4>Multi-Page Compilation</h4>
+          <p>Combine 10+ captured pages seamlessly into a single unified document.</p>
+        </div>
+        <div class="seo-feature-card">
+          <h4>Standardized A4 Output</h4>
+          <p>Pages are scaled and framed into official A4 dimensions ready for printing or upload.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEO Section 3: Technical Formats & Privacy -->
+    <section class="seo-section">
+      <div>
+        <h2 style="margin-bottom: 8px;">Format Specifications &amp; Client-Side Privacy</h2>
+        <p>Transparent technical details regarding pdf scanner.</p>
+      </div>
+      <div class="seo-grid">
+        <div class="seo-feature-card">
+          <h4>Supported Input Format</h4>
+          <p>Live camera feed or uploaded photo files (JPG, PNG)</p>
+        </div>
+        <div class="seo-feature-card">
+          <h4>Generated Output Format</h4>
+          <p>Standardized A4 PDF document (.pdf)</p>
+        </div>
+        <div class="seo-feature-card">
+          <h4>Browser Processing Scope</h4>
+          <p>100% on-device client processing. Zero network transmission of your private file bytes.</p>
+        </div>
+        <div class="seo-feature-card">
+          <h4>System Limitations</h4>
+          <p>Requires camera permission in your browser for live capture. You can also upload pre-taken photos.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEO Section 4: Related Tools (Strict Rule: Clean Cards, Icon + Title Only) -->
+    <section class="tools-section">
+      <div class="tools-section-header">
+        <h3>Related Document &amp; Image Tools</h3>
+      </div>
+      <div class="tools-grid">
+        
+            <a class="tool-card" href="../../tools/image-to-pdf/">
+              <div class="tool-card-icon">📁</div>
+              <h4>Images to PDF</h4>
+            </a>
+            <a class="tool-card" href="../../tools/compress-pdf/">
+              <div class="tool-card-icon">📄</div>
+              <h4>Compress PDF</h4>
+            </a>
+            <a class="tool-card" href="../../tools/merge-pdf/">
+              <div class="tool-card-icon">📑</div>
+              <h4>Merge PDF</h4>
+            </a>
+            <a class="tool-card" href="../../tools/organize-pdf/">
+              <div class="tool-card-icon">🗂️</div>
+              <h4>Organize PDF</h4>
+            </a>
+      </div>
+    </section>
+
+    <!-- SEO Section 5: Frequently Asked Questions -->
+    <section class="seo-section">
+      <div>
+        <h2 style="margin-bottom: 8px;">Frequently Asked Questions</h2>
+        <p>Common questions regarding pdf scanner.</p>
+      </div>
+      <div class="faq-list">
+        
+        <div class="faq-item">
+          <div class="faq-question">Does DocToolKit save my camera photos?</div>
+          <div class="faq-answer">No. Camera frames are processed only in browser memory and written directly into PDF bytes on your device.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-question">Can I use this on mobile phones?</div>
+          <div class="faq-answer">Yes, the scanner defaults to the rear camera on mobile devices for easy document scanning.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      <div class="footer-top">
+        <div class="footer-col">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+            <img src="../../icons/doctoolkit-logo-horizontal.png" alt="DocToolKit" height="28" style="height: 28px; width: auto; display: block;">
+          </div>
+          <p style="font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 12px;">
+            Free, privacy-first online tools for PDF and image compression, conversion, page reorganization, document scanning, and digital signatures. 100% on-device processing.
+          </p>
+          <p style="font-size: 12px; color: var(--text-muted);">
+            Official Domain: <a href="https://doctoolkit.in/" style="color: var(--primary); text-decoration: none; font-weight: 600;">https://doctoolkit.in/</a>
+          </p>
+        </div>
+
+        <div class="footer-col">
+          <h5>PDF Utilities</h5>
+          <ul>
+            <li><a href="../../tools/compress-pdf/">Compress PDF</a></li>
+            <li><a href="../../tools/pdf-scanner/">PDF Scanner</a></li>
+            <li><a href="../../tools/merge-pdf/">Merge PDF</a></li>
+            <li><a href="../../tools/split-pdf/">Split PDF</a></li>
+            <li><a href="../../tools/organize-pdf/">Organize PDF</a></li>
+            <li><a href="../../tools/pdf-to-image/">PDF to Images</a></li>
+            <li><a href="../../tools/image-to-pdf/">Images to PDF</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h5>Image Utilities</h5>
+          <ul>
+            <li><a href="../../tools/compress-image/">Compress Image</a></li>
+            <li><a href="../../tools/resize-image/">Resize Image</a></li>
+            <li><a href="../../tools/convert-image/">Convert Image</a></li>
+            <li><a href="../../tools/crop-image/">Crop Image</a></li>
+            <li><a href="../../tools/rotate-image/">Rotate Image</a></li>
+            <li><a href="../../tools/passport-photo/">Passport Photo</a></li>
+            <li><a href="../../tools/signature-maker/">Signature Maker</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h5>Legal &amp; Privacy</h5>
+          <ul>
+            <li><a href="../../privacy/">Privacy Policy</a></li>
+            <li><a href="../../terms/">Terms of Service</a></li>
+            <li><a href="../../tools/document-organizer/">Document Organizer</a></li>
+            <li><a href="../../sitemap.xml">XML Sitemap</a></li>
+            <li><a href="../../robots.txt">Robots.txt</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>&copy; 2026 DocToolKit. All rights reserved. 100% Client-Side Privacy Guaranteed.</p>
+        <p style="font-size: 11px;">All PDF and image processing occurs locally in browser memory. No files are stored or uploaded.</p>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- Interactive JavaScript for this tool -->
+  <script>
+  
+        let scannerPages = [];
+        const video = document.getElementById('scanVideo');
+        const btnCapture = document.getElementById('btnCaptureFrame');
+        const scanInput = document.getElementById('scanFileInput');
+        const pageStrip = document.getElementById('scanPagesStrip');
+        const pageCount = document.getElementById('scanPageCount');
+
+        async function initCamera() {
+          try {
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+              const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+              video.srcObject = stream;
+            }
+          } catch (e) {
+            video.style.display = 'none';
+            btnCapture.style.display = 'none';
+          }
+        }
+        initCamera();
+
+        function addPage(dataUrl) {
+          scannerPages.push({ dataUrl, rotation: 0 });
+          renderPages();
+        }
+
+        btnCapture.onclick = () => {
+          const c = document.createElement('canvas');
+          c.width = video.videoWidth || 640;
+          c.height = video.videoHeight || 480;
+          c.getContext('2d').drawImage(video, 0, 0, c.width, c.height);
+          addPage(c.toDataURL('image/jpeg', 0.92));
+        };
+
+        scanInput.onchange = (e) => {
+          Array.from(e.target.files).forEach(f => {
+            const r = new FileReader();
+            r.onload = ev => addPage(ev.target.result);
+            r.readAsDataURL(f);
+          });
+        };
+
+        function renderPages() {
+          pageCount.textContent = `${scannerPages.length} Pages Added`;
+          pageStrip.innerHTML = '';
+          scannerPages.forEach((p, idx) => {
+            const d = document.createElement('div');
+            d.style.cssText = 'position:relative; width:80px; height:100px; border-radius:8px; overflow:hidden; border:1px solid var(--card-border); flex-shrink:0;';
+            d.innerHTML = `
+              <img src="${p.dataUrl}" style="width:100%; height:100%; object-fit:cover; transform:rotate(${p.rotation}deg);">
+              <button onclick="scannerPages.splice(${idx},1); renderPages();" style="position:absolute; top:2px; right:2px; background:rgba(0,0,0,0.6); color:white; border:none; width:20px; height:20px; border-radius:50%; cursor:pointer;">✕</button>
+              <button onclick="scannerPages[${idx}].rotation = (scannerPages[${idx}].rotation + 90) % 360; renderPages();" style="position:absolute; bottom:2px; left:2px; background:rgba(0,0,0,0.6); color:white; border:none; font-size:11px; border-radius:4px; padding:2px 6px; cursor:pointer;">⟳</button>
+            `;
+            pageStrip.appendChild(d);
+          });
+        }
+
+        document.getElementById('btnExportScanPdf').onclick = async () => {
+          if (!scannerPages.length) return alert('Please capture or add at least one page.');
+          const pdfDoc = await PDFLib.PDFDocument.create();
+          for (const p of scannerPages) {
+            const imgBytes = await fetch(p.dataUrl).then(r => r.arrayBuffer());
+            const embedded = await pdfDoc.embedJpg(imgBytes);
+            const page = pdfDoc.addPage([595, 842]);
+            page.drawImage(embedded, { x: 20, y: 20, width: 555, height: 802 });
+            if (p.rotation) page.setRotation(PDFLib.degrees(p.rotation));
+          }
+          const bytes = await pdfDoc.save();
+          const name = document.getElementById('scanNameInput').value.trim() || 'scan_document.pdf';
+          triggerDownload(new Blob([bytes], { type: 'application/pdf' }), name);
+          saveDocumentToDB({ name, origSize: bytes.length, size: bytes.length, type: 'Scan' });
+        };
+        
+  </script>
+</body>
+</html>

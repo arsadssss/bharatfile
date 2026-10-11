@@ -1,4 +1,4 @@
-# BharatFile - Hostinger Web Production Configuration
+# DocToolKit - Production Web Configuration (https://doctoolkit.in/)
 DirectoryIndex index.html
 
 # Prevent directory listing
@@ -7,18 +7,34 @@ Options -Indexes
 # UTF-8 Encoding
 AddDefaultCharset UTF-8
 
+# Canonical Domain Redirection (www -> non-www)
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteCond %{HTTP_HOST} ^www\.doctoolkit\.in$ [NC]
+  RewriteRule ^(.*)$ https://doctoolkit.in/$1 [R=301,L]
+</IfModule>
+
 # Proper MIME types
 <IfModule mod_mime.c>
   AddType application/manifest+json .json
   AddType text/javascript .js
+  AddType image/svg+xml .svg
   AddType image/png .png
+  AddType image/x-icon .ico
+  AddType application/xml .xml
 </IfModule>
 
-# Service Worker Cache Invalidation
+# Caching & Security Headers
 <IfModule mod_headers.c>
+  # Service worker must never be cached
   <Files "sw.js">
     Header set Cache-Control "no-cache, no-store, must-revalidate"
     Header set Pragma "no-cache"
     Header set Expires 0
   </Files>
+  
+  # Security Headers
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
 </IfModule>

@@ -33,3 +33,6 @@ Thumbs.db
 # Unit test and lint outputs
 lint/
 reports/
+
+# Unrelated local directories
+open-dot/

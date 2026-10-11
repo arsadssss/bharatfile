@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Compress PDF Online – Free & 100% Private | DocToolKit</title>
+  <meta name="description" content="Compress PDF files online for free. Reduce PDF file size with a continuous 1%–100% slider or target KB presets without uploading files to any server.">
+  <link rel="canonical" href="https://doctoolkit.in/tools/compress-pdf/">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://doctoolkit.in/tools/compress-pdf/">
+  <meta property="og:title" content="Compress PDF Online – Free & 100% Private | DocToolKit">
+  <meta property="og:description" content="Compress PDF files online for free. Reduce PDF file size with a continuous 1%–100% slider or target KB presets without uploading files to any server.">
+  <meta property="og:image" content="https://doctoolkit.in/icons/og-image.png">
+
+  <!-- Twitter / X -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://doctoolkit.in/tools/compress-pdf/">
+  <meta name="twitter:title" content="Compress PDF Online – Free & 100% Private | DocToolKit">
+  <meta name="twitter:description" content="Compress PDF files online for free. Reduce PDF file size with a continuous 1%–100% slider or target KB presets without uploading files to any server.">
+  <meta name="twitter:image" content="https://doctoolkit.in/icons/og-image.png">
+
+  <!-- Icons & PWA -->
+  <meta name="theme-color" content="#0D59F2">
+  <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+  <link rel="icon" type="image/x-icon" href="../../favicon.ico">
+  <link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+  <link rel="manifest" href="../../manifest.json">
+
+  <!-- Shared Stylesheet -->
+  <link rel="stylesheet" href="../../css/style.css">
+
+  <!-- Vendor Libraries for 100% In-Browser Execution -->
+  <script src="../../js/pdf-lib.min.js"></script>
+  <script src="../../js/pdf.min.js"></script>
+  <script src="../../js/app.js"></script>
+
+  <!-- JSON-LD Structured Data -->
+  <script type="application/ld+json">
+  {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://doctoolkit.in/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Tools",
+      "item": "https://doctoolkit.in/#toolsSection"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Compress PDF",
+      "item": "https://doctoolkit.in/tools/compress-pdf/"
+    }
+  ]
+}
+  </script>
+  <script type="application/ld+json">
+  {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "DocToolKit Compress PDF",
+  "url": "https://doctoolkit.in/tools/compress-pdf/",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "All",
+  "browserRequirements": "Requires JavaScript and HTML5 Canvas support",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  }
+}
+  </script>
+  <script type="application/ld+json">
+  {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Will compressing my PDF reduce text readability?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "DocToolKit balances image downsampling with text legibility. Standard text remains sharp and readable even at recommended compression levels."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Are my confidential financial or medical PDFs safe?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, 100%. DocToolKit executes entirely in your client-side browser memory. Files are never uploaded to our servers or stored in any cloud database."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is there a limit on how many PDFs I can compress?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. DocToolKit is completely free with unlimited daily compressions and zero watermarks."
+      }
+    }
+  ]
+}
+  </script>
+</head>
+<body>
+
+  <!-- Background Orbs -->
+  <div class="bg-orbs">
+    <div class="orb-1"></div>
+    <div class="orb-2"></div>
+  </div>
+
+  <!-- Mobile Drawer Backdrop -->
+  <div class="drawer-backdrop" id="drawerBackdrop" onclick="closeDrawer()"></div>
+
+  <!-- Mobile Navigation Drawer -->
+  <aside class="drawer" id="drawer">
+    <div class="drawer-header">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <img src="../../icons/doctoolkit-logo-horizontal.png" alt="DocToolKit" height="28" style="height: 28px; width: auto; display: block;">
+      </div>
+      <button class="btn-close-modal" id="closeDrawerBtn" onclick="closeDrawer()" aria-label="Close Navigation">✕</button>
+    </div>
+
+    <div class="drawer-menu">
+      <a class="drawer-item" href="../../tools/compress-pdf/">📄 Compress PDF</a>
+      <a class="drawer-item" href="../../tools/compress-image/">🖼️ Compress Image</a>
+      <a class="drawer-item" href="../../tools/pdf-scanner/">📸 PDF Scanner</a>
+      <a class="drawer-item" href="../../tools/merge-pdf/">📑 Merge PDF</a>
+      <a class="drawer-item" href="../../tools/split-pdf/">✂️ Split PDF</a>
+      <a class="drawer-item" href="../../tools/organize-pdf/">🗂️ Organize PDF</a>
+      <a class="drawer-item" href="../../tools/pdf-to-image/">🖼️ PDF to Images</a>
+      <a class="drawer-item" href="../../tools/image-to-pdf/">📁 Images to PDF</a>
+      <a class="drawer-item" href="../../tools/resize-image/">📐 Resize Image</a>
+      <a class="drawer-item" href="../../tools/convert-image/">🔄 Convert Image</a>
+      <a class="drawer-item" href="../../tools/crop-image/">✂️ Crop Image</a>
+      <a class="drawer-item" href="../../tools/rotate-image/">🔄 Rotate Image</a>
+      <a class="drawer-item" href="../../tools/passport-photo/">👤 Passport Photo</a>
+      <a class="drawer-item" href="../../tools/signature-maker/">✍️ Signature Maker</a>
+      <a class="drawer-item" href="../../tools/document-organizer/">📂 Document Organizer</a>
+
+      <div class="drawer-divider"></div>
+
+      <button class="drawer-item" onclick="toggleTheme()">🌓 Toggle Dark Mode</button>
+      <a class="drawer-item" href="../../privacy/">🔒 Privacy Policy</a>
+      <a class="drawer-item" href="../../terms/">📜 Terms of Service</a>
+    </div>
+  </aside>
+
+  <!-- Main Application Wrapper -->
+  <div class="app-wrapper">
+
+    <!-- Top Floating Navbar -->
+    <header class="navbar">
+      <a class="nav-brand" href="../../" aria-label="DocToolKit Homepage">
+        <img src="../../icons/doctoolkit-logo-horizontal.png" alt="DocToolKit" height="34" style="height: 34px; max-height: 34px; width: auto; display: block;">
+      </a>
+
+      <!-- Desktop Center Menu -->
+      <nav class="desktop-menu" aria-label="Main Navigation">
+        <a class="menu-btn" href="../../tools/compress-pdf/">📄 Compress PDF</a>
+        <a class="menu-btn" href="../../tools/compress-image/">🖼️ Compress Image</a>
+        <a class="menu-btn" href="../../tools/pdf-scanner/">📸 Scanner</a>
+        <a class="menu-btn" href="../../tools/merge-pdf/">📑 Merge PDF</a>
+        <a class="menu-btn" href="../../tools/document-organizer/">📂 Organizer</a>
+      </nav>
+
+      <!-- Right Actions -->
+      <div class="nav-actions">
+        <button class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()" aria-label="Toggle Dark/Light Mode">🌙</button>
+        <button class="btn-get-started" onclick="location.href='../../tools/document-organizer/'" aria-label="User Profile">
+          <span>👤</span>
+          <span id="navProfileName">User</span>
+        </button>
+        <button class="hamburger-btn" id="hamburgerBtn" onclick="openDrawer()" aria-label="Open Navigation Menu">☰</button>
+      </div>
+    </header>
+
+    <!-- Breadcrumb Navigation -->
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a href="../../">Home</a>
+      <span>&gt;</span>
+      <a href="../../#toolsSection">Tools</a>
+      <span>&gt;</span>
+      <span>Compress PDF</span>
+    </nav>
+
+    <!-- Main Interactive Workbench Card -->
+    <main class="workbench-card">
+      <div class="workbench-header">
+        <h1>Compress PDF Online</h1>
+        <p>Reduce PDF file size in seconds while preserving high clarity. Use the continuous 1% to 100% compression slider or select target presets (50 KB, 100 KB, 200 KB) for government applications and forms. All processing happens 100% on your device.</p>
+      </div>
+
+      <!-- Mounted Interactive Tool Interface -->
+      
+        <div style="display:flex; flex-direction:column; gap:20px;">
+          <input type="file" id="mainFileInput" accept=".pdf,application/pdf" style="display: none;">
+          <div class="dropzone" id="mainDropzone">
+            <div class="drop-cloud-icon">☁️</div>
+            <div style="font-weight: 700; font-size: 15px;" id="dropTitle">Choose a PDF file or drag & drop it here</div>
+            <div style="font-size: 12px; color: var(--text-muted);" id="dropSub">100% on-device • Instant WebAssembly processing</div>
+            <button class="btn-choose-file" id="btnChooseFile" type="button">📁 Choose PDF File</button>
+          </div>
+
+          <div class="slider-container" id="sliderGroup">
+            <div class="slider-header">
+              <span style="font-size: 13px; font-weight: 700;">Compression Level</span>
+              <span class="slider-pct-badge" id="sliderPctBadge">60%</span>
+            </div>
+            <div class="slider-track-wrap">
+              <div class="slider-track-fill" id="sliderFill" style="width: 60%;"></div>
+              <input type="range" class="range-slider" id="compSlider" min="1" max="100" value="60">
+            </div>
+            <div class="slider-labels">
+              <span>Low (1%)</span>
+              <span style="color: var(--primary); font-weight: 700;">Recommended (60%)</span>
+              <span>High (100%)</span>
+            </div>
+          </div>
+
+          <div>
+            <div style="font-size: 12px; font-weight: 700; color: var(--text-muted); margin-bottom: 8px;">Target Size Presets:</div>
+            <div class="preset-pills">
+              <button class="preset-pill" onclick="applyPreset('50kb')">50 KB</button>
+              <button class="preset-pill" onclick="applyPreset('100kb')">100 KB</button>
+              <button class="preset-pill" onclick="applyPreset('200kb')">200 KB</button>
+              <button class="preset-pill" onclick="applyPreset('500kb')">500 KB</button>
+              <button class="preset-pill" onclick="applyPreset('1mb')">1 MB</button>
+            </div>
+          </div>
+
+          <div class="state-box" id="procBox">
+            <div style="font-size: 14px; font-weight: 700;" id="procFileName">Compressing document.pdf</div>
+            <div style="font-size: 12px; color: var(--text-muted);" id="procFileSize">Original: 0 B</div>
+            <div class="progress-bar-wrap"><div class="progress-bar-fill" id="procBarFill"></div></div>
+            <div style="display:flex; justify-content:space-between; width:100%; font-size:12px; color:var(--text-muted);">
+              <span id="procStatusText">Processing pages...</span>
+              <span id="procProgressPct" style="font-weight:700; color:var(--primary);">0%</span>
+            </div>
+          </div>
+
+          <div class="state-box" id="compBox">
+            <div style="font-size: 13px; font-weight: 700;" id="compOriginalName">document.pdf</div>
+            <div class="delta-badge" id="compSizesDelta">Optimized</div>
+            <div style="width:100%; text-align:left;">
+              <label for="exportFilenameInput" style="font-size:12px; font-weight:700; color:var(--text-muted); display:block; margin-bottom:4px;">Customize Filename:</label>
+              <input type="text" class="rename-input" id="exportFilenameInput" value="document_compressed.pdf">
+            </div>
+            <div style="display:flex; gap:10px; width:100%;">
+              <button class="btn-choose-file" id="btnDownloadCompressed" style="flex:1;" onclick="downloadResult()">⬇ Download Compressed PDF</button>
+              <button class="btn-choose-file" style="background:var(--track-bg); color:var(--text-main); box-shadow:none;" onclick="resetToUpload()">🔄 Compress Another</button>
+            </div>
+          </div>
+        </div>
+        
+    </main>
+
+    <!-- SEO Section 1: Step-by-Step Instructions -->
+    <section class="seo-section">
+      <div>
+        <h2 style="margin-bottom: 8px;">How to Use Compress PDF Online</h2>
+        <p>Follow these quick steps to process your files securely on your device.</p>
+      </div>
+      <div class="steps-list">
+        
+        <div class="step-item">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <h4>Upload PDF File</h4>
+            <p>Click "Choose File" or drag and drop your PDF into the upload area. Your file never leaves your device.</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <h4>Adjust Compression Percentage</h4>
+            <p>Move the 1% to 100% slider or click a target preset (e.g. 100 KB) to configure your desired reduction.</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <h4>Download Compressed Document</h4>
+            <p>Preview the before/after file size reduction, customize the smart filename, and download your optimized PDF.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEO Section 2: Features & Capabilities -->
+    <section class="seo-section">
+      <div>
+        <h2 style="margin-bottom: 8px;">Key Features &amp; Specifications</h2>
+        <p>Why users choose DocToolKit's compress pdf utility.</p>
+      </div>
+      <div class="seo-grid">
+        
+        <div class="seo-feature-card">
+          <h4>Continuous 1%–100% Slider</h4>
+          <p>Fine-tune exact compression strength rather than being locked to rigid low/medium/high presets.</p>
+        </div>
+        <div class="seo-feature-card">
+          <h4>Target File Size Presets</h4>
+          <p>Instantly hit required file size ceilings like 50 KB, 100 KB, 200 KB, or 500 KB for exam and portal submissions.</p>
+        </div>
+        <div class="seo-feature-card">
+          <h4>Zero Server Uploads</h4>
+          <p>PDF.js and WebAssembly rasterize and compress pages directly inside your browser memory.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEO Section 3: Technical Formats & Privacy -->
+    <section class="seo-section">
+      <div>
+        <h2 style="margin-bottom: 8px;">Format Specifications &amp; Client-Side Privacy</h2>
+        <p>Transparent technical details regarding compress pdf.</p>
+      </div>
+      <div class="seo-grid">
+        <div class="seo-feature-card">
+          <h4>Supported Input Format</h4>
+          <p>PDF documents (.pdf)</p>
+        </div>
+        <div class="seo-feature-card">
+          <h4>Generated Output Format</h4>
+          <p>Compressed PDF document (.pdf)</p>
+        </div>
+        <div class="seo-feature-card">
+          <h4>Browser Processing Scope</h4>
+          <p>100% on-device client processing. Zero network transmission of your private file bytes.</p>
+        </div>
+        <div class="seo-feature-card">
+          <h4>System Limitations</h4>
+          <p>Processing is bound by your local device browser memory. Password-protected PDFs must be unlocked before compression.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEO Section 4: Related Tools (Strict Rule: Clean Cards, Icon + Title Only) -->
+    <section class="tools-section">
+      <div class="tools-section-header">
+        <h3>Related Document &amp; Image Tools</h3>
+      </div>
+      <div class="tools-grid">
+        
+            <a class="tool-card" href="../../tools/merge-pdf/">
+              <div class="tool-card-icon">📑</div>
+              <h4>Merge PDF</h4>
+            </a>
+            <a class="tool-card" href="../../tools/split-pdf/">
+              <div class="tool-card-icon">✂️</div>
+              <h4>Split PDF</h4>
+            </a>
+            <a class="tool-card" href="../../tools/organize-pdf/">
+              <div class="tool-card-icon">🗂️</div>
+              <h4>Organize PDF</h4>
+            </a>
+            <a class="tool-card" href="../../tools/pdf-to-image/">
+              <div class="tool-card-icon">🖼️</div>
+              <h4>PDF to Images</h4>
+            </a>
+      </div>
+    </section>
+
+    <!-- SEO Section 5: Frequently Asked Questions -->
+    <section class="seo-section">
+      <div>
+        <h2 style="margin-bottom: 8px;">Frequently Asked Questions</h2>
+        <p>Common questions regarding compress pdf.</p>
+      </div>
+      <div class="faq-list">
+        
+        <div class="faq-item">
+          <div class="faq-question">Will compressing my PDF reduce text readability?</div>
+          <div class="faq-answer">DocToolKit balances image downsampling with text legibility. Standard text remains sharp and readable even at recommended compression levels.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-question">Are my confidential financial or medical PDFs safe?</div>
+          <div class="faq-answer">Yes, 100%. DocToolKit executes entirely in your client-side browser memory. Files are never uploaded to our servers or stored in any cloud database.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-question">Is there a limit on how many PDFs I can compress?</div>
+          <div class="faq-answer">No. DocToolKit is completely free with unlimited daily compressions and zero watermarks.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      <div class="footer-top">
+        <div class="footer-col">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+            <img src="../../icons/doctoolkit-logo-horizontal.png" alt="DocToolKit" height="28" style="height: 28px; width: auto; display: block;">
+          </div>
+          <p style="font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 12px;">
+            Free, privacy-first online tools for PDF and image compression, conversion, page reorganization, document scanning, and digital signatures. 100% on-device processing.
+          </p>
+          <p style="font-size: 12px; color: var(--text-muted);">
+            Official Domain: <a href="https://doctoolkit.in/" style="color: var(--primary); text-decoration: none; font-weight: 600;">https://doctoolkit.in/</a>
+          </p>
+        </div>
+
+        <div class="footer-col">
+          <h5>PDF Utilities</h5>
+          <ul>
+            <li><a href="../../tools/compress-pdf/">Compress PDF</a></li>
+            <li><a href="../../tools/pdf-scanner/">PDF Scanner</a></li>
+            <li><a href="../../tools/merge-pdf/">Merge PDF</a></li>
+            <li><a href="../../tools/split-pdf/">Split PDF</a></li>
+            <li><a href="../../tools/organize-pdf/">Organize PDF</a></li>
+            <li><a href="../../tools/pdf-to-image/">PDF to Images</a></li>
+            <li><a href="../../tools/image-to-pdf/">Images to PDF</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h5>Image Utilities</h5>
+          <ul>
+            <li><a href="../../tools/compress-image/">Compress Image</a></li>
+            <li><a href="../../tools/resize-image/">Resize Image</a></li>
+            <li><a href="../../tools/convert-image/">Convert Image</a></li>
+            <li><a href="../../tools/crop-image/">Crop Image</a></li>
+            <li><a href="../../tools/rotate-image/">Rotate Image</a></li>
+            <li><a href="../../tools/passport-photo/">Passport Photo</a></li>
+            <li><a href="../../tools/signature-maker/">Signature Maker</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h5>Legal &amp; Privacy</h5>
+          <ul>
+            <li><a href="../../privacy/">Privacy Policy</a></li>
+            <li><a href="../../terms/">Terms of Service</a></li>
+            <li><a href="../../tools/document-organizer/">Document Organizer</a></li>
+            <li><a href="../../sitemap.xml">XML Sitemap</a></li>
+            <li><a href="../../robots.txt">Robots.txt</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>&copy; 2026 DocToolKit. All rights reserved. 100% Client-Side Privacy Guaranteed.</p>
+        <p style="font-size: 11px;">All PDF and image processing occurs locally in browser memory. No files are stored or uploaded.</p>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- Interactive JavaScript for this tool -->
+  <script>
+  
+        let loadedFile = null, processedBlob = null, isProcessing = false;
+        const mainFileInput = document.getElementById('mainFileInput');
+        const mainDropzone = document.getElementById('mainDropzone');
+        const btnChooseFile = document.getElementById('btnChooseFile');
+        const compSlider = document.getElementById('compSlider');
+        const sliderFill = document.getElementById('sliderFill');
+        const sliderPctBadge = document.getElementById('sliderPctBadge');
+        const procBox = document.getElementById('procBox');
+        const compBox = document.getElementById('compBox');
+
+        btnChooseFile.onclick = (e) => { e.stopPropagation(); mainFileInput.click(); };
+        mainDropzone.onclick = () => mainFileInput.click();
+        mainDropzone.ondragover = (e) => { e.preventDefault(); mainDropzone.classList.add('dragover'); };
+        mainDropzone.ondragleave = () => mainDropzone.classList.remove('dragover');
+        mainDropzone.ondrop = (e) => {
+          e.preventDefault(); mainDropzone.classList.remove('dragover');
+          if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+        };
+        mainFileInput.onchange = (e) => { if (e.target.files[0]) handleFile(e.target.files[0]); };
+
+        compSlider.oninput = (e) => {
+          const val = parseInt(e.target.value);
+          sliderFill.style.width = val + '%';
+          sliderPctBadge.textContent = val + '%';
+          if (loadedFile) compressPdf(loadedFile, val);
+        };
+
+        function applyPreset(preset) {
+          let pct = 60;
+          if (preset === '50kb') pct = 85;
+          else if (preset === '100kb') pct = 75;
+          else if (preset === '200kb') pct = 65;
+          else if (preset === '500kb') pct = 45;
+          else if (preset === '1mb') pct = 25;
+          compSlider.value = pct;
+          sliderFill.style.width = pct + '%';
+          sliderPctBadge.textContent = pct + '%';
+          if (loadedFile) compressPdf(loadedFile, pct);
+        }
+
+        function handleFile(f) {
+          loadedFile = f;
+          compressPdf(f, parseInt(compSlider.value));
+        }
+
+        async function compressPdf(file, pct) {
+          isProcessing = true;
+          mainDropzone.style.display = 'none';
+          compBox.style.display = 'none';
+          procBox.style.display = 'flex';
+          document.getElementById('procFileName').textContent = file.name;
+          document.getElementById('procFileSize').textContent = 'Original: ' + formatBytes(file.size);
+
+          try {
+            const buf = await file.arrayBuffer();
+            const pdfDoc = await pdfjsLib.getDocument({ data: buf }).promise;
+            const count = pdfDoc.numPages;
+            const outDoc = await PDFLib.PDFDocument.create();
+            const quality = Math.max(0.12, (100 - pct * 0.85) / 100);
+            const scale = Math.max(0.65, (100 - pct * 0.35) / 100);
+
+            for (let i = 1; i <= count; i++) {
+              document.getElementById('procProgressPct').textContent = Math.round((i/count)*90) + '%';
+              document.getElementById('procBarFill').style.width = Math.round((i/count)*90) + '%';
+              document.getElementById('procStatusText').textContent = `Optimizing page ${i} of ${count}...`;
+              const page = await pdfDoc.getPage(i);
+              const vp = page.getViewport({ scale: scale * 1.5 });
+              const canvas = document.createElement('canvas');
+              canvas.width = vp.width; canvas.height = vp.height;
+              await page.render({ canvasContext: canvas.getContext('2d'), viewport: vp }).promise;
+              const imgData = canvas.toDataURL('image/jpeg', quality);
+              const embedded = await outDoc.embedJpg(imgData);
+              const p = outDoc.addPage([vp.width, vp.height]);
+              p.drawImage(embedded, { x: 0, y: 0, width: vp.width, height: vp.height });
+            }
+
+            const outBytes = await outDoc.save();
+            processedBlob = new Blob([outBytes], { type: 'application/pdf' });
+            procBox.style.display = 'none';
+            compBox.style.display = 'flex';
+            document.getElementById('compOriginalName').textContent = file.name;
+            const saved = Math.round(((file.size - outBytes.length) / file.size) * 100);
+            document.getElementById('compSizesDelta').textContent = `${formatBytes(file.size)} ➔ ${formatBytes(outBytes.length)} (${saved > 0 ? '-' + saved + '%' : 'Optimized'})`;
+            document.getElementById('exportFilenameInput').value = generateExportFilename(file.name, DocToolKit.userProfile.name, 'compressed', 'pdf');
+            saveDocumentToDB({ name: document.getElementById('exportFilenameInput').value, origSize: file.size, size: outBytes.length, type: 'PDF' });
+          } catch (e) {
+            alert('Error compressing PDF: ' + e.message);
+            resetToUpload();
+          }
+        }
+
+        function resetToUpload() {
+          loadedFile = null; processedBlob = null;
+          mainDropzone.style.display = 'flex';
+          procBox.style.display = 'none';
+          compBox.style.display = 'none';
+        }
+
+        function downloadResult() {
+          if (processedBlob) triggerDownload(processedBlob, document.getElementById('exportFilenameInput').value);
+        }
+        
+  </script>
+</body>
+</html>

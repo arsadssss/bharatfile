@@ -1,11 +1,11 @@
 {
-  "name": "BharatFile — 100% On-Device Document Utilities",
-  "short_name": "BharatFile",
-  "description": "Privacy-focused document and image compression, PDF merge, split, scanner, and photo tool for Indian students and professionals.",
+  "name": "DocToolKit — Free Online PDF & Image Tools",
+  "short_name": "DocToolKit",
+  "description": "Compress PDFs and images, resize and convert images, merge and split PDFs, scan documents, and organize files with DocToolKit's free online tools.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#F3F7FA",
+  "background_color": "#F4F6FC",
   "theme_color": "#0D59F2",
   "orientation": "portrait-primary",
   "icons": [

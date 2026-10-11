@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Privacy Policy – 100% On-Device Data Protection | DocToolKit</title>
+  <meta name="description" content="Learn how DocToolKit protects your confidentiality with 100% client-side document processing, zero server uploads, and private local storage.">
+  <link rel="canonical" href="https://doctoolkit.in/privacy/">
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <link rel="icon" type="image/x-icon" href="../favicon.ico">
+  <link rel="stylesheet" href="../css/style.css">
+  <script src="../js/app.js"></script>
+</head>
+<body>
+  <div class="bg-orbs"><div class="orb-1"></div><div class="orb-2"></div></div>
+  <!-- Mobile Drawer Backdrop -->
+  <div class="drawer-backdrop" id="drawerBackdrop" onclick="closeDrawer()"></div>
+
+  <!-- Mobile Navigation Drawer -->
+  <aside class="drawer" id="drawer">
+    <div class="drawer-header">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <img src="../icons/doctoolkit-logo-horizontal.png" alt="DocToolKit" height="28" style="height: 28px; width: auto; display: block;">
+      </div>
+      <button class="btn-close-modal" id="closeDrawerBtn" onclick="closeDrawer()" aria-label="Close Navigation">✕</button>
+    </div>
+
+    <div class="drawer-menu">
+      <a class="drawer-item" href="../tools/compress-pdf/">📄 Compress PDF</a>
+      <a class="drawer-item" href="../tools/compress-image/">🖼️ Compress Image</a>
+      <a class="drawer-item" href="../tools/pdf-scanner/">📸 PDF Scanner</a>
+      <a class="drawer-item" href="../tools/merge-pdf/">📑 Merge PDF</a>
+      <a class="drawer-item" href="../tools/split-pdf/">✂️ Split PDF</a>
+      <a class="drawer-item" href="../tools/organize-pdf/">🗂️ Organize PDF</a>
+      <a class="drawer-item" href="../tools/pdf-to-image/">🖼️ PDF to Images</a>
+      <a class="drawer-item" href="../tools/image-to-pdf/">📁 Images to PDF</a>
+      <a class="drawer-item" href="../tools/resize-image/">📐 Resize Image</a>
+      <a class="drawer-item" href="../tools/convert-image/">🔄 Convert Image</a>
+      <a class="drawer-item" href="../tools/crop-image/">✂️ Crop Image</a>
+      <a class="drawer-item" href="../tools/rotate-image/">🔄 Rotate Image</a>
+      <a class="drawer-item" href="../tools/passport-photo/">👤 Passport Photo</a>
+      <a class="drawer-item" href="../tools/signature-maker/">✍️ Signature Maker</a>
+      <a class="drawer-item" href="../tools/document-organizer/">📂 Document Organizer</a>
+
+      <div class="drawer-divider"></div>
+
+      <button class="drawer-item" onclick="toggleTheme()">🌓 Toggle Dark Mode</button>
+      <a class="drawer-item" href="../privacy/">🔒 Privacy Policy</a>
+      <a class="drawer-item" href="../terms/">📜 Terms of Service</a>
+    </div>
+  </aside>
+  <div class="app-wrapper">
+    <!-- Top Floating Navbar -->
+    <header class="navbar">
+      <a class="nav-brand" href="../" aria-label="DocToolKit Homepage">
+        <img src="../icons/doctoolkit-logo-horizontal.png" alt="DocToolKit" height="34" style="height: 34px; max-height: 34px; width: auto; display: block;">
+      </a>
+
+      <!-- Desktop Center Menu -->
+      <nav class="desktop-menu" aria-label="Main Navigation">
+        <a class="menu-btn" href="../tools/compress-pdf/">📄 Compress PDF</a>
+        <a class="menu-btn" href="../tools/compress-image/">🖼️ Compress Image</a>
+        <a class="menu-btn" href="../tools/pdf-scanner/">📸 Scanner</a>
+        <a class="menu-btn" href="../tools/merge-pdf/">📑 Merge PDF</a>
+        <a class="menu-btn" href="../tools/document-organizer/">📂 Organizer</a>
+      </nav>
+
+      <!-- Right Actions -->
+      <div class="nav-actions">
+        <button class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()" aria-label="Toggle Dark/Light Mode">🌙</button>
+        <button class="btn-get-started" onclick="location.href='../tools/document-organizer/'" aria-label="User Profile">
+          <span>👤</span>
+          <span id="navProfileName">User</span>
+        </button>
+        <button class="hamburger-btn" id="hamburgerBtn" onclick="openDrawer()" aria-label="Open Navigation Menu">☰</button>
+      </div>
+    </header>
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a href="../">Home</a><span>&gt;</span><span>Privacy Policy</span>
+    </nav>
+    <main class="seo-section">
+      <h1>DocToolKit Privacy Policy</h1>
+      <p>Last updated: October 11, 2026</p>
+      
+      <h3>1. 100% On-Device Processing Architecture</h3>
+      <p>DocToolKit was created with privacy as its primary architectural principle. All document and image operations—including PDF compression, merging, splitting, camera scanning, photo cropping, and format conversion—occur entirely within your web browser using HTML5 Canvas, WebAssembly, and local JavaScript libraries.</p>
+      
+      <h3>2. Zero Server Uploads</h3>
+      <p>Your files, documents, photos, and signatures are never uploaded, transmitted, or streamed to any DocToolKit web server or third-party cloud infrastructure. All file reading, processing, and saving happens in local volatile memory (RAM) on your physical computer, tablet, or phone.</p>
+
+      <h3>3. Local Browser Storage (IndexedDB)</h3>
+      <p>DocToolKit includes an optional local Document Organizer that allows you to review your processed files. This library is stored solely inside your browser's local sandboxed database (IndexedDB). It is never synchronized to the cloud and is accessible only to you on your current browser profile. You can delete individual documents or clear the entire library at any time with one click.</p>
+
+      <h3>4. Cookies & Analytics</h3>
+      <p>DocToolKit does not use tracking cookies, advertising identifiers, or invasive telemetry. We do not profile your usage or sell data to third parties.</p>
+
+      <h3>5. Contact & Questions</h3>
+      <p>For questions or feedback regarding DocToolKit, visit our official domain at <a href="https://doctoolkit.in/" style="color:var(--primary);">https://doctoolkit.in/</a>.</p>
+    </main>
+    <!-- Footer -->
+    <footer class="site-footer">
+      <div class="footer-top">
+        <div class="footer-col">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+            <img src="../icons/doctoolkit-logo-horizontal.png" alt="DocToolKit" height="28" style="height: 28px; width: auto; display: block;">
+          </div>
+          <p style="font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 12px;">
+            Free, privacy-first online tools for PDF and image compression, conversion, page reorganization, document scanning, and digital signatures. 100% on-device processing.
+          </p>
+          <p style="font-size: 12px; color: var(--text-muted);">
+            Official Domain: <a href="https://doctoolkit.in/" style="color: var(--primary); text-decoration: none; font-weight: 600;">https://doctoolkit.in/</a>
+          </p>
+        </div>
+
+        <div class="footer-col">
+          <h5>PDF Utilities</h5>
+          <ul>
+            <li><a href="../tools/compress-pdf/">Compress PDF</a></li>
+            <li><a href="../tools/pdf-scanner/">PDF Scanner</a></li>
+            <li><a href="../tools/merge-pdf/">Merge PDF</a></li>
+            <li><a href="../tools/split-pdf/">Split PDF</a></li>
+            <li><a href="../tools/organize-pdf/">Organize PDF</a></li>
+            <li><a href="../tools/pdf-to-image/">PDF to Images</a></li>
+            <li><a href="../tools/image-to-pdf/">Images to PDF</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h5>Image Utilities</h5>
+          <ul>
+            <li><a href="../tools/compress-image/">Compress Image</a></li>
+            <li><a href="../tools/resize-image/">Resize Image</a></li>
+            <li><a href="../tools/convert-image/">Convert Image</a></li>
+            <li><a href="../tools/crop-image/">Crop Image</a></li>
+            <li><a href="../tools/rotate-image/">Rotate Image</a></li>
+            <li><a href="../tools/passport-photo/">Passport Photo</a></li>
+            <li><a href="../tools/signature-maker/">Signature Maker</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h5>Legal &amp; Privacy</h5>
+          <ul>
+            <li><a href="../privacy/">Privacy Policy</a></li>
+            <li><a href="../terms/">Terms of Service</a></li>
+            <li><a href="../tools/document-organizer/">Document Organizer</a></li>
+            <li><a href="../sitemap.xml">XML Sitemap</a></li>
+            <li><a href="../robots.txt">Robots.txt</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>&copy; 2026 DocToolKit. All rights reserved. 100% Client-Side Privacy Guaranteed.</p>
+        <p style="font-size: 11px;">All PDF and image processing occurs locally in browser memory. No files are stored or uploaded.</p>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>

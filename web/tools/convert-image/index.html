@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Image Converter Online – Convert JPG, PNG & WebP | DocToolKit</title>
+  <meta name="description" content="Convert images between JPG, PNG, and WebP formats online for free. Fast, high-quality on-device conversion with transparency and quality controls.">
+  <link rel="canonical" href="https://doctoolkit.in/tools/convert-image/">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://doctoolkit.in/tools/convert-image/">
+  <meta property="og:title" content="Image Converter Online – Convert JPG, PNG & WebP | DocToolKit">
+  <meta property="og:description" content="Convert images between JPG, PNG, and WebP formats online for free. Fast, high-quality on-device conversion with transparency and quality controls.">
+  <meta property="og:image" content="https://doctoolkit.in/icons/og-image.png">
+
+  <!-- Twitter / X -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://doctoolkit.in/tools/convert-image/">
+  <meta name="twitter:title" content="Image Converter Online – Convert JPG, PNG & WebP | DocToolKit">
+  <meta name="twitter:description" content="Convert images between JPG, PNG, and WebP formats online for free. Fast, high-quality on-device conversion with transparency and quality controls.">
+  <meta name="twitter:image" content="https://doctoolkit.in/icons/og-image.png">
+
+  <!-- Icons & PWA -->
+  <meta name="theme-color" content="#0D59F2">
+  <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+  <link rel="icon" type="image/x-icon" href="../../favicon.ico">
+  <link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+  <link rel="manifest" href="../../manifest.json">
+
+  <!-- Shared Stylesheet -->
+  <link rel="stylesheet" href="../../css/style.css">
+
+  <!-- Vendor Libraries for 100% In-Browser Execution -->
+  <script src="../../js/pdf-lib.min.js"></script>
+  <script src="../../js/pdf.min.js"></script>
+  <script src="../../js/app.js"></script>
+
+  <!-- JSON-LD Structured Data -->
+  <script type="application/ld+json">
+  {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://doctoolkit.in/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Tools",
+      "item": "https://doctoolkit.in/#toolsSection"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Convert Image",
+      "item": "https://doctoolkit.in/tools/convert-image/"
+    }
+  ]
+}
+  </script>
+  <script type="application/ld+json">
+  {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "DocToolKit Convert Image",
+  "url": "https://doctoolkit.in/tools/convert-image/",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "All",
+  "browserRequirements": "Requires JavaScript and HTML5 Canvas support",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  }
+}
+  </script>
+  <script type="application/ld+json">
+  {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "When should I use WebP vs JPG?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "WebP offers 25%\u201335% smaller file sizes than JPG at similar visual quality."
+      }
+    }
+  ]
+}
+  </script>
+</head>
+<body>
+
+  <!-- Background Orbs -->
+  <div class="bg-orbs">
+    <div class="orb-1"></div>
+    <div class="orb-2"></div>
+  </div>
+
+  <!-- Mobile Drawer Backdrop -->
+  <div class="drawer-backdrop" id="drawerBackdrop" onclick="closeDrawer()"></div>
+
+  <!-- Mobile Navigation Drawer -->
+  <aside class="drawer" id="drawer">
+    <div class="drawer-header">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <img src="../../icons/doctoolkit-logo-horizontal.png" alt="DocToolKit" height="28" style="height: 28px; width: auto; display: block;">
+      </div>
+      <button class="btn-close-modal" id="closeDrawerBtn" onclick="closeDrawer()" aria-label="Close Navigation">✕</button>
+    </div>
+
+    <div class="drawer-menu">
+      <a class="drawer-item" href="../../tools/compress-pdf/">📄 Compress PDF</a>
+      <a class="drawer-item" href="../../tools/compress-image/">🖼️ Compress Image</a>
+      <a class="drawer-item" href="../../tools/pdf-scanner/">📸 PDF Scanner</a>
+      <a class="drawer-item" href="../../tools/merge-pdf/">📑 Merge PDF</a>
+      <a class="drawer-item" href="../../tools/split-pdf/">✂️ Split PDF</a>
+      <a class="drawer-item" href="../../tools/organize-pdf/">🗂️ Organize PDF</a>
+      <a class="drawer-item" href="../../tools/pdf-to-image/">🖼️ PDF to Images</a>
+      <a class="drawer-item" href="../../tools/image-to-pdf/">📁 Images to PDF</a>
+      <a class="drawer-item" href="../../tools/resize-image/">📐 Resize Image</a>
+      <a class="drawer-item" href="../../tools/convert-image/">🔄 Convert Image</a>
+      <a class="drawer-item" href="../../tools/crop-image/">✂️ Crop Image</a>
+      <a class="drawer-item" href="../../tools/rotate-image/">🔄 Rotate Image</a>
+      <a class="drawer-item" href="../../tools/passport-photo/">👤 Passport Photo</a>
+      <a class="drawer-item" href="../../tools/signature-maker/">✍️ Signature Maker</a>
+      <a class="drawer-item" href="../../tools/document-organizer/">📂 Document Organizer</a>
+
+      <div class="drawer-divider"></div>
+
+      <button class="drawer-item" onclick="toggleTheme()">🌓 Toggle Dark Mode</button>
+      <a class="drawer-item" href="../../privacy/">🔒 Privacy Policy</a>
+      <a class="drawer-item" href="../../terms/">📜 Terms of Service</a>
+    </div>
+  </aside>
+
+  <!-- Main Application Wrapper -->
+  <div class="app-wrapper">
+
+    <!-- Top Floating Navbar -->
+    <header class="navbar">
+      <a class="nav-brand" href="../../" aria-label="DocToolKit Homepage">
+        <img src="../../icons/doctoolkit-logo-horizontal.png" alt="DocToolKit" height="34" style="height: 34px; max-height: 34px; width: auto; display: block;">
+      </a>
+
+      <!-- Desktop Center Menu -->
+      <nav class="desktop-menu" aria-label="Main Navigation">
+        <a class="menu-btn" href="../../tools/compress-pdf/">📄 Compress PDF</a>
+        <a class="menu-btn" href="../../tools/compress-image/">🖼️ Compress Image</a>
+        <a class="menu-btn" href="../../tools/pdf-scanner/">📸 Scanner</a>
+        <a class="menu-btn" href="../../tools/merge-pdf/">📑 Merge PDF</a>
+        <a class="menu-btn" href="../../tools/document-organizer/">📂 Organizer</a>
+      </nav>
+
+      <!-- Right Actions -->
+      <div class="nav-actions">
+        <button class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()" aria-label="Toggle Dark/Light Mode">🌙</button>
+        <button class="btn-get-started" onclick="location.href='../../tools/document-organizer/'" aria-label="User Profile">
+          <span>👤</span>
+          <span id="navProfileName">User</span>
+        </button>
+        <button class="hamburger-btn" id="hamburgerBtn" onclick="openDrawer()" aria-label="Open Navigation Menu">☰</button>
+      </div>
+    </header>
+
+    <!-- Breadcrumb Navigation -->
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a href="../../">Home</a>
+      <span>&gt;</span>
+      <a href="../../#toolsSection">Tools</a>
+      <span>&gt;</span>
+      <span>Convert Image</span>
+    </nav>
+
+    <!-- Main Interactive Workbench Card -->
+    <main class="workbench-card">
+      <div class="workbench-header">
+        <h1>Image Converter Online</h1>
+        <p>Convert images effortlessly between JPG, PNG, and WebP formats. Keep transparency when converting to PNG or WebP, or create lightweight JPEGs for government portals.</p>
+      </div>
+
+      <!-- Mounted Interactive Tool Interface -->
+      
+        <div style="display:flex; flex-direction:column; gap:16px;">
+          <input type="file" id="convInput" accept="image/*" style="display:none;">
+          <div class="dropzone" onclick="document.getElementById('convInput').click()">
+            <div class="drop-cloud-icon">🔄</div>
+            <div style="font-weight:700; font-size:15px;">Choose Image to Convert</div>
+            <div style="font-size:12px; color:var(--text-muted);" id="convStatus">Convert between JPG, PNG & WebP</div>
+            <button class="btn-choose-file" type="button">📁 Select Image</button>
+          </div>
+          <div style="display:flex; gap:10px;">
+            <button class="preset-pill active" id="btnConvJpg" onclick="setConvFormat('jpeg')">JPG</button>
+            <button class="preset-pill" id="btnConvPng" onclick="setConvFormat('png')">PNG</button>
+            <button class="preset-pill" id="btnConvWebp" onclick="setConvFormat('webp')">WebP</button>
+          </div>
+          <button class="btn-choose-file" id="btnDoConvert" style="width:100%;">Convert & Save Image</button>
+        </div>
+        
+    </main>
+
+    <!-- SEO Section 1: Step-by-Step Instructions -->
+    <section class="seo-section">
+      <div>
+        <h2 style="margin-bottom: 8px;">How to Use Convert Image Online</h2>
+        <p>Follow these quick steps to process your files securely on your device.</p>
+      </div>
+      <div class="steps-list">
+        
+        <div class="step-item">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <h4>Choose Source Image</h4>
+            <p>Select any JPG, PNG, or WebP photo.</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <h4>Select Target Format</h4>
+            <p>Pick JPG, PNG, or WebP using the format buttons.</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <h4>Convert & Save</h4>
+            <p>Click Convert & Save to download your converted graphic.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEO Section 2: Features & Capabilities -->
+    <section class="seo-section">
+      <div>
+        <h2 style="margin-bottom: 8px;">Key Features &amp; Specifications</h2>
+        <p>Why users choose DocToolKit's convert image utility.</p>
+      </div>
+      <div class="seo-grid">
+        
+        <div class="seo-feature-card">
+          <h4>Three Major Formats</h4>
+          <p>Seamlessly convert between JPG, PNG, and modern WebP.</p>
+        </div>
+        <div class="seo-feature-card">
+          <h4>Alpha Channel Handling</h4>
+          <p>Maintains transparency for PNG and WebP, adds white matte for JPG.</p>
+        </div>
+        <div class="seo-feature-card">
+          <h4>Instant Local Conversion</h4>
+          <p>Converts on HTML5 Canvas in milliseconds with zero server upload.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEO Section 3: Technical Formats & Privacy -->
+    <section class="seo-section">
+      <div>
+        <h2 style="margin-bottom: 8px;">Format Specifications &amp; Client-Side Privacy</h2>
+        <p>Transparent technical details regarding convert image.</p>
+      </div>
+      <div class="seo-grid">
+        <div class="seo-feature-card">
+          <h4>Supported Input Format</h4>
+          <p>JPG, PNG, WebP, BMP image files</p>
+        </div>
+        <div class="seo-feature-card">
+          <h4>Generated Output Format</h4>
+          <p>Converted JPG, PNG, or WebP image</p>
+        </div>
+        <div class="seo-feature-card">
+          <h4>Browser Processing Scope</h4>
+          <p>100% on-device client processing. Zero network transmission of your private file bytes.</p>
+        </div>
+        <div class="seo-feature-card">
+          <h4>System Limitations</h4>
+          <p>Converting transparent PNGs to JPG replaces transparent areas with a clean white background.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEO Section 4: Related Tools (Strict Rule: Clean Cards, Icon + Title Only) -->
+    <section class="tools-section">
+      <div class="tools-section-header">
+        <h3>Related Document &amp; Image Tools</h3>
+      </div>
+      <div class="tools-grid">
+        
+            <a class="tool-card" href="../../tools/compress-image/">
+              <div class="tool-card-icon">🖼️</div>
+              <h4>Compress Image</h4>
+            </a>
+            <a class="tool-card" href="../../tools/resize-image/">
+              <div class="tool-card-icon">📐</div>
+              <h4>Resize Image</h4>
+            </a>
+            <a class="tool-card" href="../../tools/crop-image/">
+              <div class="tool-card-icon">✂️</div>
+              <h4>Crop Image</h4>
+            </a>
+            <a class="tool-card" href="../../tools/rotate-image/">
+              <div class="tool-card-icon">🔄</div>
+              <h4>Rotate Image</h4>
+            </a>
+      </div>
+    </section>
+
+    <!-- SEO Section 5: Frequently Asked Questions -->
+    <section class="seo-section">
+      <div>
+        <h2 style="margin-bottom: 8px;">Frequently Asked Questions</h2>
+        <p>Common questions regarding convert image.</p>
+      </div>
+      <div class="faq-list">
+        
+        <div class="faq-item">
+          <div class="faq-question">When should I use WebP vs JPG?</div>
+          <div class="faq-answer">WebP offers 25%–35% smaller file sizes than JPG at similar visual quality.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      <div class="footer-top">
+        <div class="footer-col">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+            <img src="../../icons/doctoolkit-logo-horizontal.png" alt="DocToolKit" height="28" style="height: 28px; width: auto; display: block;">
+          </div>
+          <p style="font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 12px;">
+            Free, privacy-first online tools for PDF and image compression, conversion, page reorganization, document scanning, and digital signatures. 100% on-device processing.
+          </p>
+          <p style="font-size: 12px; color: var(--text-muted);">
+            Official Domain: <a href="https://doctoolkit.in/" style="color: var(--primary); text-decoration: none; font-weight: 600;">https://doctoolkit.in/</a>
+          </p>
+        </div>
+
+        <div class="footer-col">
+          <h5>PDF Utilities</h5>
+          <ul>
+            <li><a href="../../tools/compress-pdf/">Compress PDF</a></li>
+            <li><a href="../../tools/pdf-scanner/">PDF Scanner</a></li>
+            <li><a href="../../tools/merge-pdf/">Merge PDF</a></li>
+            <li><a href="../../tools/split-pdf/">Split PDF</a></li>
+            <li><a href="../../tools/organize-pdf/">Organize PDF</a></li>
+            <li><a href="../../tools/pdf-to-image/">PDF to Images</a></li>
+            <li><a href="../../tools/image-to-pdf/">Images to PDF</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h5>Image Utilities</h5>
+          <ul>
+            <li><a href="../../tools/compress-image/">Compress Image</a></li>
+            <li><a href="../../tools/resize-image/">Resize Image</a></li>
+            <li><a href="../../tools/convert-image/">Convert Image</a></li>
+            <li><a href="../../tools/crop-image/">Crop Image</a></li>
+            <li><a href="../../tools/rotate-image/">Rotate Image</a></li>
+            <li><a href="../../tools/passport-photo/">Passport Photo</a></li>
+            <li><a href="../../tools/signature-maker/">Signature Maker</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h5>Legal &amp; Privacy</h5>
+          <ul>
+            <li><a href="../../privacy/">Privacy Policy</a></li>
+            <li><a href="../../terms/">Terms of Service</a></li>
+            <li><a href="../../tools/document-organizer/">Document Organizer</a></li>
+            <li><a href="../../sitemap.xml">XML Sitemap</a></li>
+            <li><a href="../../robots.txt">Robots.txt</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>&copy; 2026 DocToolKit. All rights reserved. 100% Client-Side Privacy Guaranteed.</p>
+        <p style="font-size: 11px;">All PDF and image processing occurs locally in browser memory. No files are stored or uploaded.</p>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- Interactive JavaScript for this tool -->
+  <script>
+  
+        let convFile = null, targetFmt = 'jpeg';
+        window.setConvFormat = (fmt) => {
+          targetFmt = fmt;
+          document.querySelectorAll('#btnConvJpg, #btnConvPng, #btnConvWebp').forEach(b => b.classList.remove('active'));
+          if (fmt === 'jpeg') document.getElementById('btnConvJpg').classList.add('active');
+          if (fmt === 'png') document.getElementById('btnConvPng').classList.add('active');
+          if (fmt === 'webp') document.getElementById('btnConvWebp').classList.add('active');
+        };
+
+        document.getElementById('convInput').onchange = (e) => {
+          if (e.target.files[0]) {
+            convFile = e.target.files[0];
+            document.getElementById('convStatus').textContent = `Selected: ${convFile.name}`;
+          }
+        };
+
+        document.getElementById('btnDoConvert').onclick = () => {
+          if (!convFile) return alert('Please select an image first.');
+          const img = new Image();
+          img.src = URL.createObjectURL(convFile);
+          img.onload = () => {
+            const c = document.createElement('canvas');
+            c.width = img.width; c.height = img.height;
+            const ctx = c.getContext('2d');
+            if (targetFmt === 'jpeg') {
+              ctx.fillStyle = '#FFFFFF';
+              ctx.fillRect(0, 0, c.width, c.height);
+            }
+            ctx.drawImage(img, 0, 0);
+            c.toBlob(blob => {
+              const ext = targetFmt === 'jpeg' ? 'jpg' : targetFmt;
+              const name = generateExportFilename(convFile.name, DocToolKit.userProfile.name, 'converted', ext);
+              triggerDownload(blob, name);
+              saveDocumentToDB({ name, origSize: convFile.size, size: blob.size, type: 'Image' });
+            }, `image/${targetFmt}`, 0.92);
+          };
+        };
+        
+  </script>
+</body>
+</html>
