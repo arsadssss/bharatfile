@@ -31,10 +31,10 @@
   <link rel="manifest" href="../../manifest.json">
 
   <!-- Shared Stylesheet -->
-  <link rel="stylesheet" href="../../css/style.css?v=2.5.0">
+  <link rel="stylesheet" href="../../css/style.css?v=2.6.0">
 
   <!-- Client-Side Script Engine (Deferred to prevent render blocking) -->
-  <script src="../../js/app.js" defer></script>
+  <script src="../../js/app.js?v=2.6.0" defer></script>
 
   <!-- JSON-LD Structured Data -->
   <script type="application/ld+json">
@@ -494,7 +494,7 @@
         </div>
         <div class="seo-feature-card">
           <h4>Generated Output Format</h4>
-          <p>Optimized JPEG or PNG image</p>
+          <p>JPEG, PNG, or WebP (strictly matches your format selection or source file)</p>
         </div>
         <div class="seo-feature-card">
           <h4>Browser Processing Scope</h4>
@@ -797,7 +797,7 @@
         imgDropzone.style.display = 'none';
         imgCompBox.style.display = 'flex';
         document.getElementById('imgOriginalName').textContent = imgFile.name;
-        document.getElementById('imgSizesDelta').textContent = `${formatBytes(imgFile.size)} ➔ ${formatBytes(result.newSize)} (${result.savedPct > 0 ? '-' + result.savedPct + '%' : 'Optimized'})`;
+        document.getElementById('imgSizesDelta').textContent = `${formatBytes(imgFile.size)} ➔ ${formatBytes(result.newSize)} (${result.savedPct > 0 ? '-' + result.savedPct + '%' : 'Optimized'}) • ${result.ext.toUpperCase()}`;
         document.getElementById('imgExportName').value = generateExportFilename(imgFile.name, DocToolKit.userProfile.name, 'compressed', result.ext);
 
         const targetStatusBanner = document.getElementById('imgTargetStatusMsg');
@@ -806,10 +806,10 @@
             targetStatusBanner.style.display = 'flex';
             if (result.achieved) {
               targetStatusBanner.className = 'target-result-badge achieved';
-              targetStatusBanner.textContent = `✓ Target Achieved: Output (${formatBytes(result.newSize)}) meets your goal.`;
+              targetStatusBanner.textContent = `✓ Target Achieved: Output (${formatBytes(result.newSize)}) meets your goal in ${result.ext.toUpperCase()} format.`;
             } else {
               targetStatusBanner.className = 'target-result-badge unachieved';
-              targetStatusBanner.textContent = result.statusMessage || `⚠️ Target of ${formatBytes(targetBytes)} reached quality floor (${formatBytes(result.newSize)}).`;
+              targetStatusBanner.textContent = result.statusMessage || `⚠️ Target of ${formatBytes(targetBytes)} reached quality limit (${formatBytes(result.newSize)}).`;
             }
           } else {
             targetStatusBanner.style.display = 'none';
@@ -827,7 +827,7 @@
             if (result.achieved) {
               inspTargetStatusBadge.className = 'target-result-badge achieved';
               inspTargetStatusIcon.textContent = '✓';
-              inspTargetStatusText.textContent = `Target Met (${formatBytes(result.newSize)})`;
+              inspTargetStatusText.textContent = `Target Met (${formatBytes(result.newSize)}) • ${result.ext.toUpperCase()}`;
             } else {
               inspTargetStatusBadge.className = 'target-result-badge unachieved';
               inspTargetStatusIcon.textContent = '⚠️';
@@ -836,10 +836,10 @@
           } else {
             inspTargetStatusBadge.className = 'target-result-badge achieved';
             inspTargetStatusIcon.textContent = '✓';
-            inspTargetStatusText.textContent = `Reduced by ${result.savedPct}%`;
+            inspTargetStatusText.textContent = `Reduced by ${result.savedPct}% • ${result.ext.toUpperCase()}`;
           }
         }
-        if (inspTechNotes) inspTechNotes.textContent = result.statusMessage || 'Image compressed successfully. Ready for download.';
+        if (inspTechNotes) inspTechNotes.textContent = result.statusMessage || `Image compressed successfully in ${result.ext.toUpperCase()} format. Ready for download.`;
 
         DocToolKit.recentActivity.add({
           name: document.getElementById('imgExportName').value,
@@ -856,6 +856,7 @@
           origSize: imgFile.size,
           size: result.newSize,
           type: 'Image',
+          blob: result.blob,
           date: new Date().toISOString()
         });
 
