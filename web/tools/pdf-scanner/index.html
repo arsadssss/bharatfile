@@ -221,7 +221,8 @@
             <label style="font-size:12px; font-weight:700; color:var(--text-muted);">PDF Document Name:</label>
             <input type="text" class="rename-input" id="scanNameInput" value="scan_document.pdf">
           </div>
-          <button class="btn-choose-file" id="btnExportScanPdf" style="width:100%;">Save Scanned A4 PDF</button>
+          <button class="btn-choose-file" id="btnExportScanPdf" style="width:100%;" disabled>Save Scanned A4 PDF</button>
+          <div id="scanResultBox" class="result-feedback-card hidden"></div>
         </div>
         
     </main>
@@ -420,79 +421,172 @@
 
   <!-- Interactive JavaScript for this tool -->
   <script>
-  
-        let scannerPages = [];
-        const video = document.getElementById('scanVideo');
-        const btnCapture = document.getElementById('btnCaptureFrame');
-        const scanInput = document.getElementById('scanFileInput');
-        const pageStrip = document.getElementById('scanPagesStrip');
-        const pageCount = document.getElementById('scanPageCount');
+    let scannerPages = [];
+    const video = document.getElementById('scanVideo');
+    const btnCapture = document.getElementById('btnCaptureFrame');
+    const scanInput = document.getElementById('scanFileInput');
+    const pageStrip = document.getElementById('scanPagesStrip');
+    const pageCount = document.getElementById('scanPageCount');
+    const btnExport = document.getElementById('btnExportScanPdf');
+    const scanNameInput = document.getElementById('scanNameInput');
 
-        async function initCamera() {
-          try {
-            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-              const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-              video.srcObject = stream;
-            }
-          } catch (e) {
-            video.style.display = 'none';
-            btnCapture.style.display = 'none';
+    function updateScannerState() {
+      if (scannerPages.length === 0) {
+        btnExport.disabled = true;
+        btnExport.style.opacity = '0.6';
+        btnExport.style.cursor = 'not-allowed';
+      } else {
+        btnExport.disabled = false;
+        btnExport.style.opacity = '1';
+        btnExport.style.cursor = 'pointer';
+      }
+    }
+
+    async function initCamera() {
+      try {
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+          const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+          video.srcObject = stream;
+        }
+      } catch (e) {
+        video.style.display = 'none';
+        btnCapture.style.display = 'none';
+      }
+    }
+    initCamera();
+
+    function normalizeImageToJpegDataUrl(fileOrBlob) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        const url = URL.createObjectURL(fileOrBlob);
+        img.onload = () => {
+          URL.revokeObjectURL(url);
+          const canvas = document.createElement('canvas');
+          canvas.width = img.width;
+          canvas.height = img.height;
+          const ctx = canvas.getContext('2d');
+          ctx.fillStyle = '#FFFFFF';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          ctx.drawImage(img, 0, 0);
+          resolve(canvas.toDataURL('image/jpeg', 0.92));
+        };
+        img.onerror = () => {
+          URL.revokeObjectURL(url);
+          reject(new Error('Failed to load image file.'));
+        };
+        img.src = url;
+      });
+    }
+
+    function dataUrlToUint8Array(dataUrl) {
+      const parts = dataUrl.split(',');
+      const binary = atob(parts[1]);
+      const len = binary.length;
+      const bytes = new Uint8Array(len);
+      for (let i = 0; i < len; i++) {
+        bytes[i] = binary.charCodeAt(i);
+      }
+      return bytes;
+    }
+
+    function addPage(dataUrl) {
+      scannerPages.push({ dataUrl, rotation: 0 });
+      DocToolKit.hideResult('scanResultBox');
+      renderPages();
+    }
+
+    btnCapture.onclick = () => {
+      const c = document.createElement('canvas');
+      c.width = video.videoWidth || 640;
+      c.height = video.videoHeight || 480;
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(0, 0, c.width, c.height);
+      ctx.drawImage(video, 0, 0, c.width, c.height);
+      addPage(c.toDataURL('image/jpeg', 0.92));
+    };
+
+    scanInput.onchange = async (e) => {
+      const files = Array.from(e.target.files || []);
+      for (const f of files) {
+        try {
+          const jpegDataUrl = await normalizeImageToJpegDataUrl(f);
+          addPage(jpegDataUrl);
+        } catch (err) {
+          console.error('Image read error:', err);
+        }
+      }
+      scanInput.value = '';
+    };
+
+    function renderPages() {
+      pageCount.textContent = `${scannerPages.length} ${scannerPages.length === 1 ? 'Page' : 'Pages'} Added`;
+      pageStrip.innerHTML = '';
+      scannerPages.forEach((p, idx) => {
+        const d = document.createElement('div');
+        d.style.cssText = 'position:relative; width:80px; height:100px; border-radius:8px; overflow:hidden; border:1px solid var(--card-border); flex-shrink:0; background:#f8fafc;';
+        d.innerHTML = `
+          <img src="${p.dataUrl}" alt="Scanned Document Page ${idx+1}" style="width:100%; height:100%; object-fit:cover; transform:rotate(${p.rotation}deg);">
+          <button type="button" onclick="scannerPages.splice(${idx},1); renderPages();" style="position:absolute; top:2px; right:2px; background:rgba(0,0,0,0.6); color:white; border:none; width:20px; height:20px; border-radius:50%; cursor:pointer;">✕</button>
+          <button type="button" onclick="scannerPages[${idx}].rotation = (scannerPages[${idx}].rotation + 90) % 360; renderPages();" style="position:absolute; bottom:2px; left:2px; background:rgba(0,0,0,0.6); color:white; border:none; font-size:11px; border-radius:4px; padding:2px 6px; cursor:pointer;">⟳</button>
+        `;
+        pageStrip.appendChild(d);
+      });
+      updateScannerState();
+    }
+
+    btnExport.onclick = async () => {
+      if (!scannerPages.length) return;
+
+      btnExport.disabled = true;
+      const originalText = btnExport.innerHTML;
+      btnExport.innerHTML = '<span class="result-spinner" style="width:16px;height:16px;display:inline-block;margin-right:6px;vertical-align:middle;"></span> Compiling A4 PDF...';
+      DocToolKit.showProcessing('scanResultBox', 'Compiling Scanned PDF...', `Assembling ${pluralize(scannerPages.length, 'page', 'pages')} into standardized A4 document...`);
+
+      try {
+        const pdfDoc = await PDFLib.PDFDocument.create();
+        for (const p of scannerPages) {
+          const imgBytes = dataUrlToUint8Array(p.dataUrl);
+          const embedded = await pdfDoc.embedJpg(imgBytes);
+          const page = pdfDoc.addPage([595, 842]);
+          page.drawImage(embedded, { x: 20, y: 20, width: 555, height: 802 });
+          if (p.rotation) page.setRotation(PDFLib.degrees(p.rotation));
+        }
+        const bytes = await pdfDoc.save();
+        const exportName = scanNameInput.value.trim() || 'scan_document.pdf';
+        const finalBlob = new Blob([bytes], { type: 'application/pdf' });
+
+        saveDocumentToDB({ name: exportName, origSize: bytes.length, size: bytes.length, type: 'Scan' });
+
+        DocToolKit.showResult('scanResultBox', {
+          title: 'Scanned PDF Ready',
+          subTitle: `Successfully compiled ${pluralize(scannerPages.length, 'scanned page', 'scanned pages')} into a standardized A4 PDF.`,
+          blob: finalBlob,
+          defaultFilename: exportName,
+          meta: [
+            { label: 'Scanned Pages', value: pluralize(scannerPages.length, 'page', 'pages') },
+            { label: 'Page Format', value: 'Standard A4 (595 × 842 pt)' },
+            { label: 'Document Size', value: formatBytes(bytes.length) },
+            { label: 'Security', value: '100% In-Browser' }
+          ],
+          onReset: () => {
+            scannerPages = [];
+            scanNameInput.value = 'scan_document.pdf';
+            renderPages();
+            DocToolKit.hideResult('scanResultBox');
           }
-        }
-        initCamera();
+        });
+      } catch (err) {
+        console.error('Scan compile error:', err);
+        DocToolKit.showError('scanResultBox', 'Compilation Failed', err.message || 'Unable to compile scanned pages into PDF.');
+      } finally {
+        btnExport.disabled = false;
+        btnExport.innerHTML = originalText;
+        updateScannerState();
+      }
+    };
 
-        function addPage(dataUrl) {
-          scannerPages.push({ dataUrl, rotation: 0 });
-          renderPages();
-        }
-
-        btnCapture.onclick = () => {
-          const c = document.createElement('canvas');
-          c.width = video.videoWidth || 640;
-          c.height = video.videoHeight || 480;
-          c.getContext('2d').drawImage(video, 0, 0, c.width, c.height);
-          addPage(c.toDataURL('image/jpeg', 0.92));
-        };
-
-        scanInput.onchange = (e) => {
-          Array.from(e.target.files).forEach(f => {
-            const r = new FileReader();
-            r.onload = ev => addPage(ev.target.result);
-            r.readAsDataURL(f);
-          });
-        };
-
-        function renderPages() {
-          pageCount.textContent = `${scannerPages.length} Pages Added`;
-          pageStrip.innerHTML = '';
-          scannerPages.forEach((p, idx) => {
-            const d = document.createElement('div');
-            d.style.cssText = 'position:relative; width:80px; height:100px; border-radius:8px; overflow:hidden; border:1px solid var(--card-border); flex-shrink:0;';
-            d.innerHTML = `
-              <img src="${p.dataUrl}" alt="Scanned Document Page ${idx+1}" style="width:100%; height:100%; object-fit:cover; transform:rotate(${p.rotation}deg);">
-              <button onclick="scannerPages.splice(${idx},1); renderPages();" style="position:absolute; top:2px; right:2px; background:rgba(0,0,0,0.6); color:white; border:none; width:20px; height:20px; border-radius:50%; cursor:pointer;">✕</button>
-              <button onclick="scannerPages[${idx}].rotation = (scannerPages[${idx}].rotation + 90) % 360; renderPages();" style="position:absolute; bottom:2px; left:2px; background:rgba(0,0,0,0.6); color:white; border:none; font-size:11px; border-radius:4px; padding:2px 6px; cursor:pointer;">⟳</button>
-            `;
-            pageStrip.appendChild(d);
-          });
-        }
-
-        document.getElementById('btnExportScanPdf').onclick = async () => {
-          if (!scannerPages.length) return alert('Please capture or add at least one page.');
-          const pdfDoc = await PDFLib.PDFDocument.create();
-          for (const p of scannerPages) {
-            const imgBytes = await fetch(p.dataUrl).then(r => r.arrayBuffer());
-            const embedded = await pdfDoc.embedJpg(imgBytes);
-            const page = pdfDoc.addPage([595, 842]);
-            page.drawImage(embedded, { x: 20, y: 20, width: 555, height: 802 });
-            if (p.rotation) page.setRotation(PDFLib.degrees(p.rotation));
-          }
-          const bytes = await pdfDoc.save();
-          const name = document.getElementById('scanNameInput').value.trim() || 'scan_document.pdf';
-          triggerDownload(new Blob([bytes], { type: 'application/pdf' }), name);
-          saveDocumentToDB({ name, origSize: bytes.length, size: bytes.length, type: 'Scan' });
-        };
-        
+    updateScannerState();
   </script>
 </body>
 </html>

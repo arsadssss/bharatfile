@@ -204,12 +204,22 @@
             <div style="font-size:12px; color:var(--text-muted);" id="cropStatus">Aspect ratio framing in browser</div>
             <button class="btn-choose-file" type="button">📁 Select Image</button>
           </div>
-          <div style="display:flex; gap:8px;">
-            <button class="preset-pill active" id="btnCrop1" onclick="setCropRatio(1, this)">Square (1:1)</button>
-            <button class="preset-pill" onclick="setCropRatio(4/3, this)">Document (4:3)</button>
-            <button class="preset-pill" onclick="setCropRatio(16/9, this)">Widescreen (16:9)</button>
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div style="font-size:12px; font-weight:700; color:var(--text-muted);">Aspect Ratio Framing:</div>
+            <div style="font-size:11px; color:var(--text-muted);">Center-weighted crop</div>
           </div>
-          <button class="btn-choose-file" id="btnDoCrop" style="width:100%;">Crop Center & Download</button>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button type="button" class="preset-pill active" id="btnCrop1" onclick="setCropRatio(1, this, '1:1')">Square (1:1)</button>
+            <button type="button" class="preset-pill" onclick="setCropRatio(4/3, this, '4:3')">Document (4:3)</button>
+            <button type="button" class="preset-pill" onclick="setCropRatio(3/4, this, '3:4')">Portrait (3:4)</button>
+            <button type="button" class="preset-pill" onclick="setCropRatio(16/9, this, '16:9')">Widescreen (16:9)</button>
+          </div>
+          <div id="cropPreviewWrap" style="display:none; text-align:center; padding:16px; background:var(--track-bg); border-radius:12px; overflow:hidden;">
+            <div style="font-size:11px; font-weight:700; color:var(--text-muted); margin-bottom:10px;">Framed Output Preview:</div>
+            <canvas id="cropPreviewCanvas" style="max-width:100%; max-height:240px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.15);"></canvas>
+          </div>
+          <button class="btn-choose-file" id="btnDoCrop" style="width:100%;" disabled>Crop Center & Download</button>
+          <div id="cropResultBox" class="result-feedback-card hidden"></div>
         </div>
         
     </main>
@@ -404,41 +414,133 @@
 
   <!-- Interactive JavaScript for this tool -->
   <script>
-  
-        let cropFile = null, ratio = 1;
-        window.setCropRatio = (r, btn) => {
-          ratio = r;
-          document.querySelectorAll('.preset-pill').forEach(p => p.classList.remove('active'));
-          btn.classList.add('active');
-        };
+    let cropFile = null;
+    let loadedImg = null;
+    let ratio = 1;
+    let ratioLabel = '1:1';
 
-        document.getElementById('cropInput').onchange = (e) => {
-          if (e.target.files[0]) {
-            cropFile = e.target.files[0];
-            document.getElementById('cropStatus').textContent = `Selected: ${cropFile.name}`;
+    const cropInput = document.getElementById('cropInput');
+    const cropStatus = document.getElementById('cropStatus');
+    const cropPreviewWrap = document.getElementById('cropPreviewWrap');
+    const cropPreviewCanvas = document.getElementById('cropPreviewCanvas');
+    const btnDoCrop = document.getElementById('btnDoCrop');
+
+    function updateLivePreview() {
+      if (!loadedImg) return;
+      let cropW = loadedImg.width;
+      let cropH = loadedImg.width / ratio;
+      if (cropH > loadedImg.height) {
+        cropH = loadedImg.height;
+        cropW = loadedImg.height * ratio;
+      }
+      const startX = (loadedImg.width - cropW) / 2;
+      const startY = (loadedImg.height - cropH) / 2;
+
+      // Scale preview canvas sensibly
+      const previewScale = Math.min(1, 400 / Math.max(cropW, cropH));
+      cropPreviewCanvas.width = Math.round(cropW * previewScale);
+      cropPreviewCanvas.height = Math.round(cropH * previewScale);
+
+      const ctx = cropPreviewCanvas.getContext('2d');
+      ctx.drawImage(loadedImg, startX, startY, cropW, cropH, 0, 0, cropPreviewCanvas.width, cropPreviewCanvas.height);
+      cropPreviewWrap.style.display = 'block';
+    }
+
+    window.setCropRatio = (r, btn, label) => {
+      ratio = r;
+      ratioLabel = label || 'Custom';
+      document.querySelectorAll('.preset-pill').forEach(p => p.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      updateLivePreview();
+    };
+
+    cropInput.onchange = (e) => {
+      if (!e.target.files || !e.target.files[0]) return;
+      cropFile = e.target.files[0];
+      DocToolKit.hideResult('cropResultBox');
+      cropStatus.textContent = 'Loading image...';
+
+      const img = new Image();
+      const objUrl = URL.createObjectURL(cropFile);
+      img.onload = () => {
+        URL.revokeObjectURL(objUrl);
+        loadedImg = img;
+        cropStatus.textContent = `Selected: ${cropFile.name} (${img.width} × ${img.height} px, ${formatBytes(cropFile.size)})`;
+        btnDoCrop.disabled = false;
+        btnDoCrop.style.opacity = '1';
+        btnDoCrop.style.cursor = 'pointer';
+        updateLivePreview();
+      };
+      img.onerror = () => {
+        URL.revokeObjectURL(objUrl);
+        cropStatus.textContent = '❌ Failed to load image file.';
+      };
+      img.src = objUrl;
+    };
+
+    btnDoCrop.onclick = () => {
+      if (!cropFile || !loadedImg) return;
+
+      btnDoCrop.disabled = true;
+      const originalText = btnDoCrop.innerHTML;
+      btnDoCrop.innerHTML = '<span class="result-spinner" style="width:16px;height:16px;display:inline-block;margin-right:6px;vertical-align:middle;"></span> Cropping Image...';
+      DocToolKit.showProcessing('cropResultBox', 'Cropping Image...', `Framing center area to ${ratioLabel} aspect ratio...`);
+
+      const isPng = (cropFile.type === 'image/png');
+      const exportMime = isPng ? 'image/png' : 'image/jpeg';
+      const exportExt = isPng ? 'png' : 'jpg';
+
+      let cropW = loadedImg.width;
+      let cropH = loadedImg.width / ratio;
+      if (cropH > loadedImg.height) {
+        cropH = loadedImg.height;
+        cropW = loadedImg.height * ratio;
+      }
+      const startX = (loadedImg.width - cropW) / 2;
+      const startY = (loadedImg.height - cropH) / 2;
+
+      const c = document.createElement('canvas');
+      c.width = Math.round(cropW);
+      c.height = Math.round(cropH);
+      const ctx = c.getContext('2d');
+      if (!isPng) {
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(0, 0, c.width, c.height);
+      }
+      ctx.drawImage(loadedImg, startX, startY, cropW, cropH, 0, 0, c.width, c.height);
+
+      c.toBlob(blob => {
+        const exportName = generateExportFilename(cropFile.name, DocToolKit.userProfile.name, `crop_${ratioLabel.replace(':', 'x')}`, exportExt);
+        saveDocumentToDB({ name: exportName, origSize: cropFile.size, size: blob.size, type: exportExt.toUpperCase() });
+
+        DocToolKit.showResult('cropResultBox', {
+          title: 'Image Cropped Successfully',
+          subTitle: `Center area cleanly cropped to ${ratioLabel} aspect ratio without distortion.`,
+          blob: blob,
+          defaultFilename: exportName,
+          meta: [
+            { label: 'Aspect Ratio', value: ratioLabel },
+            { label: 'Output Dimensions', value: `${c.width} × ${c.height} px` },
+            { label: 'Original Size', value: formatBytes(cropFile.size) },
+            { label: 'Cropped Size', value: formatBytes(blob.size) }
+          ],
+          onReset: () => {
+            cropFile = null;
+            loadedImg = null;
+            cropInput.value = '';
+            cropStatus.textContent = 'Aspect ratio framing in browser';
+            cropPreviewWrap.style.display = 'none';
+            btnDoCrop.disabled = true;
+            btnDoCrop.style.opacity = '0.6';
+            btnDoCrop.style.cursor = 'not-allowed';
+            DocToolKit.hideResult('cropResultBox');
           }
-        };
+        });
 
-        document.getElementById('btnDoCrop').onclick = () => {
-          if (!cropFile) return alert('Select image first.');
-          const img = new Image();
-          img.src = URL.createObjectURL(cropFile);
-          img.onload = () => {
-            let cropW = img.width, cropH = img.width / ratio;
-            if (cropH > img.height) { cropH = img.height; cropW = img.height * ratio; }
-            const startX = (img.width - cropW) / 2;
-            const startY = (img.height - cropH) / 2;
-            const c = document.createElement('canvas');
-            c.width = cropW; c.height = cropH;
-            c.getContext('2d').drawImage(img, startX, startY, cropW, cropH, 0, 0, cropW, cropH);
-            c.toBlob(blob => {
-              const name = generateExportFilename(cropFile.name, DocToolKit.userProfile.name, 'cropped', 'jpg');
-              triggerDownload(blob, name);
-              saveDocumentToDB({ name, origSize: cropFile.size, size: blob.size, type: 'Image' });
-            }, 'image/jpeg', 0.9);
-          };
-        };
-        
+        btnDoCrop.disabled = false;
+        btnDoCrop.innerHTML = originalText;
+      }, exportMime, 0.92);
+    };
   </script>
 </body>
 </html>

@@ -280,19 +280,32 @@
               <input type="range" class="range-slider" id="imgSlider" min="1" max="100" value="70">
             </div>
             <div class="slider-labels"><span>Low (1%)</span><span>Balanced (70%)</span><span>Maximum (100%)</span></div>
+            <div style="margin-top: 14px;">
+              <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">Output Image Format:</div>
+              <div class="preset-pills" id="imgFormatPills">
+                <button type="button" class="preset-pill active" onclick="setImgFormat('original', this)">Auto (Original)</button>
+                <button type="button" class="preset-pill" onclick="setImgFormat('jpeg', this)">JPG</button>
+                <button type="button" class="preset-pill" onclick="setImgFormat('png', this)">PNG (Lossless)</button>
+                <button type="button" class="preset-pill" onclick="setImgFormat('webp', this)">WebP</button>
+              </div>
+            </div>
           </div>
 
           <div class="state-box" id="imgCompBox">
-            <div style="font-size: 13px; font-weight: 700;" id="imgOriginalName">photo.jpg</div>
+            <div style="font-size: 13px; font-weight: 700;" id="imgOriginalName">Compressed Image</div>
             <div class="delta-badge" id="imgSizesDelta">Optimized</div>
+            <div id="imgTargetStatusMsg" class="target-result-badge achieved" style="width: 100%; display: none;">
+              ✓ Target Achieved: Output meets your goal.
+            </div>
             <div style="width: 100%; text-align: left;">
               <label for="imgExportName" style="font-size: 12px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">Customize Filename:</label>
-              <input type="text" class="rename-input" id="imgExportName" value="photo_compressed.jpg">
+              <input type="text" class="rename-input" id="imgExportName" value="image_compressed.jpg">
             </div>
             <div style="display: flex; gap: 10px; width: 100%;">
               <button class="btn-choose-file" id="btnDownloadImg" style="flex: 1;" onclick="downloadImg()">⬇ Download Compressed Image</button>
               <button class="btn-choose-file" style="background: var(--track-bg); color: var(--text-main); box-shadow: none;" onclick="resetImgUpload()">🔄 Compress Another</button>
             </div>
+            <div class="result-download-confirm" id="imgDownloadConfirm">✓ Download started! Check your browser downloads.</div>
           </div>
         </div>
       </section>
@@ -745,6 +758,14 @@
     };
     imgSlider.onchange = () => { if (imgFile) compressImage(); };
 
+    let selectedImgFormat = 'original';
+    window.setImgFormat = function(fmt, btn) {
+      selectedImgFormat = fmt;
+      document.querySelectorAll('#imgFormatPills .preset-pill').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      if (imgFile) compressImage();
+    };
+
     async function compressImage() {
       if (!imgFile) return;
 
@@ -768,7 +789,8 @@
         const result = await window.compressImageEngine(imgFile, {
           mode: currentStrategy,
           targetBytes: targetBytes,
-          sliderPct: parseInt(imgSlider.value)
+          sliderPct: parseInt(imgSlider.value),
+          format: selectedImgFormat
         });
 
         imgBlob = result.blob;
@@ -777,6 +799,22 @@
         document.getElementById('imgOriginalName').textContent = imgFile.name;
         document.getElementById('imgSizesDelta').textContent = `${formatBytes(imgFile.size)} ➔ ${formatBytes(result.newSize)} (${result.savedPct > 0 ? '-' + result.savedPct + '%' : 'Optimized'})`;
         document.getElementById('imgExportName').value = generateExportFilename(imgFile.name, DocToolKit.userProfile.name, 'compressed', result.ext);
+
+        const targetStatusBanner = document.getElementById('imgTargetStatusMsg');
+        if (targetStatusBanner) {
+          if (currentStrategy === 'target') {
+            targetStatusBanner.style.display = 'flex';
+            if (result.achieved) {
+              targetStatusBanner.className = 'target-result-badge achieved';
+              targetStatusBanner.textContent = `✓ Target Achieved: Output (${formatBytes(result.newSize)}) meets your goal.`;
+            } else {
+              targetStatusBanner.className = 'target-result-badge unachieved';
+              targetStatusBanner.textContent = result.statusMessage || `⚠️ Target of ${formatBytes(targetBytes)} reached quality floor (${formatBytes(result.newSize)}).`;
+            }
+          } else {
+            targetStatusBanner.style.display = 'none';
+          }
+        }
 
         if (inspectorStatusPill) {
           inspectorStatusPill.textContent = 'Completed';
@@ -844,7 +882,14 @@
     }
 
     function downloadImg() {
-      if (imgBlob) triggerDownload(imgBlob, document.getElementById('imgExportName').value);
+      if (imgBlob) {
+        triggerDownload(imgBlob, document.getElementById('imgExportName').value);
+        const conf = document.getElementById('imgDownloadConfirm');
+        if (conf) {
+          conf.style.display = 'inline-flex';
+          setTimeout(() => { if (conf) conf.style.display = 'none'; }, 4000);
+        }
+      }
     }
 
     function renderRecentActivity() {
@@ -881,8 +926,10 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
+      resetImgUpload();
       renderRecentActivity();
     });
+    resetImgUpload();
     renderRecentActivity();
   </script>
 </body>

@@ -400,51 +400,97 @@
 
   <!-- Interactive JavaScript for this tool -->
   <script>
-  
-        let allDocs = [];
-        async function loadLibrary() {
-          allDocs = await getAllDocumentsFromDB();
-          renderLibrary(allDocs);
-        }
+    let allDocs = [];
 
-        function renderLibrary(docs) {
-          document.getElementById('libCount').textContent = `Total Stored: ${docs.length} documents`;
-          const list = document.getElementById('orgDocList');
-          if (docs.length === 0) {
-            list.innerHTML = '<p style="text-align:center; padding:30px; color:var(--text-muted); font-size:14px;">No documents in local library yet. Compress, convert, or scan a file to see it saved here!</p>';
-            return;
-          }
-          list.innerHTML = docs.map(doc => `
-            <div style="background:var(--track-bg); border-radius:12px; padding:14px; display:flex; justify-content:space-between; align-items:center;">
-              <div>
-                <div style="font-weight:700; font-size:14px;">${doc.name}</div>
-                <div style="font-size:12px; color:var(--text-muted); margin-top:2px;">Type: ${doc.type || 'Doc'} • Size: ${formatBytes(doc.size)} • ${new Date(doc.date).toLocaleDateString()}</div>
-              </div>
-              <button class="preset-pill" onclick="deleteDoc(${doc.id})" style="color:red; font-size:11px;">Delete</button>
+    async function loadLibrary() {
+      const libCount = document.getElementById('libCount');
+      const list = document.getElementById('orgDocList');
+      libCount.textContent = 'Loading library...';
+
+      try {
+        allDocs = await getAllDocumentsFromDB();
+        renderLibrary(allDocs);
+      } catch (err) {
+        console.warn('Could not read IndexedDB library:', err);
+        libCount.textContent = 'Local Storage Unavailable';
+        list.innerHTML = `
+          <div style="background:var(--track-bg); border-radius:12px; padding:24px; text-align:center;">
+            <div style="font-size:28px; margin-bottom:8px;">🔒</div>
+            <div style="font-weight:700; font-size:15px; margin-bottom:6px;">Private Browsing or Restricted Storage</div>
+            <p style="font-size:13px; color:var(--text-muted); margin-bottom:14px; line-height:1.5;">
+              Your browser is running in private mode or has blocked local IndexedDB storage.
+              All file processing, compression, and conversion still work normally, but history cannot be saved between sessions.
+            </p>
+            <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+              <a href="../compress-pdf/" class="preset-pill" style="text-decoration:none;">Compress PDF</a>
+              <a href="../compress-image/" class="preset-pill" style="text-decoration:none;">Compress Image</a>
+              <a href="../merge-pdf/" class="preset-pill" style="text-decoration:none;">Merge PDF</a>
             </div>
-          `).join('');
-        }
+          </div>
+        `;
+      }
+    }
 
-        document.getElementById('orgSearch').oninput = (e) => {
-          const q = e.target.value.toLowerCase();
-          const filtered = allDocs.filter(d => d.name.toLowerCase().includes(q));
-          renderLibrary(filtered);
-        };
+    function renderLibrary(docs) {
+      document.getElementById('libCount').textContent = `Total Stored: ${pluralize(docs.length, 'document', 'documents')}`;
+      const list = document.getElementById('orgDocList');
+      if (docs.length === 0) {
+        list.innerHTML = `
+          <div style="text-align:center; padding:36px 16px; background:var(--track-bg); border-radius:12px;">
+            <div style="font-size:32px; margin-bottom:10px;">📂</div>
+            <div style="font-weight:700; font-size:15px; margin-bottom:6px;">No Documents Stored Yet</div>
+            <p style="color:var(--text-muted); font-size:13px; max-width:400px; margin:0 auto 16px auto; line-height:1.5;">
+              Whenever you compress, convert, merge, or scan documents in DocToolKit, quick history records will appear here securely on your device.
+            </p>
+            <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap;">
+              <a href="../compress-pdf/" class="preset-pill" style="text-decoration:none;">Compress PDF</a>
+              <a href="../compress-image/" class="preset-pill" style="text-decoration:none;">Compress Image</a>
+              <a href="../merge-pdf/" class="preset-pill" style="text-decoration:none;">Merge PDF</a>
+            </div>
+          </div>
+        `;
+        return;
+      }
+      list.innerHTML = docs.map(doc => `
+        <div style="background:var(--track-bg); border-radius:12px; padding:14px; display:flex; justify-content:space-between; align-items:center;">
+          <div style="overflow:hidden; text-overflow:ellipsis; padding-right:12px;">
+            <div style="font-weight:700; font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${doc.name}</div>
+            <div style="font-size:12px; color:var(--text-muted); margin-top:2px;">Type: ${doc.type || 'Doc'} • Size: ${formatBytes(doc.size)} • ${new Date(doc.date).toLocaleDateString()}</div>
+          </div>
+          <button class="preset-pill" onclick="deleteDoc(${doc.id})" style="color:#ef4444; font-size:11px; flex-shrink:0;">Delete</button>
+        </div>
+      `).join('');
+    }
 
-        window.deleteDoc = async (id) => {
-          await deleteDocumentFromDB(id);
-          loadLibrary();
-        };
+    document.getElementById('orgSearch').oninput = (e) => {
+      const q = e.target.value.toLowerCase();
+      const filtered = allDocs.filter(d => (d.name || '').toLowerCase().includes(q));
+      renderLibrary(filtered);
+    };
 
-        window.clearLibrary = async () => {
-          if (!confirm('Clear all stored document history?')) return;
-          const db = await openDocDB();
-          const tx = db.transaction('documents', 'readwrite');
-          tx.objectStore('documents').clear();
-          tx.oncomplete = () => loadLibrary();
-        };
+    window.deleteDoc = async (id) => {
+      try {
+        await deleteDocumentFromDB(id);
+      } catch (e) {
+        console.warn('Failed to delete doc:', e);
+      }
+      loadLibrary();
+    };
 
+    window.clearLibrary = async () => {
+      if (!confirm('Clear all stored document history from this browser?')) return;
+      try {
+        const db = await openDocDB();
+        const tx = db.transaction('documents', 'readwrite');
+        tx.objectStore('documents').clear();
+        tx.oncomplete = () => loadLibrary();
+      } catch (e) {
+        console.warn('Failed to clear library:', e);
         loadLibrary();
+      }
+    };
+
+    loadLibrary();
         
   </script>
 </body>
