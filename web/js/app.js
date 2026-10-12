@@ -107,6 +107,7 @@
   }
 
   window.DocToolKit = {
+    version: '2.6.0',
     getPref,
     setPref,
     parseTargetBytes,
@@ -156,22 +157,20 @@
       const btn = container.querySelector('#btnRetryFeedbackOp');
       if (btn && onRetry) btn.onclick = onRetry;
     },
-    showResult(containerId, options) {
+    showResult(containerId, options = {}) {
       const container = typeof containerId === 'string' ? document.getElementById(containerId) : containerId;
       if (!container) return;
-      const {
-        title = 'Operation Completed Successfully',
-        subtitle = 'Output generated locally. Click download below.',
-        filename,
-        blob,
-        origSize,
-        newSize,
-        savedPct,
-        meta = [],
-        ctaLabel = 'Download Output',
-        onReset,
-        resetLabel = 'Process Another File'
-      } = options;
+      const title = options.title || 'Operation Completed Successfully';
+      const subtitle = options.subtitle || options.subTitle || 'Output generated locally. Click download below.';
+      const filename = options.filename || options.defaultFilename || 'download';
+      const blob = options.blob;
+      const origSize = options.origSize;
+      const newSize = options.newSize || (blob ? blob.size : 0);
+      const savedPct = typeof options.savedPct === 'number' ? options.savedPct : (origSize && newSize ? Math.round(((origSize - newSize) / origSize) * 100) : 0);
+      const meta = options.meta || [];
+      const ctaLabel = options.ctaLabel || 'Download Output';
+      const onReset = options.onReset;
+      const resetLabel = options.resetLabel || 'Process Another File';
 
       let metaItemsHtml = '';
       if (origSize) {
@@ -625,32 +624,63 @@
       achieved = true;
       statusMessage = `Compressed at ${sliderPct}% compression level.`;
     } else {
-      // Target File Size Mode: Calibrate according to perPageBudget
+      // Target File Size Mode: Adaptive Empirical Calibration
       if (targetBytes >= origSize) {
-        qualityFactor = 0.88;
-        scaleFactor = 1.25;
+        qualityFactor = 0.92;
+        scaleFactor = 1.80;
         achieved = true;
         statusMessage = `Target size (${formatBytes(targetBytes)}) is greater than or equal to original. File saved at maximum quality.`;
       } else {
-        const perPageBudget = Math.max(1000, (targetBytes - 6000) / Math.max(1, numPages));
+        onProgress(15, 'Evaluating document complexity & clarity...');
+        const perPageBudget = Math.max(1500, (targetBytes - 3500) / Math.max(1, numPages));
 
-        if (perPageBudget >= 400 * 1024) {
-          scaleFactor = 1.30; qualityFactor = 0.85;
-        } else if (perPageBudget >= 250 * 1024) {
-          scaleFactor = 1.20; qualityFactor = 0.80;
-        } else if (perPageBudget >= 150 * 1024) {
-          scaleFactor = 1.10; qualityFactor = 0.74;
-        } else if (perPageBudget >= 90 * 1024) {
-          scaleFactor = 0.98; qualityFactor = 0.65;
-        } else if (perPageBudget >= 50 * 1024) {
-          scaleFactor = 0.86; qualityFactor = 0.52;
-        } else if (perPageBudget >= 30 * 1024) {
-          scaleFactor = 0.74; qualityFactor = 0.38;
-        } else if (perPageBudget >= 18 * 1024) {
-          scaleFactor = 0.64; qualityFactor = 0.26;
+        // Sample Page 1 at reference scale (1.5) and quality 0.82
+        let sampleBytes = 35000;
+        try {
+          const samplePage = await pdfDoc.getPage(1);
+          const sampleViewport = samplePage.getViewport({ scale: 1.5 });
+          const sampleCanvas = document.createElement('canvas');
+          sampleCanvas.width = sampleViewport.width;
+          sampleCanvas.height = sampleViewport.height;
+          const sampleCtx = sampleCanvas.getContext('2d');
+          sampleCtx.fillStyle = '#FFFFFF';
+          sampleCtx.fillRect(0, 0, sampleCanvas.width, sampleCanvas.height);
+          await samplePage.render({ canvasContext: sampleCtx, viewport: sampleViewport }).promise;
+          const sampleDataUrl = sampleCanvas.toDataURL('image/jpeg', 0.82);
+          sampleBytes = Math.round((sampleDataUrl.length - 22) * 0.75);
+        } catch (e) {
+          console.warn('PDF sampling notice:', e);
+        }
+
+        // Calibrate scale and quality according to measured empirical sample:
+        // Aim for ~90% of budget to prevent overshoot while maximizing crispness
+        const budgetTarget = perPageBudget * 0.90;
+        const ratio = budgetTarget / Math.max(1000, sampleBytes);
+
+        if (ratio >= 2.5) {
+          // Abundant budget headroom: maximize resolution and crisp text
+          scaleFactor = 1.80; // total viewport scale = 2.7 (~195 DPI)
+          qualityFactor = 0.92;
+        } else if (ratio >= 1.4) {
+          // Healthy budget headroom: high quality
+          scaleFactor = 1.55; // total viewport scale = 2.3 (~165 DPI)
+          qualityFactor = 0.86;
+        } else if (ratio >= 0.85) {
+          // Balanced budget: standard clear quality
+          scaleFactor = 1.25; // total viewport scale = 1.88 (~135 DPI)
+          qualityFactor = 0.78;
+        } else if (ratio >= 0.50) {
+          // Tight budget: moderate compression
+          scaleFactor = 1.05; // total viewport scale = 1.58 (~113 DPI)
+          qualityFactor = 0.62;
+        } else if (ratio >= 0.28) {
+          // Severe budget: compact compression
+          scaleFactor = 0.88; // total viewport scale = 1.32 (~95 DPI)
+          qualityFactor = 0.44;
         } else {
-          // Readability floor for severe targets
-          scaleFactor = 0.58; qualityFactor = 0.18;
+          // Readability floor: preserve text legibility
+          scaleFactor = 0.72; // total viewport scale = 1.08 (~78 DPI)
+          qualityFactor = 0.26;
         }
       }
     }
@@ -658,7 +688,7 @@
     const outPdf = await PDFLib.PDFDocument.create();
 
     for (let i = 1; i <= numPages; i++) {
-      const prog = Math.round(15 + (i / numPages) * 75);
+      const prog = Math.round(20 + (i / numPages) * 70);
       onProgress(prog, `Optimizing page ${i} of ${numPages}...`);
 
       const page = await pdfDoc.getPage(i);
@@ -668,6 +698,8 @@
       canvas.width = viewport.width;
       canvas.height = viewport.height;
       const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       await page.render({ canvasContext: ctx, viewport }).promise;
 
@@ -692,10 +724,10 @@
     if (mode === 'target') {
       if (newSize <= targetBytes) {
         achieved = true;
-        statusMessage = `Target achieved: Output (${formatBytes(newSize)}) is within your ${formatBytes(targetBytes)} goal.`;
+        statusMessage = `Target achieved: Output (${formatBytes(newSize)}) is within your ${formatBytes(targetBytes)} target with maximum clarity preserved.`;
       } else {
         achieved = false;
-        statusMessage = `Target of ${formatBytes(targetBytes)} could not be reached without making text unreadable. Reduced as much as allowable (${formatBytes(newSize)}).`;
+        statusMessage = `Target of ${formatBytes(targetBytes)} reached readability floor (${formatBytes(newSize)}). Minimum legible quality was preserved.`;
       }
     }
 

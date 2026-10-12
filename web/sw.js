@@ -1,5 +1,5 @@
-// DocToolKit Service Worker for Offline PWA - v2.4.0
-const CACHE_NAME = 'doctoolkit-v2.4.0';
+// DocToolKit Service Worker for Offline PWA - v2.6.0
+const CACHE_NAME = 'doctoolkit-v2.6.0';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -20,7 +20,9 @@ const ASSETS_TO_CACHE = [
   './icons/icon-192.webp',
   './icons/icon-512.webp',
   './css/style.css',
+  './css/style.css?v=2.6.0',
   './js/app.js',
+  './js/app.js?v=2.6.0',
   './js/pdf-lib.min.js',
   './js/pdf.min.js',
   './js/pdf.worker.min.js'
@@ -41,7 +43,8 @@ self.addEventListener('activate', (event) => {
     caches.keys().then((keys) => {
       return Promise.all(
         keys.map((key) => {
-          if (key !== CACHE_NAME) {
+          // Delete obsolete doctoolkit caches while preserving unrelated origin caches
+          if (key !== CACHE_NAME && key.startsWith('doctoolkit-')) {
             return caches.delete(key);
           }
         })
@@ -80,22 +83,43 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Cache-First for static assets (CSS, JS, images, icons, fonts)
+  // Network-First for dynamic application logic and stylesheets (app.js, style.css)
+  // Guarantees returning online users receive current JavaScript/CSS immediately
+  if (url.includes('/js/app.js') || url.includes('/css/style.css')) {
+    event.respondWith(
+      fetch(event.request)
+        .then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            const responseToCache = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(event.request, responseToCache);
+            });
+          }
+          return networkResponse;
+        })
+        .catch(() => {
+          return caches.match(event.request).then((cached) => {
+            return cached || caches.match('./js/app.js') || caches.match('./css/style.css');
+          });
+        })
+    );
+    return;
+  }
+
+  // Cache-First with Background Revalidation for static vendor assets, images, icons
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
-      if (cachedResponse) {
-        return cachedResponse;
-      }
-      return fetch(event.request).then((networkResponse) => {
-        if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
-          return networkResponse;
+      const fetchPromise = fetch(event.request).then((networkResponse) => {
+        if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
+          const responseToCache = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseToCache);
+          });
         }
-        const responseToCache = networkResponse.clone();
-        caches.open(CACHE_NAME).then((cache) => {
-          cache.put(event.request, responseToCache);
-        });
         return networkResponse;
-      });
+      }).catch(() => null);
+
+      return cachedResponse || fetchPromise;
     })
   );
 });
