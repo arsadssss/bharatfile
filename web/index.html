@@ -33,10 +33,10 @@
   <!-- Stylesheets -->
   <link rel="stylesheet" href="css/style.css">
 
-  <!-- Vendor Libraries for 100% Local Processing -->
-  <script src="js/pdf-lib.min.js"></script>
-  <script src="js/pdf.min.js"></script>
-  <script src="js/app.js"></script>
+  <!-- Vendor Libraries for 100% Local Processing (Deferred to prevent render blocking) -->
+  <script src="js/pdf-lib.min.js" defer></script>
+  <script src="js/pdf.min.js" defer></script>
+  <script src="js/app.js" defer></script>
 
   <!-- JSON-LD Structured Data -->
   <script type="application/ld+json">
@@ -82,7 +82,7 @@
             "name": "Are my files uploaded to any server when using DocToolKit?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "No. DocToolKit runs entirely inside your web browser using WebAssembly and HTML5 Canvas. Your files, photos, signatures, and PDF pages are processed strictly in local browser memory and are never uploaded to any remote server."
+              "text": "No. All file processing happens locally on your computer or phone using modern browser technologies (WebAssembly, HTML5 Canvas, and PDF.js). Your confidential PDFs, photos, and signatures never travel to our servers or any third-party cloud."
             }
           },
           {
@@ -90,23 +90,31 @@
             "name": "How does the continuous compression slider work?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "The custom 1% to 100% slider maps directly to genuine compression algorithms. You can select any exact percentage or target file size preset (such as 50 KB, 100 KB, or 200 KB) for precise size reduction."
+              "text": "The 1% to 100% slider controls genuine compression parameters. Higher percentages apply stronger downsampling and JPEG optimization curves to maximize size reduction, while lower percentages prioritize pristine visual fidelity."
             }
           },
           {
             "@type": "Question",
-            "name": "Does DocToolKit work offline?",
+            "name": "Is DocToolKit compatible with mobile browsers?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "Yes. DocToolKit is an offline-first Progressive Web App (PWA). Once loaded, its service worker caches all required assets so you can continue compressing, merging, converting, and editing documents without an active internet connection."
+              "text": "Yes. DocToolKit is completely responsive across iOS Safari, Android Chrome, tablet viewports, and desktop monitors. You can also add it to your home screen as a Progressive Web App (PWA)."
             }
           },
           {
             "@type": "Question",
-            "name": "Is DocToolKit completely free to use?",
+            "name": "What file formats are supported?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "Yes. All tools on DocToolKit are completely free to use without file limits, subscriptions, or required account registration."
+              "text": "DocToolKit supports standard PDF documents (.pdf) along with major raster image formats including JPEG (.jpg, .jpeg), PNG (.png), and WebP (.webp)."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Is there a daily limit or paid subscription?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "No. DocToolKit is completely free with no usage caps, watermarks, or account registration requirements."
             }
           }
         ]
@@ -130,7 +138,10 @@
   <aside class="drawer" id="drawer">
     <div class="drawer-header">
       <div style="display: flex; align-items: center; gap: 10px;">
-        <img src="icons/doctoolkit-logo-horizontal.png" alt="DocToolKit" width="155" height="28" style="height: 28px; width: auto; display: block;">
+        <picture>
+          <source srcset="icons/doctoolkit-logo-horizontal.webp" type="image/webp">
+          <img src="icons/doctoolkit-logo-horizontal.png" alt="DocToolKit" width="155" height="28" style="height: 28px; width: auto; display: block;" loading="lazy" decoding="async">
+        </picture>
       </div>
       <button class="btn-close-modal" id="closeDrawerBtn" aria-label="Close Navigation">✕</button>
     </div>
@@ -182,7 +193,10 @@
     <!-- Top Floating Navbar -->
     <header class="navbar">
       <a class="nav-brand" href="./" aria-label="DocToolKit Homepage">
-        <img src="icons/doctoolkit-logo-horizontal.png" alt="DocToolKit" width="199" height="36" class="nav-brand-logo">
+        <picture>
+          <source srcset="icons/doctoolkit-logo-horizontal.webp" type="image/webp">
+          <img src="icons/doctoolkit-logo-horizontal.png" alt="DocToolKit" width="199" height="36" class="nav-brand-logo" fetchpriority="high">
+        </picture>
       </a>
 
       <!-- Desktop Center Menu -->
@@ -216,13 +230,13 @@
 
       <!-- Left Column: Primary Interactive Compressor Card -->
       <section class="compressor-card">
-        <!-- Segmented Tab Switcher -->
+        <!-- Segmented Tab Switcher (Format Mode) -->
         <div class="seg-tabs">
-          <button class="seg-tab active" id="tabPdf" onclick="setMode('pdf')">
+          <button type="button" class="seg-tab active" id="tabPdf" onclick="setMode('pdf')">
             <span>📄</span>
             <span>Compress PDF</span>
           </button>
-          <button class="seg-tab" id="tabImg" onclick="setMode('image')">
+          <button type="button" class="seg-tab" id="tabImg" onclick="setMode('image')">
             <span>🖼️</span>
             <span>Compress Image</span>
           </button>
@@ -247,8 +261,62 @@
           </button>
         </div>
 
-        <!-- Continuous 1% - 100% Compression Slider Control -->
-        <div class="slider-container" id="sliderGroup">
+        <!-- Strategy Toggle (Target File Size vs Compression Level) -->
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <label style="font-size: 12px; font-weight: 700; color: var(--text-muted);">Compression Strategy:</label>
+            <span style="font-size: 11px; color: var(--primary); font-weight: 600;" id="strategyBadge">Target Size Mode</span>
+          </div>
+          <div class="strategy-toggle">
+            <button type="button" class="strategy-toggle-btn active" id="btnStratTarget" onclick="setStrategy('target')">
+              <span>🎯</span>
+              <span>Target File Size</span>
+            </button>
+            <button type="button" class="strategy-toggle-btn" id="btnStratSlider" onclick="setStrategy('slider')">
+              <span>🎚️</span>
+              <span>Quality Level</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Target Size Controls Panel (Visible in Target Mode) -->
+        <div class="target-size-panel" id="targetSizePanel">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <label for="customTargetInput" style="font-size: 13px; font-weight: 700;">Desired Output File Size:</label>
+            <span class="status-pill active" id="targetSelectedBadge">200 KB</span>
+          </div>
+
+          <div class="target-input-row">
+            <div class="target-input-wrap">
+              <span class="target-input-icon">🎯</span>
+              <input type="number" id="customTargetInput" class="target-size-input" placeholder="e.g. 200" min="1" step="any" value="200" aria-label="Target File Size">
+            </div>
+            <select id="targetUnitSelect" class="target-unit-select" aria-label="Target Size Unit">
+              <option value="KB" selected>KB</option>
+              <option value="MB">MB</option>
+            </select>
+          </div>
+
+          <div class="target-validation-alert" id="targetAlert"></div>
+
+          <div>
+            <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">Quick Presets:</div>
+            <div class="preset-pills">
+              <button type="button" class="preset-pill" onclick="applyTargetPreset(50, 'KB')">50 KB</button>
+              <button type="button" class="preset-pill" onclick="applyTargetPreset(100, 'KB')">100 KB</button>
+              <button type="button" class="preset-pill active" onclick="applyTargetPreset(200, 'KB')">200 KB</button>
+              <button type="button" class="preset-pill" onclick="applyTargetPreset(500, 'KB')">500 KB</button>
+              <button type="button" class="preset-pill" onclick="applyTargetPreset(1, 'MB')">1 MB</button>
+            </div>
+          </div>
+
+          <p class="target-hint-text" id="targetHintText">
+            The engine automatically calibrates downsampling &amp; quality factors to approach your target size threshold.
+          </p>
+        </div>
+
+        <!-- Continuous 1% - 100% Compression Slider Control (Visible in Slider Mode) -->
+        <div class="slider-container" id="sliderGroup" style="display: none;">
           <div class="slider-header">
             <span style="font-size: 13px; font-weight: 700;">Compression Level</span>
             <span class="slider-pct-badge" id="sliderPctBadge">60%</span>
@@ -266,21 +334,15 @@
           </div>
         </div>
 
-        <!-- Fast Target Presets -->
-        <div>
-          <div style="font-size: 12px; font-weight: 700; color: var(--text-muted); margin-bottom: 8px;">Target Size Presets (KB / MB):</div>
-          <div class="preset-pills">
-            <button class="preset-pill" onclick="applyPreset('50kb')">50 KB</button>
-            <button class="preset-pill" onclick="applyPreset('100kb')">100 KB</button>
-            <button class="preset-pill" onclick="applyPreset('200kb')">200 KB</button>
-            <button class="preset-pill" onclick="applyPreset('500kb')">500 KB</button>
-            <button class="preset-pill" onclick="applyPreset('1mb')">1 MB</button>
-          </div>
-        </div>
+        <!-- Re-compress Action Button (Shown when file is loaded) -->
+        <button type="button" class="btn-choose-file" id="btnCompressAction" style="display: none; width: 100%; justify-content: center;" onclick="triggerCompressionFromUI()">
+          <span>🚀</span>
+          <span>Compress to Target Size</span>
+        </button>
 
         <!-- State Box: Real Processing State -->
         <div class="state-box" id="procBox">
-          <div style="width: 50px; height: 50px; border-radius: 14px; background: rgba(239, 68, 68, 0.1); display: flex; align-items: center; justify-content: center; font-size: 26px;">📄</div>
+          <div style="width: 50px; height: 50px; border-radius: 14px; background: rgba(13, 89, 242, 0.1); display: flex; align-items: center; justify-content: center; font-size: 26px;">⚡</div>
           <div>
             <div style="font-size: 14px; font-weight: 700;" id="procFileName">Compressing document.pdf</div>
             <div style="font-size: 12px; color: var(--text-muted);" id="procFileSize">Original: 2.4 MB</div>
@@ -289,7 +351,7 @@
             <div class="progress-bar-fill" id="procBarFill"></div>
           </div>
           <div style="display: flex; justify-content: space-between; width: 100%; font-size: 12px; color: var(--text-muted);">
-            <span id="procStatusText">Processing pages...</span>
+            <span id="procStatusText">Processing file...</span>
             <span id="procProgressPct" style="font-weight: 700; color: var(--primary);">0%</span>
           </div>
           <button class="btn-choose-file" style="background: var(--track-bg); color: var(--text-main); box-shadow: none; padding: 6px 18px; font-size: 12px;" onclick="cancelCompression()">✕ Cancel</button>
@@ -300,10 +362,15 @@
           <div style="width: 50px; height: 50px; border-radius: 14px; background: var(--success-bg); color: var(--success); display: flex; align-items: center; justify-content: center; font-size: 26px;">✓</div>
           <div>
             <div style="font-size: 13px; font-weight: 700;" id="compOriginalName">document.pdf</div>
-            <div class="delta-badge" id="compSizesDelta" style="margin-top: 6px;">2.4 MB ➔ 890 KB (-63%)</div>
+            <div class="delta-badge" id="compSizesDelta" style="margin-top: 6px;">2.4 MB ➔ 195 KB (-92%)</div>
           </div>
 
-          <!-- Section 8 Mandatory Filename Customization Before Export -->
+          <!-- Target Status Banner -->
+          <div id="compTargetStatusMsg" class="target-result-badge achieved" style="width: 100%;">
+            ✓ Target Achieved: Output meets your goal.
+          </div>
+
+          <!-- Smart Filename Customization Before Export -->
           <div style="width: 100%; text-align: left;">
             <label for="exportFilenameInput" style="font-size: 12px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">Smart Export Filename (Customize before download):</label>
             <input type="text" class="rename-input" id="exportFilenameInput" value="document_User_compressed.pdf">
@@ -322,53 +389,116 @@
         </div>
       </section>
 
-      <!-- Right Column: Hero Visual Graphic & Value Proposition -->
-      <section class="benefit-card">
-        <div class="benefit-visual-wrapper">
-          <div class="stacked-doc doc-back">
-            <div style="width: 20px; height: 4px; background: #CBD5E1; border-radius: 2px;"></div>
-            <div style="width: 45px; height: 4px; background: #E2E8F0; border-radius: 2px;"></div>
-          </div>
-          <div class="stacked-doc doc-front">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-              <div style="width: 24px; height: 24px; border-radius: 6px; background: #EF4444; color: white; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 800;">PDF</div>
-              <div style="font-size: 10px; font-weight: 700; color: #12B76A;">-68%</div>
-            </div>
-            <div style="width: 100%; height: 3px; background: #E2E8F0; border-radius: 2px; margin-top: 8px;"></div>
-            <div style="width: 75%; height: 3px; background: #E2E8F0; border-radius: 2px;"></div>
-            <div style="width: 50%; height: 3px; background: #E2E8F0; border-radius: 2px;"></div>
-          </div>
-          <div class="sphere sphere-1"></div>
-          <div class="sphere sphere-2"></div>
-          <div class="sphere sphere-3"></div>
-        </div>
+      <!-- Right Column: Live Inspector & Recent Activity Sidebar -->
+      <aside class="workspace-sidebar">
 
-        <div class="benefits-list">
-          <div class="benefit-item">
-            <div class="benefit-icon-badge badge-purple">⚡</div>
-            <div class="benefit-text">
-              <h4>Instant In-Browser Execution</h4>
-              <p>Reduces file size in seconds via local WebAssembly without upload delays.</p>
-            </div>
+        <!-- Card 1: Compression Inspector & File Insights -->
+        <section class="inspector-card" id="inspectorCard">
+          <div class="card-header-bar">
+            <h3><span>📊</span><span>File &amp; Compression Insights</span></h3>
+            <span class="status-pill" id="inspectorStatusPill">Idle</span>
           </div>
 
-          <div class="benefit-item">
-            <div class="benefit-icon-badge badge-blue">🛡️</div>
-            <div class="benefit-text">
-              <h4>100% Private On-Device</h4>
-              <p>Your documents, signatures, and photos never leave your device.</p>
+          <!-- Empty State (When No File Is Selected) -->
+          <div class="inspector-empty-wrap" id="inspectorEmptyWrap">
+            <div class="benefit-visual-wrapper" style="height: 130px; margin-bottom: 2px;">
+              <div class="stacked-doc doc-back">
+                <div style="width: 20px; height: 4px; background: #CBD5E1; border-radius: 2px;"></div>
+                <div style="width: 45px; height: 4px; background: #E2E8F0; border-radius: 2px;"></div>
+              </div>
+              <div class="stacked-doc doc-front">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <div style="width: 24px; height: 24px; border-radius: 6px; background: #EF4444; color: white; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 800;">PDF</div>
+                  <div style="font-size: 10px; font-weight: 700; color: #12B76A;">-82%</div>
+                </div>
+                <div style="width: 100%; height: 3px; background: #E2E8F0; border-radius: 2px; margin-top: 8px;"></div>
+                <div style="width: 75%; height: 3px; background: #E2E8F0; border-radius: 2px;"></div>
+              </div>
+              <div class="sphere sphere-1"></div>
+              <div class="sphere sphere-2"></div>
+              <div class="sphere sphere-3"></div>
+            </div>
+
+            <div class="inspector-guide-row">
+              <div class="guide-icon-badge">🎯</div>
+              <div class="guide-info-text">
+                <h5>Target File Size Mode</h5>
+                <p>Specify exact KB or MB limits (e.g. 50 KB, 100 KB, 200 KB) required by online portal application forms.</p>
+              </div>
+            </div>
+
+            <div class="inspector-guide-row">
+              <div class="guide-icon-badge">🎚️</div>
+              <div class="guide-info-text">
+                <h5>Quality Level Mode</h5>
+                <p>Smooth 1% to 100% slider control balancing file size savings with visual document fidelity.</p>
+              </div>
+            </div>
+
+            <div class="inspector-guide-row">
+              <div class="guide-icon-badge">🛡️</div>
+              <div class="guide-info-text">
+                <h5>100% Client-Side Privacy</h5>
+                <p>Zero cloud uploads. All compression algorithms execute inside your browser memory.</p>
+              </div>
             </div>
           </div>
 
-          <div class="benefit-item">
-            <div class="benefit-icon-badge badge-green">🔒</div>
-            <div class="benefit-text">
-              <h4>Accurate Target Presets</h4>
-              <p>Achieve exact KB thresholds (50KB, 100KB, 200KB) for portal uploads.</p>
+          <!-- Active File State (When A File Is Selected / Processed) -->
+          <div class="inspector-active-wrap" id="inspectorActiveWrap">
+            <div class="active-file-summary">
+              <div class="active-file-header">
+                <span id="inspFileName" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 200px;">filename.pdf</span>
+                <span class="status-pill active" id="inspFormatBadge">PDF</span>
+              </div>
+              <div class="active-file-meta">
+                <span>Original Size:</span>
+                <strong id="inspOriginalSize">0 B</strong>
+              </div>
+              <div class="active-file-meta">
+                <span>Active Strategy:</span>
+                <span id="inspStrategyText" style="font-weight: 600; color: var(--primary);">Target: 200 KB</span>
+              </div>
+            </div>
+
+            <div class="metrics-delta-grid">
+              <div class="metric-col">
+                <span class="metric-col-label">Original</span>
+                <span class="metric-col-val" id="metricOrig">--</span>
+              </div>
+              <div class="metric-col">
+                <span class="metric-col-label">Goal</span>
+                <span class="metric-col-val" id="metricGoal" style="color: var(--primary);">200 KB</span>
+              </div>
+              <div class="metric-col">
+                <span class="metric-col-label">Output</span>
+                <span class="metric-col-val" id="metricOutput" style="color: var(--success);">--</span>
+              </div>
+            </div>
+
+            <div class="target-result-badge achieved" id="inspTargetStatusBadge" style="display: none;">
+              <span id="inspTargetStatusIcon">✓</span>
+              <span id="inspTargetStatusText">Target achieved</span>
+            </div>
+
+            <div style="font-size: 11px; color: var(--text-muted); line-height: 1.4;" id="inspTechNotes">
+              Engine ready. Click compress or adjust settings to process file.
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+
+        <!-- Card 2: Recent Activity / Local History Card -->
+        <section class="activity-card" id="activityCard">
+          <div class="card-header-bar">
+            <h3><span>🕒</span><span>Recent Local Activity</span></h3>
+            <button type="button" class="btn-clear-history" onclick="clearLocalActivity()" title="Clear local activity history">Clear</button>
+          </div>
+          <div class="activity-list" id="activityList">
+            <div class="activity-empty-message">No recent files processed yet on this browser. Processed files will appear here locally.</div>
+          </div>
+        </section>
+
+      </aside>
 
     </main>
 
@@ -565,7 +695,10 @@
       <div class="footer-top">
         <div class="footer-col">
           <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
-            <img src="icons/doctoolkit-logo-horizontal.png" alt="DocToolKit" width="155" height="28" style="height: 28px; width: auto; display: block;">
+            <picture>
+              <source srcset="icons/doctoolkit-logo-horizontal.webp" type="image/webp">
+              <img src="icons/doctoolkit-logo-horizontal.png" alt="DocToolKit" width="155" height="28" style="height: 28px; width: auto; display: block;" loading="lazy" decoding="async">
+            </picture>
           </div>
           <p style="font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 12px;">
             Free, privacy-first online tools for PDF and image compression, conversion, page reorganization, document scanning, and digital signatures. 100% on-device processing.
@@ -627,6 +760,7 @@
   <script>
     // State Variables
     let currentMode = 'pdf';
+    let currentStrategy = 'target'; // 'target' or 'slider'
     let loadedFile = null;
     let processedBlob = null;
     let isProcessing = false;
@@ -641,12 +775,26 @@
     const btnChooseFile = document.getElementById('btnChooseFile');
     const dropTitle = document.getElementById('dropTitle');
     const dropSub = document.getElementById('dropSub');
+
+    const btnStratTarget = document.getElementById('btnStratTarget');
+    const btnStratSlider = document.getElementById('btnStratSlider');
+    const strategyBadge = document.getElementById('strategyBadge');
+    const targetSizePanel = document.getElementById('targetSizePanel');
+    const customTargetInput = document.getElementById('customTargetInput');
+    const targetUnitSelect = document.getElementById('targetUnitSelect');
+    const targetSelectedBadge = document.getElementById('targetSelectedBadge');
+    const targetAlert = document.getElementById('targetAlert');
+    const targetHintText = document.getElementById('targetHintText');
+
+    const sliderGroup = document.getElementById('sliderGroup');
     const compSlider = document.getElementById('compSlider');
     const sliderFill = document.getElementById('sliderFill');
     const sliderPctBadge = document.getElementById('sliderPctBadge');
     const lblLow = document.getElementById('lblLow');
     const lblMed = document.getElementById('lblMed');
     const lblHigh = document.getElementById('lblHigh');
+
+    const btnCompressAction = document.getElementById('btnCompressAction');
 
     const procBox = document.getElementById('procBox');
     const procFileName = document.getElementById('procFileName');
@@ -658,20 +806,64 @@
     const compBox = document.getElementById('compBox');
     const compOriginalName = document.getElementById('compOriginalName');
     const compSizesDelta = document.getElementById('compSizesDelta');
+    const compTargetStatusMsg = document.getElementById('compTargetStatusMsg');
     const exportFilenameInput = document.getElementById('exportFilenameInput');
     const btnDownloadCompressed = document.getElementById('btnDownloadCompressed');
     const navProfileName = document.getElementById('navProfileName');
+
+    // Inspector & Activity Elements
+    const inspectorStatusPill = document.getElementById('inspectorStatusPill');
+    const inspectorEmptyWrap = document.getElementById('inspectorEmptyWrap');
+    const inspectorActiveWrap = document.getElementById('inspectorActiveWrap');
+    const inspFileName = document.getElementById('inspFileName');
+    const inspFormatBadge = document.getElementById('inspFormatBadge');
+    const inspOriginalSize = document.getElementById('inspOriginalSize');
+    const inspStrategyText = document.getElementById('inspStrategyText');
+    const metricOrig = document.getElementById('metricOrig');
+    const metricGoal = document.getElementById('metricGoal');
+    const metricOutput = document.getElementById('metricOutput');
+    const inspTargetStatusBadge = document.getElementById('inspTargetStatusBadge');
+    const inspTargetStatusIcon = document.getElementById('inspTargetStatusIcon');
+    const inspTargetStatusText = document.getElementById('inspTargetStatusText');
+    const inspTechNotes = document.getElementById('inspTechNotes');
+    const activityList = document.getElementById('activityList');
 
     const toolModalOverlay = document.getElementById('toolModalOverlay');
     const toolModalTitle = document.getElementById('toolModalTitle');
     const toolModalBody = document.getElementById('toolModalBody');
 
-    // Initialize Profile Name in Nav
-    if (navProfileName) {
-      navProfileName.textContent = DocToolKit.userProfile.name;
+    // Initialize Nav Profile Name and Recent Activity on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      if (navProfileName && window.DocToolKit && DocToolKit.userProfile) {
+        navProfileName.textContent = DocToolKit.userProfile.name;
+      }
+      renderRecentActivity();
+    });
+
+    // 1. Compression Strategy Switcher (Target Size vs Quality Slider)
+    function setStrategy(strat) {
+      currentStrategy = strat;
+      if (strat === 'target') {
+        btnStratTarget.classList.add('active');
+        btnStratSlider.classList.remove('active');
+        strategyBadge.textContent = 'Target Size Mode';
+        targetSizePanel.style.display = 'flex';
+        sliderGroup.style.display = 'none';
+        btnCompressAction.innerHTML = '<span>🚀</span><span>Compress to Target Size</span>';
+        updateTargetGoalDisplay();
+      } else {
+        btnStratSlider.classList.add('active');
+        btnStratTarget.classList.remove('active');
+        strategyBadge.textContent = 'Quality Level Mode';
+        targetSizePanel.style.display = 'none';
+        sliderGroup.style.display = 'flex';
+        btnCompressAction.innerHTML = '<span>🚀</span><span>Compress with Quality Level</span>';
+        metricGoal.textContent = compSlider.value + '%';
+        if (inspStrategyText) inspStrategyText.textContent = `Quality Level: ${compSlider.value}%`;
+      }
     }
 
-    // Mode Switcher
+    // 2. Format Mode Switcher (PDF vs Image)
     function setMode(mode) {
       currentMode = mode;
       resetToUpload();
@@ -690,7 +882,7 @@
         tabImg.classList.add('active');
         tabPdf.classList.remove('active');
         compTitle.textContent = 'Upload your Image';
-        compSub.textContent = 'Select JPG, PNG, or WebP to compress with quality control.';
+        compSub.textContent = 'Select JPG, PNG, or WebP to compress with size targeting.';
         dropTitle.textContent = 'Choose an Image or drag & drop it here';
         dropSub.textContent = 'JPG, PNG, WebP • 100% local canvas compression';
         mainFileInput.accept = 'image/jpeg,image/png,image/webp';
@@ -700,28 +892,74 @@
       }
     }
 
-    // Slider Interaction
+    // 3. Target Size Inputs & Presets
+    function applyTargetPreset(val, unit) {
+      customTargetInput.value = val;
+      targetUnitSelect.value = unit;
+
+      const pills = document.querySelectorAll('.preset-pill');
+      pills.forEach(p => {
+        const text = p.textContent.trim().toUpperCase();
+        const match = (val + ' ' + unit).toUpperCase();
+        if (text === match) p.classList.add('active');
+        else p.classList.remove('active');
+      });
+
+      updateTargetGoalDisplay();
+      if (loadedFile) {
+        triggerCompressionFromUI();
+      }
+    }
+
+    function updateTargetGoalDisplay() {
+      targetAlert.style.display = 'none';
+      const parsedBytes = getTargetBytes();
+      if (!parsedBytes) {
+        targetSelectedBadge.textContent = 'Invalid';
+        metricGoal.textContent = '--';
+        return;
+      }
+      const label = `${customTargetInput.value} ${targetUnitSelect.value}`;
+      targetSelectedBadge.textContent = label;
+      metricGoal.textContent = label;
+      if (inspStrategyText) inspStrategyText.textContent = `Target: ${label}`;
+
+      if (loadedFile && parsedBytes >= loadedFile.size) {
+        targetAlert.textContent = `Notice: Target size (${label}) is larger than or equal to original (${formatBytes(loadedFile.size)}). File will be optimized at maximum fidelity.`;
+        targetAlert.style.display = 'block';
+      }
+    }
+
+    customTargetInput.addEventListener('input', () => {
+      // Clear preset pills active highlight if custom value
+      document.querySelectorAll('.preset-pills .preset-pill').forEach(p => p.classList.remove('active'));
+      updateTargetGoalDisplay();
+    });
+
+    targetUnitSelect.addEventListener('change', () => {
+      updateTargetGoalDisplay();
+    });
+
+    function getTargetBytes() {
+      const val = parseFloat(customTargetInput.value);
+      if (isNaN(val) || val <= 0) return null;
+      return DocToolKit.parseTargetBytes(val, targetUnitSelect.value);
+    }
+
+    // 4. Slider Interaction
     compSlider.addEventListener('input', (e) => {
       const val = parseInt(e.target.value);
       sliderFill.style.width = val + '%';
       sliderPctBadge.textContent = val + '%';
-      if (loadedFile) runCompression(loadedFile, val);
+      metricGoal.textContent = val + '%';
+      if (inspStrategyText) inspStrategyText.textContent = `Quality Level: ${val}%`;
     });
 
-    function applyPreset(preset) {
-      let pct = 60;
-      if (preset === '50kb') pct = 85;
-      else if (preset === '100kb') pct = 75;
-      else if (preset === '200kb') pct = 65;
-      else if (preset === '500kb') pct = 45;
-      else if (preset === '1mb') pct = 25;
-      compSlider.value = pct;
-      sliderFill.style.width = pct + '%';
-      sliderPctBadge.textContent = pct + '%';
-      if (loadedFile) runCompression(loadedFile, pct);
-    }
+    compSlider.addEventListener('change', () => {
+      if (loadedFile) triggerCompressionFromUI();
+    });
 
-    // Dropzone Events
+    // 5. Dropzone & File Input Events
     btnChooseFile.addEventListener('click', (e) => {
       e.stopPropagation();
       mainFileInput.click();
@@ -749,12 +987,34 @@
 
     function handleFileSelection(file) {
       loadedFile = file;
-      if (file.type.includes('pdf') || file.name.toLowerCase().endsWith('.pdf')) {
+      const isPdf = file.type.includes('pdf') || file.name.toLowerCase().endsWith('.pdf');
+      if (isPdf) {
         setMode('pdf');
       } else {
         setMode('image');
       }
-      runCompression(file, parseInt(compSlider.value));
+
+      // Show Action Button
+      btnCompressAction.style.display = 'flex';
+
+      // Update Inspector Sidebar with File Metadata
+      inspectorEmptyWrap.style.display = 'none';
+      inspectorActiveWrap.style.display = 'flex';
+      inspectorStatusPill.textContent = 'File Loaded';
+      inspectorStatusPill.className = 'status-pill active';
+
+      inspFileName.textContent = file.name;
+      inspFormatBadge.textContent = isPdf ? 'PDF' : file.type.replace('image/', '').toUpperCase();
+      inspOriginalSize.textContent = `${formatBytes(file.size)} (${file.size.toLocaleString()} bytes)`;
+      metricOrig.textContent = formatBytes(file.size);
+      metricOutput.textContent = '--';
+      inspTargetStatusBadge.style.display = 'none';
+      inspTechNotes.textContent = 'Ready to compress. Auto-calibrating optimization parameters...';
+
+      updateTargetGoalDisplay();
+
+      // Automatically trigger initial compression
+      triggerCompressionFromUI();
     }
 
     function resetToUpload() {
@@ -762,9 +1022,17 @@
       processedBlob = null;
       isProcessing = false;
       mainDropzone.style.display = 'flex';
+      btnCompressAction.style.display = 'none';
       procBox.style.display = 'none';
       compBox.style.display = 'none';
       mainFileInput.value = '';
+      targetAlert.style.display = 'none';
+
+      // Reset Inspector
+      inspectorEmptyWrap.style.display = 'flex';
+      inspectorActiveWrap.style.display = 'none';
+      inspectorStatusPill.textContent = 'Idle';
+      inspectorStatusPill.className = 'status-pill';
     }
 
     function cancelCompression() {
@@ -772,126 +1040,90 @@
       resetToUpload();
     }
 
-    // Compression Processing Engine
-    async function runCompression(file, pct) {
+    // 6. Primary Compression Trigger & Execution
+    async function triggerCompressionFromUI() {
+      if (!loadedFile) {
+        alert('Please select a file to compress first.');
+        return;
+      }
+
+      let targetBytes = null;
+      if (currentStrategy === 'target') {
+        targetBytes = getTargetBytes();
+        if (!targetBytes) {
+          targetAlert.textContent = 'Please enter a valid positive target file size.';
+          targetAlert.style.display = 'block';
+          return;
+        }
+      }
+
       isProcessing = true;
       mainDropzone.style.display = 'none';
       compBox.style.display = 'none';
       procBox.style.display = 'flex';
+      btnCompressAction.style.display = 'none';
 
-      procFileName.textContent = file.name;
-      procFileSize.textContent = `Original: ${formatBytes(file.size)}`;
+      procFileName.textContent = loadedFile.name;
+      procFileSize.textContent = `Original: ${formatBytes(loadedFile.size)}`;
       procBarFill.style.width = '10%';
       procProgressPct.textContent = '10%';
-      procStatusText.textContent = 'Initializing engine...';
+      procStatusText.textContent = 'Calibrating local engine...';
+
+      inspectorStatusPill.textContent = 'Processing...';
+      inspectorStatusPill.className = 'status-pill active';
+      inspTechNotes.textContent = 'Optimizing in client-side memory...';
 
       try {
+        let result = null;
+        const progressCb = (pct, text) => {
+          if (!isProcessing) return;
+          procBarFill.style.width = pct + '%';
+          procProgressPct.textContent = pct + '%';
+          procStatusText.textContent = text;
+        };
+
         if (currentMode === 'pdf') {
-          await compressPdfFile(file, pct);
+          result = await window.compressPdfEngine(loadedFile, {
+            mode: currentStrategy,
+            targetBytes: targetBytes,
+            sliderPct: parseInt(compSlider.value),
+            onProgress: progressCb
+          });
         } else {
-          await compressImageFile(file, pct);
+          result = await window.compressImageEngine(loadedFile, {
+            mode: currentStrategy,
+            targetBytes: targetBytes,
+            sliderPct: parseInt(compSlider.value),
+            onProgress: progressCb
+          });
         }
+
+        if (!isProcessing) return; // In case cancelled
+        handleCompressionSuccess(loadedFile, result);
+
       } catch (err) {
         console.error('Compression error:', err);
         alert('Processing error: ' + (err.message || 'Unable to compress file.'));
+        inspectorStatusPill.textContent = 'Error';
+        inspectorStatusPill.className = 'status-pill warning';
+        inspTechNotes.textContent = 'Compression error: ' + (err.message || 'Engine encountered an issue.');
         resetToUpload();
       }
     }
 
-    async function compressPdfFile(file, pct) {
-      procStatusText.textContent = 'Loading document...';
-      const arrayBuffer = await file.arrayBuffer();
-      const pdfDoc = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-      const numPages = pdfDoc.numPages;
-
-      const outPdf = await PDFLib.PDFDocument.create();
-      const qualityFactor = Math.max(0.12, (100 - pct * 0.85) / 100);
-      const scaleFactor = Math.max(0.65, (100 - pct * 0.35) / 100);
-
-      for (let i = 1; i <= numPages; i++) {
-        if (!isProcessing) return;
-        const prog = Math.round(15 + (i / numPages) * 70);
-        procBarFill.style.width = prog + '%';
-        procProgressPct.textContent = prog + '%';
-        procStatusText.textContent = `Optimizing page ${i} of ${numPages}...`;
-
-        const page = await pdfDoc.getPage(i);
-        const viewport = page.getViewport({ scale: scaleFactor * 1.5 });
-
-        const canvas = document.createElement('canvas');
-        canvas.width = viewport.width;
-        canvas.height = viewport.height;
-        const ctx = canvas.getContext('2d');
-
-        await page.render({ canvasContext: ctx, viewport }).promise;
-
-        const imgDataUrl = canvas.toDataURL('image/jpeg', qualityFactor);
-        const embeddedImg = await outPdf.embedJpg(imgDataUrl);
-
-        const newPage = outPdf.addPage([viewport.width, viewport.height]);
-        newPage.drawImage(embeddedImg, {
-          x: 0,
-          y: 0,
-          width: viewport.width,
-          height: viewport.height
-        });
-      }
-
-      procStatusText.textContent = 'Finalizing PDF document...';
-      procBarFill.style.width = '95%';
-      procProgressPct.textContent = '95%';
-
-      const pdfBytes = await outPdf.save();
-      processedBlob = new Blob([pdfBytes], { type: 'application/pdf' });
-      finishCompression(file, processedBlob, 'pdf');
-    }
-
-    async function compressImageFile(file, pct) {
-      procStatusText.textContent = 'Processing image...';
-      procBarFill.style.width = '30%';
-      procProgressPct.textContent = '30%';
-
-      const img = new Image();
-      const url = URL.createObjectURL(file);
-
-      await new Promise((res, rej) => {
-        img.onload = res;
-        img.onerror = rej;
-        img.src = url;
-      });
-
-      const quality = Math.max(0.08, (100 - pct * 0.9) / 100);
-      const scale = Math.max(0.4, (100 - pct * 0.5) / 100);
-
-      const canvas = document.createElement('canvas');
-      canvas.width = Math.round(img.width * scale);
-      canvas.height = Math.round(img.height * scale);
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-      URL.revokeObjectURL(url);
-
-      procBarFill.style.width = '80%';
-      procProgressPct.textContent = '80%';
-
-      const targetMime = file.type === 'image/png' && quality > 0.8 ? 'image/png' : 'image/jpeg';
-      const ext = targetMime === 'image/png' ? 'png' : 'jpg';
-
-      canvas.toBlob((blob) => {
-        processedBlob = blob;
-        finishCompression(file, processedBlob, ext);
-      }, targetMime, quality);
-    }
-
-    function finishCompression(origFile, newBlob, ext) {
+    // 7. Successful Compression Handler
+    function handleCompressionSuccess(origFile, res) {
       isProcessing = false;
+      processedBlob = res.blob;
+
       procBox.style.display = 'none';
       compBox.style.display = 'flex';
+      btnCompressAction.style.display = 'flex';
 
       compOriginalName.textContent = origFile.name;
-      const origSize = origFile.size;
-      const newSize = newBlob.size;
-      const savedPct = Math.round(((origSize - newSize) / origSize) * 100);
+      const origSize = res.origSize;
+      const newSize = res.newSize;
+      const savedPct = res.savedPct;
 
       if (savedPct > 0) {
         compSizesDelta.textContent = `${formatBytes(origSize)} ➔ ${formatBytes(newSize)} (-${savedPct}%)`;
@@ -903,23 +1135,112 @@
         compSizesDelta.style.color = 'var(--primary)';
       }
 
-      const generatedName = generateExportFilename(origFile.name, DocToolKit.userProfile.name, 'compressed', ext);
+      // Target Status Banner in Compressor Card
+      if (currentStrategy === 'target') {
+        compTargetStatusMsg.style.display = 'flex';
+        if (res.achieved) {
+          compTargetStatusMsg.className = 'target-result-badge achieved';
+          compTargetStatusMsg.textContent = `✓ Target Achieved: Output (${formatBytes(newSize)}) meets your goal.`;
+        } else {
+          compTargetStatusMsg.className = 'target-result-badge unachieved';
+          compTargetStatusMsg.textContent = res.statusMessage || `⚠️ Target not reached: Output is ${formatBytes(newSize)} (minimum quality floor reached).`;
+        }
+      } else {
+        compTargetStatusMsg.style.display = 'none';
+      }
+
+      // Generate Filename
+      const generatedName = generateExportFilename(origFile.name, DocToolKit.userProfile.name, 'compressed', res.ext);
       exportFilenameInput.value = generatedName;
 
-      // Save record in local IndexedDB Document Organizer
+      // Update Inspector Sidebar
+      inspectorStatusPill.textContent = 'Completed';
+      inspectorStatusPill.className = 'status-pill success';
+      metricOutput.textContent = formatBytes(newSize);
+
+      inspTargetStatusBadge.style.display = 'flex';
+      if (currentStrategy === 'target') {
+        if (res.achieved) {
+          inspTargetStatusBadge.className = 'target-result-badge achieved';
+          inspTargetStatusIcon.textContent = '✓';
+          inspTargetStatusText.textContent = `Target Met (${formatBytes(newSize)})`;
+        } else {
+          inspTargetStatusBadge.className = 'target-result-badge unachieved';
+          inspTargetStatusIcon.textContent = '⚠️';
+          inspTargetStatusText.textContent = `Best Achievable: ${formatBytes(newSize)}`;
+        }
+      } else {
+        inspTargetStatusBadge.className = 'target-result-badge achieved';
+        inspTargetStatusIcon.textContent = '✓';
+        inspTargetStatusText.textContent = `Reduced by ${savedPct}%`;
+      }
+
+      inspTechNotes.textContent = res.statusMessage || 'Compression verified locally. Output ready for download.';
+
+      // Save to Local Activity History
+      DocToolKit.recentActivity.add({
+        name: generatedName,
+        origSize: origSize,
+        newSize: newSize,
+        savedPct: savedPct,
+        type: currentMode === 'pdf' ? 'pdf' : 'image',
+        targetAchieved: res.achieved,
+        targetSize: currentStrategy === 'target' ? targetSelectedBadge.textContent : null
+      });
+
+      // Save to IndexedDB Document Organizer
       saveDocumentToDB({
         name: generatedName,
         origSize: origSize,
         size: newSize,
-        type: currentMode,
+        type: currentMode === 'pdf' ? 'PDF' : 'Image',
         date: new Date().toISOString()
       });
+
+      renderRecentActivity();
     }
 
+    // 8. Download Result
     function downloadResult() {
       if (!processedBlob) return;
-      const finalName = exportFilenameInput.value.trim() || 'doctoolkit_output.pdf';
+      const finalName = exportFilenameInput.value.trim() || 'doctoolkit_compressed_output.pdf';
       triggerDownload(processedBlob, finalName);
+    }
+
+    // 9. Recent Activity Renderer
+    function renderRecentActivity() {
+      if (!activityList) return;
+      if (!window.DocToolKit || !DocToolKit.recentActivity) return;
+      const items = DocToolKit.recentActivity.get();
+      if (!items || items.length === 0) {
+        activityList.innerHTML = '<div class="activity-empty-message">No recent files processed yet on this browser. Processed files will appear here locally.</div>';
+        return;
+      }
+
+      activityList.innerHTML = items.slice(0, 5).map(item => {
+        const icon = item.type === 'pdf' ? '📄' : '🖼️';
+        const delta = item.savedPct > 0 ? `-${item.savedPct}%` : 'Optimized';
+        const time = DocToolKit.timeAgo(item.timestamp);
+        return `
+          <div class="activity-item">
+            <div class="activity-item-left">
+              <span>${icon}</span>
+              <span class="activity-name" title="${item.name}">${item.name}</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span class="activity-delta">${delta}</span>
+              <span class="activity-time">${time}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function clearLocalActivity() {
+      if (confirm('Clear your local recent activity history on this browser?')) {
+        DocToolKit.recentActivity.clear();
+        renderRecentActivity();
+      }
     }
 
     // Modal Tool Helpers
@@ -947,7 +1268,7 @@
               <label style="font-size: 13px; font-weight: 700; display: block; margin-bottom: 4px;">User Name (Used for smart file naming):</label>
               <input type="text" id="profNameInput" class="rename-input" value="${DocToolKit.userProfile.name}">
             </div>
-            <button class="btn-choose-file" onclick="saveProfileSettings()" style="width: 100%;">Save Settings</button>
+            <button class="btn-choose-file" onclick="saveProfileSettings()" style="width: 100%; justify-content: center;">Save Settings</button>
           </div>
         `;
       }
@@ -964,7 +1285,6 @@
       }
     }
 
-    // Close modal when clicking outside
     toolModalOverlay.addEventListener('click', (e) => {
       if (e.target === toolModalOverlay) closeToolModal();
     });

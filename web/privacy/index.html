@@ -12,7 +12,7 @@
   <link rel="icon" type="image/png" sizes="16x16" href="../icons/favicon-16x16.png">
   <link rel="apple-touch-icon" href="../icons/apple-touch-icon.png">
   <link rel="stylesheet" href="../css/style.css">
-  <script src="../js/app.js"></script>
+  <script src="../js/app.js" defer></script>
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -52,7 +52,10 @@
   <aside class="drawer" id="drawer">
     <div class="drawer-header">
       <div style="display: flex; align-items: center; gap: 10px;">
-        <img src="../icons/doctoolkit-logo-horizontal.png" alt="DocToolKit" width="155" height="28" style="height: 28px; width: auto; display: block;">
+        <picture>
+          <source srcset="../icons/doctoolkit-logo-horizontal.webp" type="image/webp">
+          <img src="../icons/doctoolkit-logo-horizontal.png" alt="DocToolKit" width="155" height="28" style="height: 28px; width: auto; display: block;" loading="lazy" decoding="async">
+        </picture>
       </div>
       <button class="btn-close-modal" id="closeDrawerBtn" onclick="closeDrawer()" aria-label="Close Navigation">✕</button>
     </div>
@@ -87,7 +90,10 @@
     <!-- Top Floating Navbar -->
     <header class="navbar">
       <a class="nav-brand" href="../" aria-label="DocToolKit Homepage">
-        <img src="../icons/doctoolkit-logo-horizontal.png" alt="DocToolKit" width="199" height="36" class="nav-brand-logo">
+        <picture>
+          <source srcset="../icons/doctoolkit-logo-horizontal.webp" type="image/webp">
+          <img src="../icons/doctoolkit-logo-horizontal.png" alt="DocToolKit" width="199" height="36" class="nav-brand-logo" fetchpriority="high">
+        </picture>
       </a>
 
       <!-- Desktop Center Menu -->
@@ -136,7 +142,10 @@
       <div class="footer-top">
         <div class="footer-col">
           <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
-            <img src="../icons/doctoolkit-logo-horizontal.png" alt="DocToolKit" width="155" height="28" style="height: 28px; width: auto; display: block;">
+            <picture>
+          <source srcset="../icons/doctoolkit-logo-horizontal.webp" type="image/webp">
+          <img src="../icons/doctoolkit-logo-horizontal.png" alt="DocToolKit" width="155" height="28" style="height: 28px; width: auto; display: block;" loading="lazy" decoding="async">
+        </picture>
           </div>
           <p style="font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 12px;">
             Free, privacy-first online tools for PDF and image compression, conversion, page reorganization, document scanning, and digital signatures. 100% on-device processing.
