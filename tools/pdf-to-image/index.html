@@ -207,6 +207,7 @@
             <button class="btn-choose-file" type="button">📁 Select PDF</button>
           </div>
           <div id="p2iPagesGrid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(140px, 1fr)); gap:12px; max-height:350px; overflow-y:auto;"></div>
+          <div id="p2iResultBox" class="result-feedback-card hidden"></div>
         </div>
         
     </main>
@@ -401,42 +402,101 @@
 
   <!-- Interactive JavaScript for this tool -->
   <script>
-  
-        document.getElementById('p2iInput').onchange = async (e) => {
-          const file = e.target.files[0];
-          if (!file) return;
-          const status = document.getElementById('p2iStatus');
-          status.textContent = 'Rendering PDF pages to canvas...';
-          const grid = document.getElementById('p2iPagesGrid');
-          grid.innerHTML = '';
-          const buf = await file.arrayBuffer();
-          const doc = await pdfjsLib.getDocument({ data: buf }).promise;
-          for (let i = 1; i <= doc.numPages; i++) {
-            const page = await doc.getPage(i);
-            const vp = page.getViewport({ scale: 1.5 });
-            const c = document.createElement('canvas');
-            c.width = vp.width; c.height = vp.height;
-            await page.render({ canvasContext: c.getContext('2d'), viewport: vp }).promise;
-            const card = document.createElement('div');
-            card.style.cssText = 'background:var(--track-bg); padding:10px; border-radius:10px; display:flex; flex-direction:column; gap:8px; align-items:center;';
-            card.innerHTML = `
-              <img src="${c.toDataURL('image/jpeg', 0.85)}" alt="Rendered PDF Page ${i}" style="width:100%; border-radius:6px;">
-              <span style="font-size:12px; font-weight:700;">Page ${i}</span>
-              <button class="btn-choose-file" style="padding:4px 10px; font-size:11px;" onclick="triggerDownload(dataURItoBlob('${c.toDataURL('image/jpeg', 0.9)}'), '${file.name}_page_${i}.jpg')">Download JPG</button>
-            `;
-            grid.appendChild(card);
-          }
-          status.textContent = `Completed: ${doc.numPages} pages extracted.`;
-        };
+    const p2iInput = document.getElementById('p2iInput');
+    const status = document.getElementById('p2iStatus');
+    const grid = document.getElementById('p2iPagesGrid');
 
-        function dataURItoBlob(dataURI) {
-          const byteString = atob(dataURI.split(',')[1]);
-          const ab = new ArrayBuffer(byteString.length);
-          const ia = new Uint8Array(ab);
-          for (let i = 0; i < byteString.length; i++) ia[i] = byteString.charCodeAt(i);
-          return new Blob([ab], { type: 'image/jpeg' });
+    p2iInput.onchange = async (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+
+      DocToolKit.hideResult('p2iResultBox');
+      grid.innerHTML = '';
+      status.textContent = 'Loading PDF document...';
+      DocToolKit.showProcessing('p2iResultBox', 'Extracting PDF Pages...', 'Parsing document pages and preparing high-DPI canvas...');
+
+      try {
+        const buf = await file.arrayBuffer();
+        const doc = await pdfjsLib.getDocument({ data: buf }).promise;
+        const total = doc.numPages;
+        const baseName = stripExtension(file.name);
+        let firstBlob = null;
+        let firstFilename = '';
+        const allPages = [];
+
+        for (let i = 1; i <= total; i++) {
+          status.textContent = `Rendering page ${i} of ${total}...`;
+          const page = await doc.getPage(i);
+          const vp = page.getViewport({ scale: 1.5 });
+          const c = document.createElement('canvas');
+          c.width = vp.width;
+          c.height = vp.height;
+          await page.render({ canvasContext: c.getContext('2d'), viewport: vp }).promise;
+
+          const dataUrl = c.toDataURL('image/jpeg', 0.90);
+          const blob = dataURItoBlob(dataUrl);
+          const pageFilename = `${baseName}_page_${i}.jpg`;
+          if (i === 1) {
+            firstBlob = blob;
+            firstFilename = pageFilename;
+          }
+          allPages.push({ blob, filename: pageFilename, pageNum: i });
+
+          const card = document.createElement('div');
+          card.style.cssText = 'background:var(--track-bg); padding:10px; border-radius:10px; display:flex; flex-direction:column; gap:8px; align-items:center; text-align:center;';
+          card.innerHTML = `
+            <img src="${dataUrl}" alt="Rendered PDF Page ${i}" style="width:100%; border-radius:6px; box-shadow:0 2px 6px rgba(0,0,0,0.08);">
+            <span style="font-size:12px; font-weight:700;">Page ${i}</span>
+            <button type="button" class="btn-choose-file" style="padding:6px 12px; font-size:11px; width:100%;" id="btnPageDl_${i}">⬇ Download JPG</button>
+            <div id="dlMsg_${i}" style="font-size:11px; color:#10b981; display:none; font-weight:600;">✓ Downloaded</div>
+          `;
+          grid.appendChild(card);
+
+          const btnDl = card.querySelector(`#btnPageDl_${i}`);
+          const dlMsg = card.querySelector(`#dlMsg_${i}`);
+          btnDl.onclick = () => {
+            triggerDownload(blob, pageFilename);
+            saveDocumentToDB({ name: pageFilename, origSize: blob.size, size: blob.size, type: 'JPEG' });
+            dlMsg.style.display = 'block';
+            setTimeout(() => { dlMsg.style.display = 'none'; }, 3000);
+          };
         }
-        
+
+        status.textContent = `Completed: ${pluralize(total, 'page', 'pages')} extracted.`;
+
+        DocToolKit.showResult('p2iResultBox', {
+          title: 'PDF Converted to Images',
+          subTitle: `Successfully converted all ${pluralize(total, 'page', 'pages')} to crisp high-resolution JPEG images.`,
+          blob: firstBlob,
+          defaultFilename: firstFilename,
+          meta: [
+            { label: 'Source File', value: file.name },
+            { label: 'Total Pages', value: pluralize(total, 'page', 'pages') },
+            { label: 'Image Format', value: 'High-Res JPEG (90% Quality)' },
+            { label: 'First Page Size', value: formatBytes(firstBlob.size) }
+          ],
+          onReset: () => {
+            p2iInput.value = '';
+            grid.innerHTML = '';
+            status.textContent = 'Extract pages as crisp JPEG images';
+            DocToolKit.hideResult('p2iResultBox');
+          }
+        });
+      } catch (err) {
+        console.error('PDF to image error:', err);
+        status.textContent = '❌ Failed to process PDF.';
+        DocToolKit.showError('p2iResultBox', 'Conversion Error', err.message || 'Unable to extract images from this PDF document.');
+      }
+    };
+
+    function dataURItoBlob(dataURI) {
+      const parts = dataURI.split(',');
+      const byteString = atob(parts[1]);
+      const ab = new ArrayBuffer(byteString.length);
+      const ia = new Uint8Array(ab);
+      for (let i = 0; i < byteString.length; i++) ia[i] = byteString.charCodeAt(i);
+      return new Blob([ab], { type: 'image/jpeg' });
+    }
   </script>
 </body>
 </html>

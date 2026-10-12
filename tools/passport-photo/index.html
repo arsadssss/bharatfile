@@ -204,7 +204,13 @@
             <div style="font-size:12px; color:var(--text-muted);" id="passStatus">Standard 3.5 × 4.5 cm (413 × 531 px) with white border</div>
             <button class="btn-choose-file" type="button">📁 Choose Portrait</button>
           </div>
-          <button class="btn-choose-file" id="btnDoPassport" style="width:100%;">Generate 3.5×4.5 cm Passport Photo</button>
+          <div id="passPreviewWrap" style="display:none; text-align:center; padding:16px; background:var(--track-bg); border-radius:12px; overflow:hidden;">
+            <div style="font-size:11px; font-weight:700; color:var(--text-muted); margin-bottom:8px;">Standard 35×45 mm Passport Framing:</div>
+            <canvas id="passPreviewCanvas" style="width:160px; height:206px; border-radius:4px; box-shadow:0 4px 12px rgba(0,0,0,0.18); border:1px solid #cbd5e1;"></canvas>
+            <div style="font-size:11px; color:var(--text-muted); margin-top:6px;">✓ 413 × 531 px (300 DPI) with official white border</div>
+          </div>
+          <button class="btn-choose-file" id="btnDoPassport" style="width:100%;" disabled>Generate 3.5×4.5 cm Passport Photo</button>
+          <div id="passResultBox" class="result-feedback-card hidden"></div>
         </div>
         
     </main>
@@ -399,39 +405,109 @@
 
   <!-- Interactive JavaScript for this tool -->
   <script>
-  
-        let passFile = null;
-        document.getElementById('passInput').onchange = (e) => {
-          if (e.target.files[0]) {
-            passFile = e.target.files[0];
-            document.getElementById('passStatus').textContent = `Selected: ${passFile.name}`;
-          }
-        };
+    let passFile = null;
+    let loadedImg = null;
 
-        document.getElementById('btnDoPassport').onclick = () => {
-          if (!passFile) return alert('Please select a photo first.');
-          const img = new Image();
-          img.src = URL.createObjectURL(passFile);
-          img.onload = () => {
-            const c = document.createElement('canvas');
-            c.width = 413; c.height = 531;
-            const ctx = c.getContext('2d');
-            ctx.fillStyle = '#FFFFFF';
-            ctx.fillRect(0, 0, c.width, c.height);
-            const r = 413 / 531;
-            let sw = img.width, sh = img.width / r;
-            if (sh > img.height) { sh = img.height; sw = img.height * r; }
-            const sx = (img.width - sw) / 2;
-            const sy = (img.height - sh) / 2;
-            ctx.drawImage(img, sx, sy, sw, sh, 8, 8, 397, 515);
-            c.toBlob(blob => {
-              const name = generateExportFilename(passFile.name, DocToolKit.userProfile.name, 'passport', 'jpg');
-              triggerDownload(blob, name);
-              saveDocumentToDB({ name, origSize: passFile.size, size: blob.size, type: 'Photo' });
-            }, 'image/jpeg', 0.95);
-          };
-        };
-        
+    const passInput = document.getElementById('passInput');
+    const passStatus = document.getElementById('passStatus');
+    const passPreviewWrap = document.getElementById('passPreviewWrap');
+    const passPreviewCanvas = document.getElementById('passPreviewCanvas');
+    const btnDoPassport = document.getElementById('btnDoPassport');
+
+    function renderPassportCanvas(canvas, targetW, targetH, borderPx) {
+      canvas.width = targetW;
+      canvas.height = targetH;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(0, 0, targetW, targetH);
+
+      if (!loadedImg) return;
+      const innerW = targetW - (borderPx * 2);
+      const innerH = targetH - (borderPx * 2);
+      const targetRatio = innerW / innerH;
+
+      let sw = loadedImg.width;
+      let sh = loadedImg.width / targetRatio;
+      if (sh > loadedImg.height) {
+        sh = loadedImg.height;
+        sw = loadedImg.height * targetRatio;
+      }
+      const sx = (loadedImg.width - sw) / 2;
+      const sy = (loadedImg.height - sh) / 2;
+
+      ctx.drawImage(loadedImg, sx, sy, sw, sh, borderPx, borderPx, innerW, innerH);
+    }
+
+    passInput.onchange = (e) => {
+      if (!e.target.files || !e.target.files[0]) return;
+      passFile = e.target.files[0];
+      DocToolKit.hideResult('passResultBox');
+      passStatus.textContent = 'Formatting portrait...';
+
+      const img = new Image();
+      const objUrl = URL.createObjectURL(passFile);
+      img.onload = () => {
+        URL.revokeObjectURL(objUrl);
+        loadedImg = img;
+        passStatus.textContent = `Selected: ${passFile.name} (${img.width} × ${img.height} px, ${formatBytes(passFile.size)})`;
+
+        renderPassportCanvas(passPreviewCanvas, 413, 531, 8);
+        passPreviewWrap.style.display = 'block';
+
+        btnDoPassport.disabled = false;
+        btnDoPassport.style.opacity = '1';
+        btnDoPassport.style.cursor = 'pointer';
+      };
+      img.onerror = () => {
+        URL.revokeObjectURL(objUrl);
+        passStatus.textContent = '❌ Failed to load image file.';
+      };
+      img.src = objUrl;
+    };
+
+    btnDoPassport.onclick = () => {
+      if (!passFile || !loadedImg) return;
+
+      btnDoPassport.disabled = true;
+      const originalText = btnDoPassport.innerHTML;
+      btnDoPassport.innerHTML = '<span class="result-spinner" style="width:16px;height:16px;display:inline-block;margin-right:6px;vertical-align:middle;"></span> Generating Passport Photo...';
+      DocToolKit.showProcessing('passResultBox', 'Generating Passport Photo...', 'Applying standard 35×45 mm proportions and official border...');
+
+      const exportCanvas = document.createElement('canvas');
+      renderPassportCanvas(exportCanvas, 413, 531, 8);
+
+      exportCanvas.toBlob(blob => {
+        const exportName = generateExportFilename(passFile.name, DocToolKit.userProfile.name, 'passport_35x45mm', 'jpg');
+        saveDocumentToDB({ name: exportName, origSize: passFile.size, size: blob.size, type: 'Photo' });
+
+        DocToolKit.showResult('passResultBox', {
+          title: 'Passport Photo Ready',
+          subTitle: 'Formatted to official 3.5 × 4.5 cm (413 × 531 px at 300 DPI) passport standards.',
+          blob: blob,
+          defaultFilename: exportName,
+          meta: [
+            { label: 'Physical Size', value: '3.5 × 4.5 cm (35 × 45 mm)' },
+            { label: 'Pixel Resolution', value: '413 × 531 px (300 DPI)' },
+            { label: 'Border', value: 'Standard 8px Clean White' },
+            { label: 'Output Size', value: formatBytes(blob.size) }
+          ],
+          onReset: () => {
+            passFile = null;
+            loadedImg = null;
+            passInput.value = '';
+            passStatus.textContent = 'Standard 3.5 × 4.5 cm (413 × 531 px) with white border';
+            passPreviewWrap.style.display = 'none';
+            btnDoPassport.disabled = true;
+            btnDoPassport.style.opacity = '0.6';
+            btnDoPassport.style.cursor = 'not-allowed';
+            DocToolKit.hideResult('passResultBox');
+          }
+        });
+
+        btnDoPassport.disabled = false;
+        btnDoPassport.innerHTML = originalText;
+      }, 'image/jpeg', 0.95);
+    };
   </script>
 </body>
 </html>

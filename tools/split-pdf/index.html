@@ -209,12 +209,14 @@
           <div>
             <label style="font-size:12px; font-weight:700; color:var(--text-muted); display:block; margin-bottom:4px;">Page Range to Extract (e.g. 1-3, 5):</label>
             <input type="text" class="rename-input" id="splitRangeInput" placeholder="1-2">
+            <div id="splitRangeHelper" style="font-size:12px; color:var(--text-muted); margin-top:4px;">Upload a PDF to specify page range.</div>
           </div>
           <div>
             <label style="font-size:12px; font-weight:700; color:var(--text-muted); display:block; margin-bottom:4px;">Output Filename:</label>
             <input type="text" class="rename-input" id="splitNameInput" value="split_document.pdf">
           </div>
-          <button class="btn-choose-file" id="btnDoSplit" style="width:100%;">Extract & Download PDF</button>
+          <button class="btn-choose-file" id="btnDoSplit" style="width:100%;" disabled>Extract & Download PDF</button>
+          <div id="splitResultBox" class="result-feedback-card hidden"></div>
         </div>
         
     </main>
@@ -409,46 +411,157 @@
 
   <!-- Interactive JavaScript for this tool -->
   <script>
-  
-        let splitFile = null, totalPages = 0;
-        const sInput = document.getElementById('splitInput');
-        const sInfo = document.getElementById('splitFileInfo');
+    let splitFile = null, totalPages = 0;
+    const sInput = document.getElementById('splitInput');
+    const sInfo = document.getElementById('splitFileInfo');
+    const sRangeInput = document.getElementById('splitRangeInput');
+    const sRangeHelper = document.getElementById('splitRangeHelper');
+    const sNameInput = document.getElementById('splitNameInput');
+    const btnDoSplit = document.getElementById('btnDoSplit');
 
-        sInput.onchange = async (e) => {
-          if (!e.target.files[0]) return;
-          splitFile = e.target.files[0];
-          const doc = await PDFLib.PDFDocument.load(await splitFile.arrayBuffer());
-          totalPages = doc.getPageCount();
-          sInfo.textContent = `Selected: ${splitFile.name} (${totalPages} pages)`;
-          document.getElementById('splitNameInput').value = generateExportFilename(splitFile.name, DocToolKit.userProfile.name, 'split', 'pdf');
-        };
-
-        document.getElementById('btnDoSplit').onclick = async () => {
-          if (!splitFile) return alert('Please choose a PDF file first.');
-          const rangeStr = document.getElementById('splitRangeInput').value.trim();
-          if (!rangeStr) return alert('Please enter a page range, e.g. 1-2');
-
-          const pagesToExtract = [];
-          rangeStr.split(',').forEach(part => {
-            if (part.includes('-')) {
-              const [start, end] = part.split('-').map(n => parseInt(n.trim(), 10));
-              for (let i = start; i <= end; i++) if (i >= 1 && i <= totalPages) pagesToExtract.push(i - 1);
-            } else {
-              const num = parseInt(part.trim(), 10);
-              if (num >= 1 && num <= totalPages) pagesToExtract.push(num - 1);
+    function parseRange(rangeStr, maxPages) {
+      if (!rangeStr || maxPages < 1) return [];
+      const pages = new Set();
+      const parts = rangeStr.split(',');
+      for (let part of parts) {
+        part = part.trim();
+        if (!part) continue;
+        if (part.includes('-')) {
+          const segs = part.split('-');
+          if (segs.length !== 2) continue;
+          const start = parseInt(segs[0].trim(), 10);
+          const end = parseInt(segs[1].trim(), 10);
+          if (!isNaN(start) && !isNaN(end) && start <= end) {
+            for (let i = start; i <= end; i++) {
+              if (i >= 1 && i <= maxPages) pages.add(i - 1);
             }
-          });
+          }
+        } else {
+          const num = parseInt(part, 10);
+          if (!isNaN(num) && num >= 1 && num <= maxPages) {
+            pages.add(num - 1);
+          }
+        }
+      }
+      return Array.from(pages).sort((a, b) => a - b);
+    }
 
-          if (!pagesToExtract.length) return alert('Invalid page range entered.');
-          const inDoc = await PDFLib.PDFDocument.load(await splitFile.arrayBuffer());
-          const outDoc = await PDFLib.PDFDocument.create();
-          const copied = await outDoc.copyPages(inDoc, pagesToExtract);
-          copied.forEach(p => outDoc.addPage(p));
-          const bytes = await outDoc.save();
-          triggerDownload(new Blob([bytes], { type: 'application/pdf' }), document.getElementById('splitNameInput').value);
-          saveDocumentToDB({ name: document.getElementById('splitNameInput').value, origSize: splitFile.size, size: bytes.length, type: 'PDF' });
-        };
+    function validateRange() {
+      if (!splitFile || totalPages === 0) {
+        btnDoSplit.disabled = true;
+        btnDoSplit.style.opacity = '0.6';
+        btnDoSplit.style.cursor = 'not-allowed';
+        sRangeHelper.textContent = 'Upload a PDF to specify page range.';
+        sRangeHelper.style.color = 'var(--text-muted)';
+        return [];
+      }
+
+      const rangeStr = sRangeInput.value.trim();
+      const extracted = parseRange(rangeStr, totalPages);
+
+      if (extracted.length === 0) {
+        btnDoSplit.disabled = true;
+        btnDoSplit.style.opacity = '0.6';
+        btnDoSplit.style.cursor = 'not-allowed';
+        sRangeHelper.textContent = `⚠️ Invalid range. Enter numbers between 1 and ${totalPages} (e.g. ${totalPages === 1 ? '1' : '1-' + Math.min(2, totalPages)}).`;
+        sRangeHelper.style.color = '#ef4444';
+      } else {
+        btnDoSplit.disabled = false;
+        btnDoSplit.style.opacity = '1';
+        btnDoSplit.style.cursor = 'pointer';
+        const pagePreview = extracted.map(p => p + 1).slice(0, 5).join(', ') + (extracted.length > 5 ? '...' : '');
+        sRangeHelper.textContent = `✓ Will extract ${pluralize(extracted.length, 'page', 'pages')} (${pagePreview}) from ${pluralize(totalPages, 'total page', 'total pages')}.`;
+        sRangeHelper.style.color = '#10b981';
+      }
+      return extracted;
+    }
+
+    sRangeInput.addEventListener('input', () => {
+      validateRange();
+    });
+
+    sInput.onchange = async (e) => {
+      if (!e.target.files || !e.target.files[0]) return;
+      splitFile = e.target.files[0];
+      DocToolKit.hideResult('splitResultBox');
+      sInfo.textContent = 'Analyzing PDF pages...';
+
+      try {
+        const inBytes = await splitFile.arrayBuffer();
+        const doc = await PDFLib.PDFDocument.load(inBytes);
+        totalPages = doc.getPageCount();
+        sInfo.textContent = `Selected: ${splitFile.name} (${pluralize(totalPages, 'page', 'pages')}, ${formatBytes(splitFile.size)})`;
+        sNameInput.value = generateExportFilename(splitFile.name, DocToolKit.userProfile.name, 'split', 'pdf');
         
+        // Smart default range based on totalPages (fixes 1-page bug)
+        if (totalPages === 1) {
+          sRangeInput.value = '1';
+        } else {
+          sRangeInput.value = `1-${Math.min(2, totalPages)}`;
+        }
+        validateRange();
+      } catch (err) {
+        console.error('PDF inspect error:', err);
+        sInfo.textContent = '❌ Failed to read PDF file.';
+        DocToolKit.showError('splitResultBox', 'Unreadable PDF', 'Unable to parse this PDF. Please check if the file is encrypted or corrupted.');
+      }
+    };
+
+    btnDoSplit.onclick = async () => {
+      const pagesToExtract = validateRange();
+      if (!splitFile || pagesToExtract.length === 0) return;
+
+      btnDoSplit.disabled = true;
+      const originalText = btnDoSplit.innerHTML;
+      btnDoSplit.innerHTML = '<span class="result-spinner" style="width:16px;height:16px;display:inline-block;margin-right:6px;vertical-align:middle;"></span> Extracting Pages...';
+      DocToolKit.showProcessing('splitResultBox', 'Extracting Pages...', `Extracting ${pluralize(pagesToExtract.length, 'page', 'pages')} from ${splitFile.name}...`);
+
+      try {
+        const inBytes = await splitFile.arrayBuffer();
+        const inDoc = await PDFLib.PDFDocument.load(inBytes);
+        const outDoc = await PDFLib.PDFDocument.create();
+        const copied = await outDoc.copyPages(inDoc, pagesToExtract);
+        copied.forEach(p => outDoc.addPage(p));
+        const bytes = await outDoc.save();
+
+        const exportName = sNameInput.value.trim() || 'split_document.pdf';
+        const finalBlob = new Blob([bytes], { type: 'application/pdf' });
+
+        saveDocumentToDB({ name: exportName, origSize: splitFile.size, size: bytes.length, type: 'PDF' });
+
+        DocToolKit.showResult('splitResultBox', {
+          title: 'Pages Extracted Successfully',
+          subTitle: `Successfully created a new document with ${pluralize(pagesToExtract.length, 'page', 'pages')}.`,
+          blob: finalBlob,
+          defaultFilename: exportName,
+          meta: [
+            { label: 'Source Document', value: splitFile.name },
+            { label: 'Pages Extracted', value: `${pagesToExtract.length} of ${totalPages}` },
+            { label: 'Output Size', value: formatBytes(bytes.length) },
+            { label: 'Processing', value: '100% Client-Side' }
+          ],
+          onReset: () => {
+            splitFile = null;
+            totalPages = 0;
+            sInput.value = '';
+            sInfo.textContent = 'Extract pages locally on your device';
+            sRangeInput.value = '';
+            sNameInput.value = 'split_document.pdf';
+            validateRange();
+            DocToolKit.hideResult('splitResultBox');
+          }
+        });
+      } catch (err) {
+        console.error('Split error:', err);
+        DocToolKit.showError('splitResultBox', 'Extraction Failed', err.message || 'Unable to extract the selected pages.');
+      } finally {
+        btnDoSplit.disabled = false;
+        btnDoSplit.innerHTML = originalText;
+        validateRange();
+      }
+    };
+
+    validateRange();
   </script>
 </body>
 </html>

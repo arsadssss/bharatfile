@@ -93,18 +93,183 @@
     return days + 'd ago';
   }
 
+  function pluralize(count, singular, plural) {
+    const num = Math.abs(count || 0);
+    const word = num === 1 ? singular : (plural || singular + 's');
+    return `${count} ${word}`;
+  }
+
+  function stripExtension(filename) {
+    if (!filename) return '';
+    const lastDot = filename.lastIndexOf('.');
+    if (lastDot <= 0) return filename;
+    return filename.substring(0, lastDot);
+  }
+
   window.DocToolKit = {
     getPref,
     setPref,
     parseTargetBytes,
     timeAgo,
+    pluralize,
+    stripExtension,
     recentActivity: recentActivityManager,
     userProfile: {
       name: getPref('username', 'User'),
       defaultFormat: getPref('format', 'jpeg'),
       defaultComp: getPref('comp', '60')
+    },
+    // Standardized UI Result & Feedback Component
+    showProcessing(containerId, actionText, subText) {
+      const container = typeof containerId === 'string' ? document.getElementById(containerId) : containerId;
+      if (!container) return;
+      container.className = 'result-feedback-card';
+      container.style.display = 'flex';
+      container.innerHTML = `
+        <div class="result-header-row">
+          <div class="result-icon-circle processing">⚡</div>
+          <div class="result-title-wrap">
+            <h4>${actionText || 'Processing...'}</h4>
+            <p>${subText || 'Executing client-side in browser memory...'}</p>
+          </div>
+        </div>
+        <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width: 75%; animation: pulse 1s infinite alternate;"></div></div>
+      `;
+    },
+    showError(containerId, title, message, onRetry) {
+      const container = typeof containerId === 'string' ? document.getElementById(containerId) : containerId;
+      if (!container) return;
+      container.className = 'result-feedback-card';
+      container.style.display = 'flex';
+      container.innerHTML = `
+        <div class="result-header-row">
+          <div class="result-icon-circle error">⚠️</div>
+          <div class="result-title-wrap">
+            <h4>${title || 'Processing Error'}</h4>
+            <p>${message || 'An error occurred while processing the file.'}</p>
+          </div>
+        </div>
+        <div class="result-actions-row">
+          <button class="btn-secondary-action" type="button" id="btnRetryFeedbackOp">🔄 Try Again</button>
+        </div>
+      `;
+      const btn = container.querySelector('#btnRetryFeedbackOp');
+      if (btn && onRetry) btn.onclick = onRetry;
+    },
+    showResult(containerId, options) {
+      const container = typeof containerId === 'string' ? document.getElementById(containerId) : containerId;
+      if (!container) return;
+      const {
+        title = 'Operation Completed Successfully',
+        subtitle = 'Output generated locally. Click download below.',
+        filename,
+        blob,
+        origSize,
+        newSize,
+        savedPct,
+        meta = [],
+        ctaLabel = 'Download Output',
+        onReset,
+        resetLabel = 'Process Another File'
+      } = options;
+
+      let metaItemsHtml = '';
+      if (origSize) {
+        metaItemsHtml += `
+          <div class="result-meta-item">
+            <span class="result-meta-label">Original</span>
+            <span class="result-meta-value">${formatBytes(origSize)}</span>
+          </div>
+        `;
+      }
+      if (newSize) {
+        metaItemsHtml += `
+          <div class="result-meta-item">
+            <span class="result-meta-label">Output</span>
+            <span class="result-meta-value" style="color:var(--success);">${formatBytes(newSize)}</span>
+          </div>
+        `;
+      }
+      if (typeof savedPct === 'number' && savedPct > 0) {
+        metaItemsHtml += `
+          <div class="result-meta-item">
+            <span class="result-meta-label">Saved</span>
+            <span class="result-meta-value" style="color:var(--success);">${savedPct}%</span>
+          </div>
+        `;
+      }
+      if (Array.isArray(meta)) {
+        meta.forEach(m => {
+          metaItemsHtml += `
+            <div class="result-meta-item">
+              <span class="result-meta-label">${m.label}</span>
+              <span class="result-meta-value">${m.value}</span>
+            </div>
+          `;
+        });
+      }
+
+      container.className = 'result-feedback-card';
+      container.style.display = 'flex';
+      container.innerHTML = `
+        <div class="result-header-row">
+          <div class="result-icon-circle">✓</div>
+          <div class="result-title-wrap">
+            <h4>${title}</h4>
+            <p>${subtitle}</p>
+          </div>
+        </div>
+
+        ${metaItemsHtml ? `<div class="result-meta-grid">${metaItemsHtml}</div>` : ''}
+
+        <div style="width:100%;">
+          <label style="font-size:12px; font-weight:700; color:var(--text-muted); display:block; margin-bottom:4px;">Customize Filename:</label>
+          <input type="text" class="rename-input" id="resultFeedbackNameInput" value="${filename || 'download'}">
+        </div>
+
+        <div class="result-actions-row">
+          <button class="btn-download-primary" type="button" id="btnFeedbackDownloadPrimary">
+            <span>⬇</span>
+            <span>${ctaLabel}</span>
+          </button>
+          <button class="btn-secondary-action" type="button" id="btnFeedbackResetAction">
+            <span>🔄</span>
+            <span>${resetLabel}</span>
+          </button>
+        </div>
+        <div class="result-download-confirm" id="feedbackDownloadConfirm">✓ Download started! Check your browser downloads.</div>
+      `;
+
+      const btnDl = container.querySelector('#btnFeedbackDownloadPrimary');
+      const btnReset = container.querySelector('#btnFeedbackResetAction');
+      const confirmMsg = container.querySelector('#feedbackDownloadConfirm');
+      const nameInput = container.querySelector('#resultFeedbackNameInput');
+
+      if (btnDl && blob) {
+        btnDl.onclick = () => {
+          const finalName = (nameInput ? nameInput.value.trim() : '') || filename || 'download';
+          triggerDownload(blob, finalName);
+          if (confirmMsg) {
+            confirmMsg.style.display = 'inline-flex';
+            setTimeout(() => { if (confirmMsg) confirmMsg.style.display = 'none'; }, 4000);
+          }
+        };
+      }
+      if (btnReset && onReset) {
+        btnReset.onclick = onReset;
+      }
+    },
+    hideResult(containerId) {
+      const container = typeof containerId === 'string' ? document.getElementById(containerId) : containerId;
+      if (!container) return;
+      container.style.display = 'none';
+      container.innerHTML = '';
     }
   };
+
+  // Expose global helpers
+  window.pluralize = pluralize;
+  window.stripExtension = stripExtension;
 
   // 4. Theme Management
   window.initTheme = function() {
@@ -155,29 +320,64 @@
   // Mandatory Smart Export Filename Rule: [Original]_[Profile]_[Action].[ext]
   window.generateExportFilename = function(origName, profileName, actionSuffix, ext) {
     const cleanProfile = (profileName || DocToolKit.userProfile.name || 'User').trim().replace(/[^a-zA-Z0-9_-]/g, '');
-    let base = origName.substring(0, origName.lastIndexOf('.')) || origName;
+    let base = stripExtension(origName);
     base = base.replace(/[^a-zA-Z0-9_-]/g, '_');
     const cleanExt = (ext || 'pdf').replace(/^\./, '');
     return `${base}_${cleanProfile}_${actionSuffix}.${cleanExt}`;
   };
 
-  // 7. IndexedDB Document Organizer Storage (DocToolKitDB)
+  // 7. IndexedDB Document Organizer Storage (DocToolKitDB) with Safety Timeout
   let dbPromise = null;
   window.openDocDB = function() {
     if (dbPromise) return dbPromise;
-    dbPromise = new Promise((resolve, reject) => {
-      const req = indexedDB.open('DocToolKitDB', 1);
-      req.onupgradeneeded = (e) => {
-        const d = e.target.result;
-        if (!d.objectStoreNames.contains('documents')) {
-          const store = d.createObjectStore('documents', { keyPath: 'id', autoIncrement: true });
-          store.createIndex('name', 'name', { unique: false });
-          store.createIndex('date', 'date', { unique: false });
-          store.createIndex('type', 'type', { unique: false });
+    dbPromise = new Promise((resolve) => {
+      let settled = false;
+      const timeout = setTimeout(() => {
+        if (!settled) {
+          settled = true;
+          console.warn('DocToolKitDB open timed out; falling back gracefully.');
+          resolve(null);
         }
-      };
-      req.onsuccess = (e) => resolve(e.target.result);
-      req.onerror = (e) => reject(e.target.error);
+      }, 2500);
+
+      try {
+        if (!window.indexedDB) {
+          clearTimeout(timeout);
+          settled = true;
+          return resolve(null);
+        }
+        const req = indexedDB.open('DocToolKitDB', 1);
+        req.onupgradeneeded = (e) => {
+          const d = e.target.result;
+          if (!d.objectStoreNames.contains('documents')) {
+            const store = d.createObjectStore('documents', { keyPath: 'id', autoIncrement: true });
+            store.createIndex('name', 'name', { unique: false });
+            store.createIndex('date', 'date', { unique: false });
+            store.createIndex('type', 'type', { unique: false });
+          }
+        };
+        req.onsuccess = (e) => {
+          if (!settled) {
+            settled = true;
+            clearTimeout(timeout);
+            resolve(e.target.result);
+          }
+        };
+        req.onerror = (e) => {
+          if (!settled) {
+            settled = true;
+            clearTimeout(timeout);
+            console.warn('IndexedDB open error:', e.target.error);
+            resolve(null);
+          }
+        };
+      } catch (err) {
+        if (!settled) {
+          settled = true;
+          clearTimeout(timeout);
+          resolve(null);
+        }
+      }
     });
     return dbPromise;
   };
@@ -185,13 +385,14 @@
   window.saveDocumentToDB = async function(doc) {
     try {
       const db = await openDocDB();
+      if (!db) return false;
       const tx = db.transaction('documents', 'readwrite');
       const store = tx.objectStore('documents');
       doc.date = doc.date || new Date().toISOString();
       store.add(doc);
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve) => {
         tx.oncomplete = () => resolve(true);
-        tx.onerror = () => reject(tx.error);
+        tx.onerror = () => resolve(false);
       });
     } catch (e) {
       console.warn('Document storage notice:', e);
@@ -202,12 +403,13 @@
   window.getAllDocumentsFromDB = async function() {
     try {
       const db = await openDocDB();
+      if (!db) return [];
       const tx = db.transaction('documents', 'readonly');
       const store = tx.objectStore('documents');
       const req = store.getAll();
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve) => {
         req.onsuccess = () => resolve(req.result || []);
-        req.onerror = () => reject(req.error);
+        req.onerror = () => resolve([]);
       });
     } catch (e) {
       return [];
@@ -217,9 +419,13 @@
   window.deleteDocumentFromDB = async function(id) {
     try {
       const db = await openDocDB();
+      if (!db) return false;
       const tx = db.transaction('documents', 'readwrite');
       tx.objectStore('documents').delete(id);
-      return new Promise(resolve => { tx.oncomplete = () => resolve(true); });
+      return new Promise(resolve => {
+        tx.oncomplete = () => resolve(true);
+        tx.onerror = () => resolve(false);
+      });
     } catch (e) {
       return false;
     }
@@ -245,6 +451,7 @@
     const mode = (opts && opts.mode) || 'target'; // 'target' or 'slider'
     const targetBytes = opts && opts.targetBytes ? opts.targetBytes : null;
     const sliderPct = opts && typeof opts.sliderPct === 'number' ? opts.sliderPct : 60;
+    const formatPref = (opts && opts.format) || 'original'; // 'original', 'jpeg', 'png', 'webp'
     const onProgress = (opts && opts.onProgress) || (() => {});
 
     onProgress(15, 'Reading image file...');
@@ -266,19 +473,30 @@
       throw new Error('Invalid image dimensions.');
     }
 
-    // Determine target format
+    // Determine target format strictly based on user selection or original file
     let targetMime = 'image/jpeg';
     let ext = 'jpg';
-    if (file.type === 'image/webp') {
+
+    if (formatPref === 'png') {
+      targetMime = 'image/png';
+      ext = 'png';
+    } else if (formatPref === 'webp') {
       targetMime = 'image/webp';
       ext = 'webp';
-    } else if (file.type === 'image/png') {
-      if (mode === 'slider' && sliderPct < 40) {
+    } else if (formatPref === 'jpeg' || formatPref === 'jpg') {
+      targetMime = 'image/jpeg';
+      ext = 'jpg';
+    } else {
+      // 'original' or auto
+      if (file.type === 'image/webp') {
+        targetMime = 'image/webp';
+        ext = 'webp';
+      } else if (file.type === 'image/png') {
         targetMime = 'image/png';
         ext = 'png';
       } else {
-        targetMime = 'image/webp';
-        ext = 'webp';
+        targetMime = 'image/jpeg';
+        ext = 'jpg';
       }
     }
 
@@ -286,45 +504,63 @@
     canvas.width = origWidth;
     canvas.height = origHeight;
     const ctx = canvas.getContext('2d');
+
+    // If saving as JPEG, fill white background behind transparency
+    if (targetMime === 'image/jpeg') {
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(0, 0, origWidth, origHeight);
+    }
     ctx.drawImage(img, 0, 0, origWidth, origHeight);
 
     let finalBlob = null;
     let achieved = true;
     let statusMessage = '';
 
-    if (mode === 'slider') {
+    if (targetMime === 'image/png') {
+      // PNG is lossless in standard canvas.toBlob
+      onProgress(60, 'Encoding lossless PNG...');
+      finalBlob = await new Promise(r => canvas.toBlob(r, 'image/png'));
+      if (mode === 'target' && targetBytes && finalBlob && finalBlob.size > targetBytes) {
+        achieved = false;
+        statusMessage = `PNG format is lossless. Standard PNG compression reached ${formatBytes(finalBlob.size)}. To achieve smaller target file sizes (such as ${formatBytes(targetBytes)}), consider selecting WebP or JPEG format.`;
+      } else {
+        achieved = true;
+        statusMessage = `Saved as PNG with lossless quality and transparency preserved (${formatBytes(finalBlob.size)}).`;
+      }
+    } else if (mode === 'slider') {
       onProgress(60, 'Applying compression curves...');
-      const quality = Math.max(0.05, Math.min(0.98, (100 - sliderPct * 0.92) / 100));
+      const quality = Math.max(0.08, Math.min(0.96, (100 - sliderPct * 0.90) / 100));
       finalBlob = await new Promise(r => canvas.toBlob(r, targetMime, quality));
       achieved = true;
-      statusMessage = `Compressed at ${sliderPct}% compression level.`;
+      statusMessage = `Compressed at ${sliderPct}% compression level in ${ext.toUpperCase()} format.`;
     } else {
       // Target File Size Mode: Iterative Binary Search
       onProgress(50, 'Calibrating quality to reach target size...');
 
       if (targetBytes >= origSize) {
-        finalBlob = await new Promise(r => canvas.toBlob(r, targetMime, 0.92));
+        finalBlob = await new Promise(r => canvas.toBlob(r, targetMime, 0.94));
         achieved = true;
         statusMessage = `Target size (${formatBytes(targetBytes)}) is greater than or equal to original size. File saved at maximum quality.`;
       } else {
-        const floorBlob = await new Promise(r => canvas.toBlob(r, targetMime, 0.05));
+        // Test lowest quality floor
+        const floorBlob = await new Promise(r => canvas.toBlob(r, targetMime, 0.08));
         if (floorBlob && floorBlob.size > targetBytes) {
           finalBlob = floorBlob;
           achieved = false;
-          statusMessage = `Target of ${formatBytes(targetBytes)} could not be reached without altering image dimensions. Reduced as much as quality settings allow (${formatBytes(floorBlob.size)}).`;
+          statusMessage = `Target of ${formatBytes(targetBytes)} could not be reached without altering image resolution. Output reached quality floor (${formatBytes(floorBlob.size)}).`;
         } else {
-          let lowQ = 0.05;
-          let highQ = 0.95;
+          let lowQ = 0.08;
+          let highQ = 0.96;
           let bestBlob = floorBlob;
 
-          for (let iter = 0; iter < 5; iter++) {
+          for (let iter = 0; iter < 6; iter++) {
             const midQ = (lowQ + highQ) / 2;
             const testBlob = await new Promise(r => canvas.toBlob(r, targetMime, midQ));
             if (!testBlob) break;
 
             if (testBlob.size <= targetBytes) {
               bestBlob = testBlob;
-              if (testBlob.size >= targetBytes * 0.92) {
+              if (testBlob.size >= targetBytes * 0.94) {
                 break;
               }
               lowQ = midQ;
@@ -361,7 +597,7 @@
     };
   };
 
-  // 10. Client-Side PDF Compression Engine (Target Size & Level Modes)
+  // 10. Client-Side PDF Compression Engine (Calibrated Target Size & Level Modes)
   window.compressPdfEngine = async function(file, opts) {
     const origSize = file.size;
     const mode = (opts && opts.mode) || 'target';
@@ -378,43 +614,43 @@
       throw new Error('The selected PDF contains no readable pages.');
     }
 
-    let qualityFactor = 0.60;
-    let scaleFactor = 0.90;
+    let qualityFactor = 0.65;
+    let scaleFactor = 0.95;
     let achieved = true;
     let statusMessage = '';
 
     if (mode === 'slider') {
-      qualityFactor = Math.max(0.12, (100 - sliderPct * 0.85) / 100);
-      scaleFactor = Math.max(0.65, (100 - sliderPct * 0.35) / 100);
+      qualityFactor = Math.max(0.15, (100 - sliderPct * 0.85) / 100);
+      scaleFactor = Math.max(0.68, (100 - sliderPct * 0.35) / 100);
       achieved = true;
       statusMessage = `Compressed at ${sliderPct}% compression level.`;
     } else {
-      // Target File Size Mode
+      // Target File Size Mode: Calibrate according to perPageBudget
       if (targetBytes >= origSize) {
-        qualityFactor = 0.85;
+        qualityFactor = 0.88;
         scaleFactor = 1.25;
         achieved = true;
         statusMessage = `Target size (${formatBytes(targetBytes)}) is greater than or equal to original. File saved at maximum quality.`;
       } else {
-        const ratio = targetBytes / origSize;
-        if (ratio >= 0.85) {
-          scaleFactor = 1.25; qualityFactor = 0.85;
-        } else if (ratio >= 0.60) {
-          scaleFactor = 1.10; qualityFactor = 0.75;
-        } else if (ratio >= 0.35) {
-          scaleFactor = 0.95; qualityFactor = 0.60;
-        } else if (ratio >= 0.18) {
-          scaleFactor = 0.80; qualityFactor = 0.42;
-        } else if (ratio >= 0.08) {
-          scaleFactor = 0.68; qualityFactor = 0.28;
-        } else {
-          scaleFactor = 0.58; qualityFactor = 0.18;
-        }
+        const perPageBudget = Math.max(1000, (targetBytes - 6000) / Math.max(1, numPages));
 
-        const perPageBudget = (targetBytes - 6000) / Math.max(1, numPages);
-        if (perPageBudget < 25000 && scaleFactor > 0.75) {
-          scaleFactor = Math.max(0.58, scaleFactor * 0.85);
-          qualityFactor = Math.max(0.18, qualityFactor * 0.85);
+        if (perPageBudget >= 400 * 1024) {
+          scaleFactor = 1.30; qualityFactor = 0.85;
+        } else if (perPageBudget >= 250 * 1024) {
+          scaleFactor = 1.20; qualityFactor = 0.80;
+        } else if (perPageBudget >= 150 * 1024) {
+          scaleFactor = 1.10; qualityFactor = 0.74;
+        } else if (perPageBudget >= 90 * 1024) {
+          scaleFactor = 0.98; qualityFactor = 0.65;
+        } else if (perPageBudget >= 50 * 1024) {
+          scaleFactor = 0.86; qualityFactor = 0.52;
+        } else if (perPageBudget >= 30 * 1024) {
+          scaleFactor = 0.74; qualityFactor = 0.38;
+        } else if (perPageBudget >= 18 * 1024) {
+          scaleFactor = 0.64; qualityFactor = 0.26;
+        } else {
+          // Readability floor for severe targets
+          scaleFactor = 0.58; qualityFactor = 0.18;
         }
       }
     }

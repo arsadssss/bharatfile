@@ -209,7 +209,8 @@
             <button class="preset-pill" id="btnConvPng" onclick="setConvFormat('png')">PNG</button>
             <button class="preset-pill" id="btnConvWebp" onclick="setConvFormat('webp')">WebP</button>
           </div>
-          <button class="btn-choose-file" id="btnDoConvert" style="width:100%;">Convert & Save Image</button>
+          <button class="btn-choose-file" id="btnDoConvert" style="width:100%;" disabled>Convert & Save Image</button>
+          <div id="convResultBox" class="result-feedback-card hidden"></div>
         </div>
         
     </main>
@@ -404,45 +405,99 @@
 
   <!-- Interactive JavaScript for this tool -->
   <script>
-  
-        let convFile = null, targetFmt = 'jpeg';
-        window.setConvFormat = (fmt) => {
-          targetFmt = fmt;
-          document.querySelectorAll('#btnConvJpg, #btnConvPng, #btnConvWebp').forEach(b => b.classList.remove('active'));
-          if (fmt === 'jpeg') document.getElementById('btnConvJpg').classList.add('active');
-          if (fmt === 'png') document.getElementById('btnConvPng').classList.add('active');
-          if (fmt === 'webp') document.getElementById('btnConvWebp').classList.add('active');
-        };
+    let convFile = null;
+    let targetFmt = 'jpeg';
 
-        document.getElementById('convInput').onchange = (e) => {
-          if (e.target.files[0]) {
-            convFile = e.target.files[0];
-            document.getElementById('convStatus').textContent = `Selected: ${convFile.name}`;
-          }
-        };
+    const convInput = document.getElementById('convInput');
+    const convStatus = document.getElementById('convStatus');
+    const btnDoConvert = document.getElementById('btnDoConvert');
 
-        document.getElementById('btnDoConvert').onclick = () => {
-          if (!convFile) return alert('Please select an image first.');
-          const img = new Image();
-          img.src = URL.createObjectURL(convFile);
-          img.onload = () => {
-            const c = document.createElement('canvas');
-            c.width = img.width; c.height = img.height;
-            const ctx = c.getContext('2d');
-            if (targetFmt === 'jpeg') {
-              ctx.fillStyle = '#FFFFFF';
-              ctx.fillRect(0, 0, c.width, c.height);
+    const fmtNames = {
+      jpeg: 'JPG / JPEG',
+      png: 'PNG (Lossless with Transparency)',
+      webp: 'WebP (Modern Web Standard)'
+    };
+
+    window.setConvFormat = (fmt) => {
+      targetFmt = fmt;
+      document.querySelectorAll('#btnConvJpg, #btnConvPng, #btnConvWebp').forEach(b => b.classList.remove('active'));
+      if (fmt === 'jpeg') document.getElementById('btnConvJpg').classList.add('active');
+      if (fmt === 'png') document.getElementById('btnConvPng').classList.add('active');
+      if (fmt === 'webp') document.getElementById('btnConvWebp').classList.add('active');
+    };
+
+    convInput.onchange = (e) => {
+      if (!e.target.files || !e.target.files[0]) return;
+      convFile = e.target.files[0];
+      DocToolKit.hideResult('convResultBox');
+      convStatus.textContent = `Selected: ${convFile.name} (${formatBytes(convFile.size)})`;
+
+      btnDoConvert.disabled = false;
+      btnDoConvert.style.opacity = '1';
+      btnDoConvert.style.cursor = 'pointer';
+    };
+
+    btnDoConvert.onclick = () => {
+      if (!convFile) return;
+
+      btnDoConvert.disabled = true;
+      const originalText = btnDoConvert.innerHTML;
+      btnDoConvert.innerHTML = '<span class="result-spinner" style="width:16px;height:16px;display:inline-block;margin-right:6px;vertical-align:middle;"></span> Converting Image...';
+      DocToolKit.showProcessing('convResultBox', 'Converting Image...', `Encoding canvas into ${targetFmt.toUpperCase()} format...`);
+
+      const img = new Image();
+      const objUrl = URL.createObjectURL(convFile);
+      img.onload = () => {
+        URL.revokeObjectURL(objUrl);
+        const c = document.createElement('canvas');
+        c.width = img.width;
+        c.height = img.height;
+        const ctx = c.getContext('2d');
+        if (targetFmt === 'jpeg') {
+          ctx.fillStyle = '#FFFFFF';
+          ctx.fillRect(0, 0, c.width, c.height);
+        }
+        ctx.drawImage(img, 0, 0);
+
+        const ext = targetFmt === 'jpeg' ? 'jpg' : targetFmt;
+        c.toBlob(blob => {
+          const exportName = generateExportFilename(convFile.name, DocToolKit.userProfile.name, 'converted', ext);
+          saveDocumentToDB({ name: exportName, origSize: convFile.size, size: blob.size, type: ext.toUpperCase() });
+
+          DocToolKit.showResult('convResultBox', {
+            title: 'Image Converted Successfully',
+            subTitle: `Image successfully re-encoded to ${fmtNames[targetFmt] || targetFmt.toUpperCase()}.`,
+            blob: blob,
+            defaultFilename: exportName,
+            meta: [
+              { label: 'Target Format', value: fmtNames[targetFmt] || targetFmt.toUpperCase() },
+              { label: 'Image Dimensions', value: `${img.width} × ${img.height} px` },
+              { label: 'Original Size', value: formatBytes(convFile.size) },
+              { label: 'Converted Size', value: formatBytes(blob.size) }
+            ],
+            onReset: () => {
+              convFile = null;
+              convInput.value = '';
+              convStatus.textContent = 'Convert between JPG, PNG & WebP';
+              btnDoConvert.disabled = true;
+              btnDoConvert.style.opacity = '0.6';
+              btnDoConvert.style.cursor = 'not-allowed';
+              DocToolKit.hideResult('convResultBox');
             }
-            ctx.drawImage(img, 0, 0);
-            c.toBlob(blob => {
-              const ext = targetFmt === 'jpeg' ? 'jpg' : targetFmt;
-              const name = generateExportFilename(convFile.name, DocToolKit.userProfile.name, 'converted', ext);
-              triggerDownload(blob, name);
-              saveDocumentToDB({ name, origSize: convFile.size, size: blob.size, type: 'Image' });
-            }, `image/${targetFmt}`, 0.92);
-          };
-        };
-        
+          });
+
+          btnDoConvert.disabled = false;
+          btnDoConvert.innerHTML = originalText;
+        }, `image/${targetFmt}`, 0.92);
+      };
+      img.onerror = () => {
+        URL.revokeObjectURL(objUrl);
+        DocToolKit.showError('convResultBox', 'Conversion Failed', 'Unable to parse the image file.');
+        btnDoConvert.disabled = false;
+        btnDoConvert.innerHTML = originalText;
+      };
+      img.src = objUrl;
+    };
   </script>
 </body>
 </html>

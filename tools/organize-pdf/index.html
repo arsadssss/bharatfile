@@ -207,7 +207,8 @@
             <button class="btn-choose-file" type="button">📁 Select PDF</button>
           </div>
           <div id="orgPageGrid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(130px, 1fr)); gap:10px; max-height:350px; overflow-y:auto;"></div>
-          <button class="btn-choose-file" id="btnSaveOrgPdf" style="width:100%;">Save Reorganized PDF</button>
+          <button class="btn-choose-file" id="btnSaveOrgPdf" style="width:100%;" disabled>Save Reorganized PDF</button>
+          <div id="orgResultBox" class="result-feedback-card hidden"></div>
         </div>
         
     </main>
@@ -402,44 +403,126 @@
 
   <!-- Interactive JavaScript for this tool -->
   <script>
-  
-        let orgDoc = null, orgPagesState = [], orgOrigName = '';
-        document.getElementById('orgInput').onchange = async (e) => {
-          const file = e.target.files[0];
-          if (!file) return;
-          orgOrigName = file.name;
-          orgDoc = await PDFLib.PDFDocument.load(await file.arrayBuffer());
-          const count = orgDoc.getPageCount();
-          orgPagesState = Array.from({ length: count }, (_, i) => ({ index: i, rotation: 0 }));
-          renderGrid();
-        };
+    let orgDoc = null;
+    let orgPagesState = [];
+    let orgOrigName = '';
+    let origPageCount = 0;
 
-        function renderGrid() {
-          const grid = document.getElementById('orgPageGrid');
-          grid.innerHTML = orgPagesState.map((p, i) => `
-            <div style="background:var(--track-bg); padding:10px; border-radius:10px; text-align:center;">
-              <div style="font-weight:700; font-size:13px;">Page ${p.index + 1}</div>
-              <div style="font-size:11px; color:var(--text-muted); margin:4px 0;">Angle: ${p.rotation}°</div>
-              <button onclick="orgPagesState[${i}].rotation = (orgPagesState[${i}].rotation + 90) % 360; renderGrid();" style="padding:4px 8px; font-size:11px; cursor:pointer; border-radius:6px; border:none; background:var(--card-bg);">⟳ Rotate</button>
-              <button onclick="orgPagesState.splice(${i},1); renderGrid();" style="padding:4px 8px; font-size:11px; color:red; cursor:pointer; border-radius:6px; border:none; background:var(--card-bg);">✕ Delete</button>
-            </div>
-          `).join('');
+    const orgInput = document.getElementById('orgInput');
+    const orgPageGrid = document.getElementById('orgPageGrid');
+    const btnSaveOrgPdf = document.getElementById('btnSaveOrgPdf');
+
+    function updateButtonState() {
+      if (!orgDoc || orgPagesState.length === 0) {
+        btnSaveOrgPdf.disabled = true;
+        btnSaveOrgPdf.style.opacity = '0.6';
+        btnSaveOrgPdf.style.cursor = 'not-allowed';
+      } else {
+        btnSaveOrgPdf.disabled = false;
+        btnSaveOrgPdf.style.opacity = '1';
+        btnSaveOrgPdf.style.cursor = 'pointer';
+      }
+    }
+
+    orgInput.onchange = async (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+
+      DocToolKit.hideResult('orgResultBox');
+      orgOrigName = file.name;
+      try {
+        orgDoc = await PDFLib.PDFDocument.load(await file.arrayBuffer());
+        origPageCount = orgDoc.getPageCount();
+        orgPagesState = Array.from({ length: origPageCount }, (_, i) => ({ index: i, rotation: 0 }));
+        renderGrid();
+      } catch (err) {
+        console.error('Failed to load PDF:', err);
+        DocToolKit.showError('orgResultBox', 'PDF Load Error', 'Unable to parse the PDF document.');
+      }
+    };
+
+    function renderGrid() {
+      if (orgPagesState.length === 0) {
+        orgPageGrid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:24px; color:var(--text-muted); font-size:13px;">No pages remaining in document.</div>';
+        updateButtonState();
+        return;
+      }
+
+      orgPageGrid.innerHTML = orgPagesState.map((p, i) => `
+        <div style="background:var(--track-bg); padding:10px; border-radius:10px; text-align:center; display:flex; flex-direction:column; gap:6px;">
+          <div style="font-weight:700; font-size:13px;">Page ${p.index + 1}</div>
+          <div style="font-size:11px; color:var(--text-muted);">Rotation: ${p.rotation}°</div>
+          <div style="display:flex; gap:4px; justify-content:center;">
+            <button type="button" onclick="rotatePage(${i})" style="padding:4px 8px; font-size:11px; cursor:pointer; border-radius:6px; border:none; background:var(--card-bg); font-weight:600;">⟳ Rotate</button>
+            <button type="button" onclick="deletePage(${i})" style="padding:4px 8px; font-size:11px; color:#ef4444; cursor:pointer; border-radius:6px; border:none; background:var(--card-bg); font-weight:600;">✕ Delete</button>
+          </div>
+        </div>
+      `).join('');
+      updateButtonState();
+    }
+
+    window.rotatePage = (i) => {
+      orgPagesState[i].rotation = (orgPagesState[i].rotation + 90) % 360;
+      renderGrid();
+    };
+
+    window.deletePage = (i) => {
+      orgPagesState.splice(i, 1);
+      renderGrid();
+    };
+
+    btnSaveOrgPdf.onclick = async () => {
+      if (!orgDoc || !orgPagesState.length) return;
+
+      btnSaveOrgPdf.disabled = true;
+      const originalText = btnSaveOrgPdf.innerHTML;
+      btnSaveOrgPdf.innerHTML = '<span class="result-spinner" style="width:16px;height:16px;display:inline-block;margin-right:6px;vertical-align:middle;"></span> Saving Reorganized PDF...';
+      DocToolKit.showProcessing('orgResultBox', 'Saving PDF...', `Building document with ${pluralize(orgPagesState.length, 'page', 'pages')}...`);
+
+      try {
+        const newDoc = await PDFLib.PDFDocument.create();
+        for (const item of orgPagesState) {
+          const [page] = await newDoc.copyPages(orgDoc, [item.index]);
+          if (item.rotation) page.setRotation(PDFLib.degrees(item.rotation));
+          newDoc.addPage(page);
         }
+        const bytes = await newDoc.save();
+        const exportName = generateExportFilename(orgOrigName, DocToolKit.userProfile.name, 'organized', 'pdf');
+        const finalBlob = new Blob([bytes], { type: 'application/pdf' });
 
-        document.getElementById('btnSaveOrgPdf').onclick = async () => {
-          if (!orgDoc || !orgPagesState.length) return alert('No pages to save.');
-          const newDoc = await PDFLib.PDFDocument.create();
-          for (const item of orgPagesState) {
-            const [page] = await newDoc.copyPages(orgDoc, [item.index]);
-            if (item.rotation) page.setRotation(PDFLib.degrees(item.rotation));
-            newDoc.addPage(page);
+        saveDocumentToDB({ name: exportName, origSize: bytes.length, size: bytes.length, type: 'PDF' });
+
+        DocToolKit.showResult('orgResultBox', {
+          title: 'PDF Reorganized Successfully',
+          subTitle: `Successfully assembled ${pluralize(orgPagesState.length, 'page', 'pages')} into a new PDF document.`,
+          blob: finalBlob,
+          defaultFilename: exportName,
+          meta: [
+            { label: 'Original Pages', value: pluralize(origPageCount, 'page', 'pages') },
+            { label: 'Preserved Pages', value: pluralize(orgPagesState.length, 'page', 'pages') },
+            { label: 'Output Size', value: formatBytes(bytes.length) },
+            { label: 'Security', value: '100% In-Browser' }
+          ],
+          onReset: () => {
+            orgDoc = null;
+            orgPagesState = [];
+            orgOrigName = '';
+            origPageCount = 0;
+            orgInput.value = '';
+            orgPageGrid.innerHTML = '';
+            updateButtonState();
+            DocToolKit.hideResult('orgResultBox');
           }
-          const bytes = await newDoc.save();
-          const name = generateExportFilename(orgOrigName, DocToolKit.userProfile.name, 'organized', 'pdf');
-          triggerDownload(new Blob([bytes], { type: 'application/pdf' }), name);
-          saveDocumentToDB({ name, origSize: bytes.length, size: bytes.length, type: 'PDF' });
-        };
-        
+        });
+      } catch (err) {
+        console.error('Failed to save organized PDF:', err);
+        DocToolKit.showError('orgResultBox', 'Save Failed', err.message || 'Unable to build reorganized PDF.');
+      } finally {
+        btnSaveOrgPdf.disabled = false;
+        btnSaveOrgPdf.innerHTML = originalText;
+        updateButtonState();
+      }
+    };
   </script>
 </body>
 </html>

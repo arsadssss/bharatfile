@@ -204,16 +204,32 @@
             <div style="font-size:12px; color:var(--text-muted);" id="resFileName">Set custom width & height in pixels</div>
             <button class="btn-choose-file" type="button">📁 Select Image</button>
           </div>
+          <div class="ratio-lock-wrap" style="display:flex; justify-content:space-between; align-items:center;">
+            <label style="font-size:13px; font-weight:600; display:flex; align-items:center; gap:6px; cursor:pointer;">
+              <input type="checkbox" id="resLockRatio" checked style="accent-color:var(--primary); width:16px; height:16px;">
+              <span>🔒 Maintain Aspect Ratio</span>
+            </label>
+            <span id="resRatioStatus" style="font-size:12px; color:var(--text-muted);">Proportional scaling</span>
+          </div>
           <div style="display:flex; gap:10px;">
-            <input type="number" id="resWidth" placeholder="Width (px)" value="200" class="rename-input" style="flex:1;">
-            <input type="number" id="resHeight" placeholder="Height (px)" value="230" class="rename-input" style="flex:1;">
+            <div style="flex:1;">
+              <label style="font-size:11px; font-weight:700; color:var(--text-muted); display:block; margin-bottom:4px;">Width (px)</label>
+              <input type="number" id="resWidth" placeholder="Width (px)" value="200" class="rename-input" style="width:100%;">
+            </div>
+            <div style="flex:1;">
+              <label style="font-size:11px; font-weight:700; color:var(--text-muted); display:block; margin-bottom:4px;">Height (px)</label>
+              <input type="number" id="resHeight" placeholder="Height (px)" value="230" class="rename-input" style="width:100%;">
+            </div>
           </div>
           <div style="display:flex; gap:8px; flex-wrap:wrap;">
-            <button class="preset-pill" onclick="document.getElementById('resWidth').value=200; document.getElementById('resHeight').value=230;">UPSC Photo (200x230)</button>
-            <button class="preset-pill" onclick="document.getElementById('resWidth').value=140; document.getElementById('resHeight').value=60;">Signature (140x60)</button>
-            <button class="preset-pill" onclick="document.getElementById('resWidth').value=500; document.getElementById('resHeight').value=500;">Square (500x500)</button>
+            <button type="button" class="preset-pill" onclick="applyDimensions(200, 230, false)">UPSC Photo (200×230)</button>
+            <button type="button" class="preset-pill" onclick="applyDimensions(140, 60, false)">Signature (140×60)</button>
+            <button type="button" class="preset-pill" onclick="applyDimensions(500, 500, false)">Square (500×500)</button>
+            <button type="button" class="preset-pill" onclick="applyDimensions(1920, 1080, false)">Full HD (1920×1080)</button>
+            <button type="button" class="preset-pill" onclick="applyDimensions(1200, 630, false)">Web (1200×630)</button>
           </div>
-          <button class="btn-choose-file" id="btnDoResize" style="width:100%;">Resize & Download Image</button>
+          <button class="btn-choose-file" id="btnDoResize" style="width:100%;" disabled>Resize & Download Image</button>
+          <div id="resizeResultBox" class="result-feedback-card hidden"></div>
         </div>
         
     </main>
@@ -408,33 +424,151 @@
 
   <!-- Interactive JavaScript for this tool -->
   <script>
-  
-        let resFile = null;
-        document.getElementById('resInput').onchange = (e) => {
-          if (e.target.files[0]) {
-            resFile = e.target.files[0];
-            document.getElementById('resFileName').textContent = `Selected: ${resFile.name}`;
-          }
-        };
+    let resFile = null;
+    let origWidth = 0;
+    let origHeight = 0;
+    let aspectRatio = 1;
 
-        document.getElementById('btnDoResize').onclick = () => {
-          if (!resFile) return alert('Please select an image first.');
-          const w = parseInt(document.getElementById('resWidth').value, 10);
-          const h = parseInt(document.getElementById('resHeight').value, 10);
-          const img = new Image();
-          img.src = URL.createObjectURL(resFile);
-          img.onload = () => {
-            const c = document.createElement('canvas');
-            c.width = w; c.height = h;
-            c.getContext('2d').drawImage(img, 0, 0, w, h);
-            c.toBlob(blob => {
-              const name = generateExportFilename(resFile.name, DocToolKit.userProfile.name, `${w}x${h}`, 'jpg');
-              triggerDownload(blob, name);
-              saveDocumentToDB({ name, origSize: resFile.size, size: blob.size, type: 'Image' });
-            }, 'image/jpeg', 0.9);
-          };
-        };
-        
+    const resInput = document.getElementById('resInput');
+    const resFileName = document.getElementById('resFileName');
+    const resWidth = document.getElementById('resWidth');
+    const resHeight = document.getElementById('resHeight');
+    const resLockRatio = document.getElementById('resLockRatio');
+    const resRatioStatus = document.getElementById('resRatioStatus');
+    const btnDoResize = document.getElementById('btnDoResize');
+
+    function updateRatioStatus() {
+      if (resLockRatio.checked) {
+        resRatioStatus.textContent = 'Proportional scaling (No distortion)';
+        resRatioStatus.style.color = '#10b981';
+      } else {
+        resRatioStatus.textContent = '⚠️ Custom aspect (May stretch or squish)';
+        resRatioStatus.style.color = '#f59e0b';
+      }
+    }
+
+    resLockRatio.addEventListener('change', updateRatioStatus);
+
+    resWidth.addEventListener('input', () => {
+      const w = parseInt(resWidth.value, 10);
+      if (resLockRatio.checked && aspectRatio > 0 && !isNaN(w) && w > 0) {
+        resHeight.value = Math.max(1, Math.round(w / aspectRatio));
+      }
+    });
+
+    resHeight.addEventListener('input', () => {
+      const h = parseInt(resHeight.value, 10);
+      if (resLockRatio.checked && aspectRatio > 0 && !isNaN(h) && h > 0) {
+        resWidth.value = Math.max(1, Math.round(h * aspectRatio));
+      }
+    });
+
+    window.applyDimensions = (w, h, respectLock) => {
+      if (respectLock && resLockRatio.checked && aspectRatio > 0) {
+        resWidth.value = w;
+        resHeight.value = Math.max(1, Math.round(w / aspectRatio));
+      } else {
+        resWidth.value = w;
+        resHeight.value = h;
+      }
+    };
+
+    resInput.onchange = (e) => {
+      if (!e.target.files || !e.target.files[0]) return;
+      resFile = e.target.files[0];
+      DocToolKit.hideResult('resizeResultBox');
+      resFileName.textContent = 'Reading image dimensions...';
+
+      const img = new Image();
+      const objUrl = URL.createObjectURL(resFile);
+      img.onload = () => {
+        URL.revokeObjectURL(objUrl);
+        origWidth = img.width;
+        origHeight = img.height;
+        aspectRatio = origWidth / origHeight;
+        resWidth.value = origWidth;
+        resHeight.value = origHeight;
+        resFileName.textContent = `Selected: ${resFile.name} (${origWidth} × ${origHeight} px, ${formatBytes(resFile.size)})`;
+        btnDoResize.disabled = false;
+        btnDoResize.style.opacity = '1';
+        btnDoResize.style.cursor = 'pointer';
+        updateRatioStatus();
+      };
+      img.onerror = () => {
+        URL.revokeObjectURL(objUrl);
+        resFileName.textContent = '❌ Failed to read image file.';
+      };
+      img.src = objUrl;
+    };
+
+    btnDoResize.onclick = () => {
+      if (!resFile || origWidth === 0) return;
+      const targetW = parseInt(resWidth.value, 10);
+      const targetH = parseInt(resHeight.value, 10);
+      if (isNaN(targetW) || targetW <= 0 || isNaN(targetH) || targetH <= 0) {
+        alert('Please enter valid positive width and height dimensions.');
+        return;
+      }
+
+      btnDoResize.disabled = true;
+      const originalText = btnDoResize.innerHTML;
+      btnDoResize.innerHTML = '<span class="result-spinner" style="width:16px;height:16px;display:inline-block;margin-right:6px;vertical-align:middle;"></span> Resizing Image...';
+      DocToolKit.showProcessing('resizeResultBox', 'Resizing Image...', `Transforming canvas to ${targetW} × ${targetH} px...`);
+
+      const isPng = (resFile.type === 'image/png');
+      const exportMime = isPng ? 'image/png' : 'image/jpeg';
+      const exportExt = isPng ? 'png' : 'jpg';
+
+      const img = new Image();
+      const objUrl = URL.createObjectURL(resFile);
+      img.onload = () => {
+        URL.revokeObjectURL(objUrl);
+        const c = document.createElement('canvas');
+        c.width = targetW;
+        c.height = targetH;
+        const ctx = c.getContext('2d');
+        if (!isPng) {
+          ctx.fillStyle = '#FFFFFF';
+          ctx.fillRect(0, 0, targetW, targetH);
+        }
+        ctx.drawImage(img, 0, 0, targetW, targetH);
+
+        c.toBlob(blob => {
+          const exportName = generateExportFilename(resFile.name, DocToolKit.userProfile.name, `${targetW}x${targetH}`, exportExt);
+          saveDocumentToDB({ name: exportName, origSize: resFile.size, size: blob.size, type: exportExt.toUpperCase() });
+
+          DocToolKit.showResult('resizeResultBox', {
+            title: 'Image Resized Successfully',
+            subTitle: `Image transformed from ${origWidth}×${origHeight} px to ${targetW}×${targetH} px.`,
+            blob: blob,
+            defaultFilename: exportName,
+            meta: [
+              { label: 'Original Dimensions', value: `${origWidth} × ${origHeight} px` },
+              { label: 'New Dimensions', value: `${targetW} × ${targetH} px` },
+              { label: 'Original Size', value: formatBytes(resFile.size) },
+              { label: 'Resized Size', value: formatBytes(blob.size) }
+            ],
+            onReset: () => {
+              resFile = null;
+              origWidth = 0;
+              origHeight = 0;
+              resInput.value = '';
+              resFileName.textContent = 'Set custom width & height in pixels';
+              btnDoResize.disabled = true;
+              btnDoResize.style.opacity = '0.6';
+              btnDoResize.style.cursor = 'not-allowed';
+              DocToolKit.hideResult('resizeResultBox');
+            }
+          });
+
+          btnDoResize.disabled = false;
+          btnDoResize.innerHTML = originalText;
+        }, exportMime, 0.92);
+      };
+      img.src = objUrl;
+    };
+
+    updateRatioStatus();
   </script>
 </body>
 </html>

@@ -219,7 +219,9 @@
             <label style="font-size:12px; font-weight:700; color:var(--text-muted); display:block; margin-bottom:4px;">Merged Filename:</label>
             <input type="text" class="rename-input" id="mergeNameInput" value="merged_document.pdf">
           </div>
-          <button class="btn-choose-file" id="btnDoMerge" style="width:100%;">Merge & Download PDF</button>
+          <div id="mergeHelper" style="font-size:12px; color:var(--text-muted);">Please select at least 2 PDF documents to merge.</div>
+          <button class="btn-choose-file" id="btnDoMerge" style="width:100%;" disabled>Merge & Download PDF</button>
+          <div id="mergeResultBox" class="result-feedback-card hidden"></div>
         </div>
         
     </main>
@@ -418,39 +420,104 @@
 
   <!-- Interactive JavaScript for this tool -->
   <script>
-  
-        let mergeFiles = [];
-        const mInput = document.getElementById('mergeInput');
-        const mList = document.getElementById('mergeList');
+    let mergeFiles = [];
+    const mInput = document.getElementById('mergeInput');
+    const mList = document.getElementById('mergeList');
+    const btnDoMerge = document.getElementById('btnDoMerge');
+    const mergeHelper = document.getElementById('mergeHelper');
+    const mergeNameInput = document.getElementById('mergeNameInput');
 
-        mInput.onchange = (e) => {
-          mergeFiles = Array.from(e.target.files);
-          mList.innerHTML = mergeFiles.map((f, i) => `
-            <div style="display:flex; justify-content:space-between; padding:10px; background:var(--track-bg); border-radius:8px; font-size:13px;">
-              <span>${i+1}. ${f.name}</span>
-              <span style="color:var(--text-muted);">${formatBytes(f.size)}</span>
-            </div>
-          `).join('');
-          if (mergeFiles[0]) {
-            document.getElementById('mergeNameInput').value = generateExportFilename(mergeFiles[0].name, DocToolKit.userProfile.name, 'merged', 'pdf');
-          }
-        };
+    function updateMergeState() {
+      if (mergeFiles.length < 2) {
+        btnDoMerge.disabled = true;
+        btnDoMerge.style.opacity = '0.6';
+        btnDoMerge.style.cursor = 'not-allowed';
+        const countText = mergeFiles.length === 1 ? '1 PDF file' : '0 PDF files';
+        mergeHelper.textContent = `Selected ${countText}. Please select at least 2 PDF documents to merge.`;
+        mergeHelper.style.color = 'var(--text-muted)';
+      } else {
+        btnDoMerge.disabled = false;
+        btnDoMerge.style.opacity = '1';
+        btnDoMerge.style.cursor = 'pointer';
+        mergeHelper.textContent = `✓ Ready to merge ${mergeFiles.length} PDF files in selected sequence.`;
+        mergeHelper.style.color = '#10b981';
+      }
+    }
 
-        document.getElementById('btnDoMerge').onclick = async () => {
-          if (mergeFiles.length < 2) return alert('Please select at least 2 PDF files.');
-          const outDoc = await PDFLib.PDFDocument.create();
-          for (const file of mergeFiles) {
-            const inBytes = await file.arrayBuffer();
-            const inDoc = await PDFLib.PDFDocument.load(inBytes);
-            const pages = await outDoc.copyPages(inDoc, inDoc.getPageIndices());
-            pages.forEach(p => outDoc.addPage(p));
+    mInput.onchange = (e) => {
+      mergeFiles = Array.from(e.target.files || []);
+      DocToolKit.hideResult('mergeResultBox');
+      mList.innerHTML = mergeFiles.map((f, i) => `
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 14px; background:var(--track-bg); border-radius:8px; font-size:13px;">
+          <span style="font-weight:600;">${i+1}. ${f.name}</span>
+          <span style="color:var(--text-muted); font-size:12px;">${formatBytes(f.size)}</span>
+        </div>
+      `).join('');
+      if (mergeFiles[0]) {
+        mergeNameInput.value = generateExportFilename(mergeFiles[0].name, DocToolKit.userProfile.name, 'merged', 'pdf');
+      }
+      updateMergeState();
+    };
+
+    btnDoMerge.onclick = async () => {
+      if (mergeFiles.length < 2) {
+        updateMergeState();
+        return;
+      }
+
+      btnDoMerge.disabled = true;
+      const originalBtnText = btnDoMerge.innerHTML;
+      btnDoMerge.innerHTML = '<span class="result-spinner" style="width:16px;height:16px;display:inline-block;margin-right:6px;vertical-align:middle;"></span> Merging PDFs...';
+      DocToolKit.showProcessing('mergeResultBox', 'Merging PDFs...', 'Combining pages into a single unified document...');
+
+      try {
+        const outDoc = await PDFLib.PDFDocument.create();
+        let totalPages = 0;
+        for (const file of mergeFiles) {
+          const inBytes = await file.arrayBuffer();
+          const inDoc = await PDFLib.PDFDocument.load(inBytes);
+          const indices = inDoc.getPageIndices();
+          totalPages += indices.length;
+          const pages = await outDoc.copyPages(inDoc, indices);
+          pages.forEach(p => outDoc.addPage(p));
+        }
+        const bytes = await outDoc.save();
+        const exportName = mergeNameInput.value.trim() || 'merged_document.pdf';
+        const finalBlob = new Blob([bytes], { type: 'application/pdf' });
+
+        saveDocumentToDB({ name: exportName, origSize: bytes.length, size: bytes.length, type: 'PDF' });
+
+        DocToolKit.showResult('mergeResultBox', {
+          title: 'PDFs Merged Successfully',
+          subTitle: `Successfully combined ${mergeFiles.length} documents into a single PDF.`,
+          blob: finalBlob,
+          defaultFilename: exportName,
+          meta: [
+            { label: 'Files Merged', value: `${mergeFiles.length} files` },
+            { label: 'Total Pages', value: pluralize(totalPages, 'page', 'pages') },
+            { label: 'Combined Size', value: formatBytes(bytes.length) },
+            { label: 'Security', value: '100% In-Browser' }
+          ],
+          onReset: () => {
+            mergeFiles = [];
+            mInput.value = '';
+            mList.innerHTML = '';
+            mergeNameInput.value = 'merged_document.pdf';
+            updateMergeState();
+            DocToolKit.hideResult('mergeResultBox');
           }
-          const bytes = await outDoc.save();
-          const name = document.getElementById('mergeNameInput').value.trim() || 'merged.pdf';
-          triggerDownload(new Blob([bytes], { type: 'application/pdf' }), name);
-          saveDocumentToDB({ name, origSize: bytes.length, size: bytes.length, type: 'PDF' });
-        };
-        
+        });
+      } catch (err) {
+        console.error('Merge PDF error:', err);
+        DocToolKit.showError('mergeResultBox', 'Merge Failed', err.message || 'Unable to merge the selected PDF files. Please ensure none are password-protected.');
+      } finally {
+        btnDoMerge.disabled = false;
+        btnDoMerge.innerHTML = originalBtnText;
+        updateMergeState();
+      }
+    };
+
+    updateMergeState();
   </script>
 </body>
 </html>

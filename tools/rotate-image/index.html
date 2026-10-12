@@ -204,12 +204,23 @@
             <div style="font-size:12px; color:var(--text-muted);" id="rotStatus">Rotate 90°, 180°, or 270° lossless</div>
             <button class="btn-choose-file" type="button">📁 Select Image</button>
           </div>
-          <div style="display:flex; gap:8px;">
-            <button class="preset-pill active" id="btnRot90" onclick="setRotAngle(90, this)">90° Clockwise</button>
-            <button class="preset-pill" onclick="setRotAngle(180, this)">180° Flip</button>
-            <button class="preset-pill" onclick="setRotAngle(270, this)">270° Counter-Clockwise</button>
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div style="font-size:12px; font-weight:700; color:var(--text-muted);">Rotation Angle:</div>
+            <div id="rotAngleBadge" class="angle-badge" style="font-size:12px; font-weight:700; color:var(--primary); background:rgba(99,102,241,0.1); padding:4px 10px; border-radius:100px;">90° Clockwise</div>
           </div>
-          <button class="btn-choose-file" id="btnDoRotate" style="width:100%;">Save Rotated Image</button>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button type="button" class="preset-pill active" id="btnRot90" onclick="setRotAngle(90, this)">↻ 90° Clockwise</button>
+            <button type="button" class="preset-pill" onclick="setRotAngle(180, this)">↻ 180° Half Turn</button>
+            <button type="button" class="preset-pill" onclick="setRotAngle(270, this)">↺ 270° (90° CCW)</button>
+          </div>
+          <div id="rotPreviewWrap" style="display:none; text-align:center; padding:16px; background:var(--track-bg); border-radius:12px; overflow:hidden;">
+            <div style="font-size:11px; font-weight:700; color:var(--text-muted); margin-bottom:10px;">Live Orientation Preview:</div>
+            <div style="display:inline-block; max-width:240px; max-height:240px; overflow:hidden; border-radius:8px;">
+              <img id="rotPreviewImg" src="" alt="Live Preview" style="max-width:100%; max-height:220px; transition:transform 0.25s ease; display:block; margin:0 auto; box-shadow:0 2px 8px rgba(0,0,0,0.15);">
+            </div>
+          </div>
+          <button class="btn-choose-file" id="btnDoRotate" style="width:100%;" disabled>Rotate & Download Image</button>
+          <div id="rotateResultBox" class="result-feedback-card hidden"></div>
         </div>
         
     </main>
@@ -404,44 +415,116 @@
 
   <!-- Interactive JavaScript for this tool -->
   <script>
-  
-        let rotFile = null, rotAngle = 90;
-        window.setRotAngle = (a, btn) => {
-          rotAngle = a;
-          document.querySelectorAll('.preset-pill').forEach(p => p.classList.remove('active'));
-          btn.classList.add('active');
-        };
+    let rotFile = null;
+    let rotAngle = 90;
+    let previewUrl = null;
 
-        document.getElementById('rotInput').onchange = (e) => {
-          if (e.target.files[0]) {
-            rotFile = e.target.files[0];
-            document.getElementById('rotStatus').textContent = `Selected: ${rotFile.name}`;
-          }
-        };
+    const rotInput = document.getElementById('rotInput');
+    const rotStatus = document.getElementById('rotStatus');
+    const rotPreviewWrap = document.getElementById('rotPreviewWrap');
+    const rotPreviewImg = document.getElementById('rotPreviewImg');
+    const rotAngleBadge = document.getElementById('rotAngleBadge');
+    const btnDoRotate = document.getElementById('btnDoRotate');
 
-        document.getElementById('btnDoRotate').onclick = () => {
-          if (!rotFile) return alert('Select image first.');
-          const img = new Image();
-          img.src = URL.createObjectURL(rotFile);
-          img.onload = () => {
-            const c = document.createElement('canvas');
-            if (rotAngle === 90 || rotAngle === 270) {
-              c.width = img.height; c.height = img.width;
-            } else {
-              c.width = img.width; c.height = img.height;
+    const angleLabels = {
+      90: '90° Clockwise',
+      180: '180° Half Turn',
+      270: '270° (90° CCW)'
+    };
+
+    window.setRotAngle = (a, btn) => {
+      rotAngle = a;
+      document.querySelectorAll('.preset-pill').forEach(p => p.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      rotAngleBadge.textContent = angleLabels[a] || `${a}°`;
+      if (rotPreviewImg) {
+        rotPreviewImg.style.transform = `rotate(${rotAngle}deg)`;
+      }
+    };
+
+    rotInput.onchange = (e) => {
+      if (!e.target.files || !e.target.files[0]) return;
+      rotFile = e.target.files[0];
+      DocToolKit.hideResult('rotateResultBox');
+      rotStatus.textContent = `Selected: ${rotFile.name} (${formatBytes(rotFile.size)})`;
+
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+      previewUrl = URL.createObjectURL(rotFile);
+      rotPreviewImg.src = previewUrl;
+      rotPreviewImg.style.transform = `rotate(${rotAngle}deg)`;
+      rotPreviewWrap.style.display = 'block';
+
+      btnDoRotate.disabled = false;
+      btnDoRotate.style.opacity = '1';
+      btnDoRotate.style.cursor = 'pointer';
+    };
+
+    btnDoRotate.onclick = () => {
+      if (!rotFile) return;
+
+      btnDoRotate.disabled = true;
+      const originalText = btnDoRotate.innerHTML;
+      btnDoRotate.innerHTML = '<span class="result-spinner" style="width:16px;height:16px;display:inline-block;margin-right:6px;vertical-align:middle;"></span> Rotating Image...';
+      DocToolKit.showProcessing('rotateResultBox', 'Rotating Image...', `Rotating canvas by ${rotAngle}° lossless...`);
+
+      const isPng = (rotFile.type === 'image/png');
+      const exportMime = isPng ? 'image/png' : 'image/jpeg';
+      const exportExt = isPng ? 'png' : 'jpg';
+
+      const img = new Image();
+      const objUrl = URL.createObjectURL(rotFile);
+      img.onload = () => {
+        URL.revokeObjectURL(objUrl);
+        const c = document.createElement('canvas');
+        if (rotAngle === 90 || rotAngle === 270) {
+          c.width = img.height;
+          c.height = img.width;
+        } else {
+          c.width = img.width;
+          c.height = img.height;
+        }
+        const ctx = c.getContext('2d');
+        if (!isPng) {
+          ctx.fillStyle = '#FFFFFF';
+          ctx.fillRect(0, 0, c.width, c.height);
+        }
+        ctx.translate(c.width / 2, c.height / 2);
+        ctx.rotate((rotAngle * Math.PI) / 180);
+        ctx.drawImage(img, -img.width / 2, -img.height / 2);
+
+        c.toBlob(blob => {
+          const exportName = generateExportFilename(rotFile.name, DocToolKit.userProfile.name, `rot${rotAngle}`, exportExt);
+          saveDocumentToDB({ name: exportName, origSize: rotFile.size, size: blob.size, type: exportExt.toUpperCase() });
+
+          DocToolKit.showResult('rotateResultBox', {
+            title: 'Image Rotated Successfully',
+            subTitle: `Image rotated by ${angleLabels[rotAngle] || rotAngle + '°'} without quality degradation.`,
+            blob: blob,
+            defaultFilename: exportName,
+            meta: [
+              { label: 'Rotation Angle', value: angleLabels[rotAngle] || `${rotAngle}°` },
+              { label: 'New Dimensions', value: `${c.width} × ${c.height} px` },
+              { label: 'File Size', value: formatBytes(blob.size) },
+              { label: 'Processing', value: '100% In-Browser' }
+            ],
+            onReset: () => {
+              rotFile = null;
+              rotInput.value = '';
+              rotStatus.textContent = 'Rotate 90°, 180°, or 270° lossless';
+              rotPreviewWrap.style.display = 'none';
+              btnDoRotate.disabled = true;
+              btnDoRotate.style.opacity = '0.6';
+              btnDoRotate.style.cursor = 'not-allowed';
+              DocToolKit.hideResult('rotateResultBox');
             }
-            const ctx = c.getContext('2d');
-            ctx.translate(c.width / 2, c.height / 2);
-            ctx.rotate((rotAngle * Math.PI) / 180);
-            ctx.drawImage(img, -img.width / 2, -img.height / 2);
-            c.toBlob(blob => {
-              const name = generateExportFilename(rotFile.name, DocToolKit.userProfile.name, 'rotated', 'jpg');
-              triggerDownload(blob, name);
-              saveDocumentToDB({ name, origSize: rotFile.size, size: blob.size, type: 'Image' });
-            }, 'image/jpeg', 0.9);
-          };
-        };
-        
+          });
+
+          btnDoRotate.disabled = false;
+          btnDoRotate.innerHTML = originalText;
+        }, exportMime, 0.92);
+      };
+      img.src = objUrl;
+    };
   </script>
 </body>
 </html>
