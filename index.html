@@ -273,7 +273,7 @@
               <span>Target File Size</span>
             </button>
             <button type="button" class="strategy-toggle-btn" id="btnStratSlider" onclick="setStrategy('slider')">
-              <span>🎚️</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
               <span>Quality Level</span>
             </button>
           </div>
@@ -401,22 +401,23 @@
 
           <!-- Empty State (When No File Is Selected) -->
           <div class="inspector-empty-wrap" id="inspectorEmptyWrap">
-            <div class="benefit-visual-wrapper" style="height: 130px; margin-bottom: 2px;">
+            <div class="benefit-visual-wrapper">
               <div class="stacked-doc doc-back">
-                <div style="width: 20px; height: 4px; background: #CBD5E1; border-radius: 2px;"></div>
-                <div style="width: 45px; height: 4px; background: #E2E8F0; border-radius: 2px;"></div>
+                <div style="width: 24px; height: 4px; background: #CBD5E1; border-radius: 2px;"></div>
+                <div style="width: 50px; height: 4px; background: #E2E8F0; border-radius: 2px;"></div>
               </div>
               <div class="stacked-doc doc-front">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
-                  <div style="width: 24px; height: 24px; border-radius: 6px; background: #EF4444; color: white; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 800;">PDF</div>
-                  <div style="font-size: 10px; font-weight: 700; color: #12B76A;">-82%</div>
+                  <div class="doc-badge-pdf">PDF</div>
+                  <span class="doc-savings-badge">-82%</span>
                 </div>
-                <div style="width: 100%; height: 3px; background: #E2E8F0; border-radius: 2px; margin-top: 8px;"></div>
-                <div style="width: 75%; height: 3px; background: #E2E8F0; border-radius: 2px;"></div>
+                <div style="width: 100%; height: 3px; background: #E2E8F0; border-radius: 2px; margin-top: 10px;"></div>
+                <div style="width: 70%; height: 3px; background: #E2E8F0; border-radius: 2px;"></div>
               </div>
               <div class="sphere sphere-1"></div>
               <div class="sphere sphere-2"></div>
               <div class="sphere sphere-3"></div>
+              <div class="sphere sphere-4"></div>
             </div>
 
             <div class="inspector-guide-row">
@@ -428,7 +429,9 @@
             </div>
 
             <div class="inspector-guide-row">
-              <div class="guide-icon-badge">🎚️</div>
+              <div class="guide-icon-badge" style="color: var(--primary);">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
+              </div>
               <div class="guide-info-text">
                 <h5>Quality Level Mode</h5>
                 <p>Smooth 1% to 100% slider control balancing file size savings with visual document fidelity.</p>
@@ -986,13 +989,13 @@
     });
 
     function handleFileSelection(file) {
-      loadedFile = file;
       const isPdf = file.type.includes('pdf') || file.name.toLowerCase().endsWith('.pdf');
       if (isPdf) {
         setMode('pdf');
       } else {
         setMode('image');
       }
+      loadedFile = file;
 
       // Show Action Button
       btnCompressAction.style.display = 'flex';
@@ -1288,6 +1291,12 @@
     toolModalOverlay.addEventListener('click', (e) => {
       if (e.target === toolModalOverlay) closeToolModal();
     });
+
+    // Initialize Recent Activity on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      renderRecentActivity();
+    });
+    renderRecentActivity();
   </script>
 </body>
 </html>

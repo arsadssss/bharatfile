@@ -195,23 +195,26 @@
       <span>Compress Image</span>
     </nav>
 
-    <!-- Main Interactive Workbench Card -->
-    <main class="workbench-card">
-      <div class="workbench-header">
-        <h1>Compress Image Online</h1>
-        <p>Shrink image file size quickly without noticeable loss in quality. Adjust quality percentages or hit exact file size limits for job portals, UPSC/SSC forms, and fast web publishing.</p>
-      </div>
+    <!-- Main Interactive Workspace Grid -->
+    <main class="workspace-grid">
 
-      <!-- Mounted Interactive Tool Interface -->
-      
+      <!-- Left Column: Primary Image Compression Card -->
+      <section class="compressor-card">
+        <div class="workbench-header" style="text-align: left; align-items: flex-start;">
+          <h1>Compress Image Online</h1>
+          <p>Shrink image file size quickly without noticeable loss in quality. Adjust quality percentages or hit exact file size limits for job portals, UPSC/SSC forms, and fast web publishing.</p>
+        </div>
+
+        <!-- Mounted Interactive Tool Interface -->
         <div style="display:flex; flex-direction:column; gap:20px;">
           <input type="file" id="imgInput" accept="image/*" style="display:none;">
-          <div class="dropzone" id="imgDropzone" onclick="document.getElementById('imgInput').click()">
+          <div class="dropzone" id="imgDropzone">
             <div class="drop-cloud-icon">☁️</div>
-            <div style="font-weight: 700; font-size: 15px;">Choose an Image or drag & drop it here</div>
-            <div style="font-size: 12px; color: var(--text-muted);">JPG, PNG, WebP • 100% on-device</div>
-            <button class="btn-choose-file" type="button">📁 Choose Image</button>
+            <div style="font-weight: 700; font-size: 15px;" id="dropTitle">Choose an Image or drag &amp; drop it here</div>
+            <div style="font-size: 12px; color: var(--text-muted);" id="dropSub">JPG, PNG, WebP • 100% on-device</div>
+            <button class="btn-choose-file" id="btnChooseImg" type="button">📁 Choose Image</button>
           </div>
+
           <!-- Strategy Toggle (Target File Size vs Compression Level) -->
           <div style="display: flex; flex-direction: column; gap: 8px;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -224,7 +227,7 @@
                 <span>Target File Size</span>
               </button>
               <button type="button" class="strategy-toggle-btn" id="btnImgStratSlider" onclick="setImageStrategy('slider')">
-                <span>🎚️</span>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
                 <span>Quality Level</span>
               </button>
             </div>
@@ -278,14 +281,136 @@
             </div>
             <div class="slider-labels"><span>Low (1%)</span><span>Balanced (70%)</span><span>Maximum (100%)</span></div>
           </div>
+
           <div class="state-box" id="imgCompBox">
             <div style="font-size: 13px; font-weight: 700;" id="imgOriginalName">photo.jpg</div>
             <div class="delta-badge" id="imgSizesDelta">Optimized</div>
-            <input type="text" class="rename-input" id="imgExportName" value="photo_compressed.jpg">
-            <button class="btn-choose-file" id="btnDownloadImg" onclick="downloadImg()">⬇ Download Compressed Image</button>
+            <div style="width: 100%; text-align: left;">
+              <label for="imgExportName" style="font-size: 12px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">Customize Filename:</label>
+              <input type="text" class="rename-input" id="imgExportName" value="photo_compressed.jpg">
+            </div>
+            <div style="display: flex; gap: 10px; width: 100%;">
+              <button class="btn-choose-file" id="btnDownloadImg" style="flex: 1;" onclick="downloadImg()">⬇ Download Compressed Image</button>
+              <button class="btn-choose-file" style="background: var(--track-bg); color: var(--text-main); box-shadow: none;" onclick="resetImgUpload()">🔄 Compress Another</button>
+            </div>
           </div>
         </div>
-        
+      </section>
+
+      <!-- Right Column: Live Inspector & Recent Activity Sidebar -->
+      <aside class="workspace-sidebar">
+
+        <!-- Card 1: Compression Inspector & File Insights -->
+        <section class="inspector-card" id="inspectorCard">
+          <div class="card-header-bar">
+            <h3><span>📊</span><span>File &amp; Compression Insights</span></h3>
+            <span class="status-pill" id="inspectorStatusPill">Idle</span>
+          </div>
+
+          <!-- Empty State (When No File Is Selected) -->
+          <div class="inspector-empty-wrap" id="inspectorEmptyWrap">
+            <div class="benefit-visual-wrapper">
+              <div class="stacked-doc doc-back">
+                <div style="width: 24px; height: 4px; background: #CBD5E1; border-radius: 2px;"></div>
+                <div style="width: 50px; height: 4px; background: #E2E8F0; border-radius: 2px;"></div>
+              </div>
+              <div class="stacked-doc doc-front">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <div class="doc-badge-img">IMG</div>
+                  <span class="doc-savings-badge">-75%</span>
+                </div>
+                <div style="width: 100%; height: 3px; background: #E2E8F0; border-radius: 2px; margin-top: 10px;"></div>
+                <div style="width: 70%; height: 3px; background: #E2E8F0; border-radius: 2px;"></div>
+              </div>
+              <div class="sphere sphere-1"></div>
+              <div class="sphere sphere-2"></div>
+              <div class="sphere sphere-3"></div>
+              <div class="sphere sphere-4"></div>
+            </div>
+
+            <div class="inspector-guide-row">
+              <div class="guide-icon-badge">🎯</div>
+              <div class="guide-info-text">
+                <h5>Target File Size Mode</h5>
+                <p>Specify exact KB or MB limits (e.g. 50 KB, 100 KB, 200 KB) required by application portals.</p>
+              </div>
+            </div>
+
+            <div class="inspector-guide-row">
+              <div class="guide-icon-badge" style="color: var(--primary);">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
+              </div>
+              <div class="guide-info-text">
+                <h5>Quality Level Mode</h5>
+                <p>Smooth quality adjustments balancing image crispness with compression ratio.</p>
+              </div>
+            </div>
+
+            <div class="inspector-guide-row">
+              <div class="guide-icon-badge">🛡️</div>
+              <div class="guide-info-text">
+                <h5>100% Client-Side Privacy</h5>
+                <p>Zero server uploads. Your photos and images are processed entirely within your browser.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Active File State (When An Image Is Selected / Processed) -->
+          <div class="inspector-active-wrap" id="inspectorActiveWrap" style="display: none;">
+            <div class="active-file-summary">
+              <div class="active-file-header">
+                <span id="inspFileName" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 200px;">photo.jpg</span>
+                <span class="status-pill active" id="inspFormatBadge">IMG</span>
+              </div>
+              <div class="active-file-meta">
+                <span>Original Size:</span>
+                <strong id="inspOriginalSize">0 B</strong>
+              </div>
+              <div class="active-file-meta">
+                <span>Active Strategy:</span>
+                <span id="inspStrategyText" style="font-weight: 600; color: var(--primary);">Target: 100 KB</span>
+              </div>
+            </div>
+
+            <div class="metrics-delta-grid">
+              <div class="metric-col">
+                <span class="metric-col-label">Original</span>
+                <span class="metric-col-val" id="metricOrig">--</span>
+              </div>
+              <div class="metric-col">
+                <span class="metric-col-label">Goal</span>
+                <span class="metric-col-val" id="metricGoal" style="color: var(--primary);">100 KB</span>
+              </div>
+              <div class="metric-col">
+                <span class="metric-col-label">Output</span>
+                <span class="metric-col-val" id="metricOutput" style="color: var(--success);">--</span>
+              </div>
+            </div>
+
+            <div class="target-result-badge achieved" id="inspTargetStatusBadge" style="display: none;">
+              <span id="inspTargetStatusIcon">✓</span>
+              <span id="inspTargetStatusText">Target achieved</span>
+            </div>
+
+            <div style="font-size: 11px; color: var(--text-muted); line-height: 1.4;" id="inspTechNotes">
+              Engine ready. Adjust parameters or download your compressed image.
+            </div>
+          </div>
+        </section>
+
+        <!-- Card 2: Recent Activity / Local History Card -->
+        <section class="activity-card" id="activityCard">
+          <div class="card-header-bar">
+            <h3><span>🕒</span><span>Recent Local Activity</span></h3>
+            <button type="button" class="btn-clear-history" onclick="clearLocalActivity()" title="Clear local activity history">Clear</button>
+          </div>
+          <div class="activity-list" id="activityList">
+            <div class="activity-empty-message">No recent files processed yet on this browser. Processed files will appear here locally.</div>
+          </div>
+        </section>
+
+      </aside>
+
     </main>
 
     <!-- SEO Section 1: Step-by-Step Instructions -->
@@ -498,13 +623,63 @@
     const imgSliderFill = document.getElementById('imgSliderFill');
     const imgCompBox = document.getElementById('imgCompBox');
 
+    const imgDropzone = document.getElementById('imgDropzone');
+    const btnChooseImg = document.getElementById('btnChooseImg');
+    const inspectorEmptyWrap = document.getElementById('inspectorEmptyWrap');
+    const inspectorActiveWrap = document.getElementById('inspectorActiveWrap');
+    const inspectorStatusPill = document.getElementById('inspectorStatusPill');
+    const inspFileName = document.getElementById('inspFileName');
+    const inspFormatBadge = document.getElementById('inspFormatBadge');
+    const inspOriginalSize = document.getElementById('inspOriginalSize');
+    const inspStrategyText = document.getElementById('inspStrategyText');
+    const metricOrig = document.getElementById('metricOrig');
+    const metricGoal = document.getElementById('metricGoal');
+    const metricOutput = document.getElementById('metricOutput');
+    const inspTargetStatusBadge = document.getElementById('inspTargetStatusBadge');
+    const inspTargetStatusIcon = document.getElementById('inspTargetStatusIcon');
+    const inspTargetStatusText = document.getElementById('inspTargetStatusText');
+    const inspTechNotes = document.getElementById('inspTechNotes');
+    const activityList = document.getElementById('activityList');
+
+    if (btnChooseImg) btnChooseImg.onclick = (e) => { e.stopPropagation(); imgInput.click(); };
+    if (imgDropzone) {
+      imgDropzone.onclick = () => imgInput.click();
+      imgDropzone.ondragover = (e) => { e.preventDefault(); imgDropzone.classList.add('dragover'); };
+      imgDropzone.ondragleave = () => imgDropzone.classList.remove('dragover');
+      imgDropzone.ondrop = (e) => {
+        e.preventDefault();
+        imgDropzone.classList.remove('dragover');
+        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+          handleImgFile(e.dataTransfer.files[0]);
+        }
+      };
+    }
+
     imgInput.onchange = (e) => {
       if (e.target.files && e.target.files[0]) {
-        imgFile = e.target.files[0];
-        updateImgTargetBadge();
-        compressImage();
+        handleImgFile(e.target.files[0]);
       }
     };
+
+    function handleImgFile(file) {
+      imgFile = file;
+      if (inspectorEmptyWrap) inspectorEmptyWrap.style.display = 'none';
+      if (inspectorActiveWrap) inspectorActiveWrap.style.display = 'flex';
+      if (inspectorStatusPill) {
+        inspectorStatusPill.textContent = 'File Loaded';
+        inspectorStatusPill.className = 'status-pill active';
+      }
+      if (inspFileName) inspFileName.textContent = file.name;
+      if (inspFormatBadge) inspFormatBadge.textContent = file.type.replace('image/', '').toUpperCase() || 'IMG';
+      if (inspOriginalSize) inspOriginalSize.textContent = `${formatBytes(file.size)} (${file.size.toLocaleString()} bytes)`;
+      if (metricOrig) metricOrig.textContent = formatBytes(file.size);
+      if (metricOutput) metricOutput.textContent = '--';
+      if (inspTargetStatusBadge) inspTargetStatusBadge.style.display = 'none';
+      if (inspTechNotes) inspTechNotes.textContent = 'Optimizing in client-side memory...';
+
+      updateImgTargetBadge();
+      compressImage();
+    }
 
     function setImageStrategy(strat) {
       currentStrategy = strat;
@@ -521,6 +696,8 @@
         imgStrategyBadge.textContent = 'Quality Level Mode';
         imgTargetPanel.style.display = 'none';
         imgSliderGroup.style.display = 'flex';
+        if (inspStrategyText) inspStrategyText.textContent = `Quality Level: ${imgSlider.value}%`;
+        if (metricGoal) metricGoal.textContent = `${imgSlider.value}%`;
       }
       if (imgFile) compressImage();
     }
@@ -545,6 +722,8 @@
       }
       const label = `${imgTargetInput.value} ${imgTargetUnit.value}`;
       imgTargetBadge.textContent = label;
+      if (inspStrategyText) inspStrategyText.textContent = `Target: ${label}`;
+      if (metricGoal) metricGoal.textContent = label;
       const parsedBytes = DocToolKit.parseTargetBytes(val, imgTargetUnit.value);
       if (imgFile && parsedBytes && parsedBytes >= imgFile.size) {
         imgTargetAlert.textContent = `Notice: Target (${label}) is larger than or equal to original file. Output will be saved at maximum quality.`;
@@ -561,6 +740,8 @@
     imgSlider.oninput = (e) => {
       imgPctBadge.textContent = e.target.value + '%';
       imgSliderFill.style.width = e.target.value + '%';
+      if (inspStrategyText) inspStrategyText.textContent = `Quality Level: ${e.target.value}%`;
+      if (metricGoal) metricGoal.textContent = `${e.target.value}%`;
     };
     imgSlider.onchange = () => { if (imgFile) compressImage(); };
 
@@ -578,6 +759,11 @@
         targetBytes = DocToolKit.parseTargetBytes(val, imgTargetUnit.value);
       }
 
+      if (inspectorStatusPill) {
+        inspectorStatusPill.textContent = 'Processing...';
+        inspectorStatusPill.className = 'status-pill active';
+      }
+
       try {
         const result = await window.compressImageEngine(imgFile, {
           mode: currentStrategy,
@@ -586,10 +772,36 @@
         });
 
         imgBlob = result.blob;
+        imgDropzone.style.display = 'none';
         imgCompBox.style.display = 'flex';
         document.getElementById('imgOriginalName').textContent = imgFile.name;
         document.getElementById('imgSizesDelta').textContent = `${formatBytes(imgFile.size)} ➔ ${formatBytes(result.newSize)} (${result.savedPct > 0 ? '-' + result.savedPct + '%' : 'Optimized'})`;
         document.getElementById('imgExportName').value = generateExportFilename(imgFile.name, DocToolKit.userProfile.name, 'compressed', result.ext);
+
+        if (inspectorStatusPill) {
+          inspectorStatusPill.textContent = 'Completed';
+          inspectorStatusPill.className = 'status-pill success';
+        }
+        if (metricOutput) metricOutput.textContent = formatBytes(result.newSize);
+        if (inspTargetStatusBadge) {
+          inspTargetStatusBadge.style.display = 'flex';
+          if (currentStrategy === 'target') {
+            if (result.achieved) {
+              inspTargetStatusBadge.className = 'target-result-badge achieved';
+              inspTargetStatusIcon.textContent = '✓';
+              inspTargetStatusText.textContent = `Target Met (${formatBytes(result.newSize)})`;
+            } else {
+              inspTargetStatusBadge.className = 'target-result-badge unachieved';
+              inspTargetStatusIcon.textContent = '⚠️';
+              inspTargetStatusText.textContent = `Best Achievable: ${formatBytes(result.newSize)}`;
+            }
+          } else {
+            inspTargetStatusBadge.className = 'target-result-badge achieved';
+            inspTargetStatusIcon.textContent = '✓';
+            inspTargetStatusText.textContent = `Reduced by ${result.savedPct}%`;
+          }
+        }
+        if (inspTechNotes) inspTechNotes.textContent = result.statusMessage || 'Image compressed successfully. Ready for download.';
 
         DocToolKit.recentActivity.add({
           name: document.getElementById('imgExportName').value,
@@ -608,14 +820,70 @@
           type: 'Image',
           date: new Date().toISOString()
         });
+
+        renderRecentActivity();
       } catch (err) {
         alert('Error compressing image: ' + err.message);
+        resetImgUpload();
+      }
+    }
+
+    function resetImgUpload() {
+      imgFile = null;
+      imgBlob = null;
+      imgDropzone.style.display = 'flex';
+      imgCompBox.style.display = 'none';
+      imgInput.value = '';
+      imgTargetAlert.style.display = 'none';
+      if (inspectorEmptyWrap) inspectorEmptyWrap.style.display = 'flex';
+      if (inspectorActiveWrap) inspectorActiveWrap.style.display = 'none';
+      if (inspectorStatusPill) {
+        inspectorStatusPill.textContent = 'Idle';
+        inspectorStatusPill.className = 'status-pill';
       }
     }
 
     function downloadImg() {
       if (imgBlob) triggerDownload(imgBlob, document.getElementById('imgExportName').value);
     }
+
+    function renderRecentActivity() {
+      if (!activityList || !window.DocToolKit || !DocToolKit.recentActivity) return;
+      const items = DocToolKit.recentActivity.get();
+      if (!items || items.length === 0) {
+        activityList.innerHTML = '<div class="activity-empty-message">No recent files processed yet on this browser. Processed files will appear here locally.</div>';
+        return;
+      }
+      activityList.innerHTML = items.slice(0, 5).map(item => {
+        const icon = item.type === 'pdf' ? '📄' : '🖼️';
+        const delta = item.savedPct > 0 ? `-${item.savedPct}%` : 'Optimized';
+        const time = DocToolKit.timeAgo(item.timestamp);
+        return `
+          <div class="activity-item">
+            <div class="activity-item-left">
+              <span>${icon}</span>
+              <span class="activity-name" title="${item.name}">${item.name}</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span class="activity-delta">${delta}</span>
+              <span class="activity-time">${time}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function clearLocalActivity() {
+      if (confirm('Clear your local recent activity history on this browser?')) {
+        DocToolKit.recentActivity.clear();
+        renderRecentActivity();
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      renderRecentActivity();
+    });
+    renderRecentActivity();
   </script>
 </body>
 </html>
