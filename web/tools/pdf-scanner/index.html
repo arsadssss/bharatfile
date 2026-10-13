@@ -3,6 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-FQQFMTFKSF"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-FQQFMTFKSF');
+  </script>
   <title>Online PDF Scanner – Scan Documents with Camera to PDF | DocToolKit</title>
   <meta name="description" content="Scan documents to PDF online for free using your phone or laptop camera. Capture pages, rotate, reorder, and compile into a multi-page A4 PDF.">
   <link rel="canonical" href="https://doctoolkit.in/tools/pdf-scanner/">
@@ -31,12 +41,12 @@
   <link rel="manifest" href="../../manifest.json">
 
   <!-- Shared Stylesheet -->
-  <link rel="stylesheet" href="../../css/style.css?v=2.6.0">
+  <link rel="stylesheet" href="../../css/style.css?v=2.7.0">
 
   <!-- Vendor Libraries for 100% In-Browser Execution -->
   <script src="../../js/pdf-lib.min.js" defer></script>
   <script src="../../js/pdf.min.js" defer></script>
-  <script src="../../js/app.js?v=2.6.0" defer></script>
+  <script src="../../js/app.js?v=2.7.0" defer></script>
 
   <!-- JSON-LD Structured Data -->
   <script type="application/ld+json">
@@ -207,9 +217,39 @@
       <!-- Mounted Interactive Tool Interface -->
       
         <div style="display:flex; flex-direction:column; gap:16px;">
-          <div style="position:relative; width:100%; height:260px; background:#000; border-radius:14px; overflow:hidden; display:flex; align-items:center; justify-content:center;">
-            <video id="scanVideo" autoplay playsinline style="width:100%; height:100%; object-fit:cover;"></video>
-            <button id="btnCaptureFrame" style="position:absolute; bottom:14px; background:var(--primary-gradient); color:white; border:none; padding:10px 24px; border-radius:100px; font-weight:700; cursor:pointer; box-shadow:0 4px 16px rgba(0,0,0,0.4);">📸 Capture Document Page</button>
+          <div id="cameraContainer" style="position:relative; width:100%; min-height:260px; background:var(--track-bg); border:1px solid var(--card-border); border-radius:14px; overflow:hidden; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:16px;">
+            <!-- Idle / Launcher View -->
+            <div id="cameraPromptView" style="display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:10px; padding:20px 10px;">
+              <div style="font-size:36px;">📸</div>
+              <div style="font-weight:700; font-size:15px;">Document Camera Viewfinder</div>
+              <p style="font-size:12px; color:var(--text-muted); max-width:360px; line-height:1.4; margin:0;">
+                Capture document pages directly with your webcam or mobile camera, or upload photo files.
+              </p>
+              <div style="display:flex; gap:10px; margin-top:6px; flex-wrap:wrap; justify-content:center;">
+                <button type="button" class="btn-choose-file" id="btnStartCamera" onclick="startCamera()">📸 Start Camera</button>
+                <button type="button" class="preset-pill" onclick="document.getElementById('scanFileInput').click()">📁 Add Photos</button>
+              </div>
+            </div>
+
+            <!-- Active Video View -->
+            <div id="cameraActiveView" style="display:none; position:relative; width:100%; height:260px; background:#000; border-radius:10px; overflow:hidden;">
+              <video id="scanVideo" autoplay playsinline style="width:100%; height:100%; object-fit:cover;"></video>
+              <button id="btnCaptureFrame" style="position:absolute; bottom:14px; left:50%; transform:translateX(-50%); background:var(--primary-gradient); color:white; border:none; padding:10px 24px; border-radius:100px; font-weight:700; cursor:pointer; box-shadow:0 4px 16px rgba(0,0,0,0.4);">📸 Capture Document Page</button>
+              <button type="button" id="btnStopCamera" onclick="stopCamera()" style="position:absolute; top:10px; right:10px; background:rgba(0,0,0,0.6); color:white; border:none; width:28px; height:28px; border-radius:50%; cursor:pointer; font-weight:700;" title="Stop Camera">✕</button>
+            </div>
+
+            <!-- Camera Error / Blocked View -->
+            <div id="cameraDeniedView" style="display:none; flex-direction:column; align-items:center; text-align:center; gap:8px; padding:16px;">
+              <div style="font-size:30px;">⚠️</div>
+              <div style="font-weight:700; font-size:14px;">Camera Unavailable or Blocked</div>
+              <p style="font-size:12px; color:var(--text-muted); max-width:380px; margin:0;" id="cameraDeniedMsg">
+                Camera access was not granted. You can still scan and create PDFs by choosing photo files from your device.
+              </p>
+              <div style="display:flex; gap:10px; margin-top:8px;">
+                <button type="button" class="btn-choose-file" onclick="startCamera()">🔄 Try Again</button>
+                <button type="button" class="preset-pill" onclick="document.getElementById('scanFileInput').click()">📁 Choose Files</button>
+              </div>
+            </div>
           </div>
           <div style="display:flex; gap:12px; align-items:center;">
             <input type="file" id="scanFileInput" accept="image/*" multiple style="display:none;">
@@ -238,21 +278,21 @@
         <div class="step-item">
           <div class="step-num">1</div>
           <div class="step-content">
-            <h4>Capture Document Pages</h4>
+            <h3>Capture Document Pages</h3>
             <p>Allow camera access and point at your document, or upload pre-existing photos.</p>
           </div>
         </div>
         <div class="step-item">
           <div class="step-num">2</div>
           <div class="step-content">
-            <h4>Rotate & Organize Pages</h4>
+            <h3>Rotate &amp; Organize Pages</h3>
             <p>Use the page strip to delete blurry shots or rotate pages 90 degrees.</p>
           </div>
         </div>
         <div class="step-item">
           <div class="step-num">3</div>
           <div class="step-content">
-            <h4>Generate A4 PDF</h4>
+            <h3>Generate A4 PDF</h3>
             <p>Click Save Scanned PDF to compile all captured pages into a professional PDF.</p>
           </div>
         </div>
@@ -268,15 +308,15 @@
       <div class="seo-grid">
         
         <div class="seo-feature-card">
-          <h4>Instant Camera Viewfinder</h4>
+          <h3>Instant Camera Viewfinder</h3>
           <p>High-frame rate live camera preview with one-tap page capture.</p>
         </div>
         <div class="seo-feature-card">
-          <h4>Multi-Page Compilation</h4>
+          <h3>Multi-Page Compilation</h3>
           <p>Combine 10+ captured pages seamlessly into a single unified document.</p>
         </div>
         <div class="seo-feature-card">
-          <h4>Standardized A4 Output</h4>
+          <h3>Standardized A4 Output</h3>
           <p>Pages are scaled and framed into official A4 dimensions ready for printing or upload.</p>
         </div>
       </div>
@@ -290,19 +330,19 @@
       </div>
       <div class="seo-grid">
         <div class="seo-feature-card">
-          <h4>Supported Input Format</h4>
+          <h3>Supported Input Format</h3>
           <p>Live camera feed or uploaded photo files (JPG, PNG)</p>
         </div>
         <div class="seo-feature-card">
-          <h4>Generated Output Format</h4>
+          <h3>Generated Output Format</h3>
           <p>Standardized A4 PDF document (.pdf)</p>
         </div>
         <div class="seo-feature-card">
-          <h4>Browser Processing Scope</h4>
+          <h3>Browser Processing Scope</h3>
           <p>100% on-device client processing. Zero network transmission of your private file bytes.</p>
         </div>
         <div class="seo-feature-card">
-          <h4>System Limitations</h4>
+          <h3>System Limitations</h3>
           <p>Requires camera permission in your browser for live capture. You can also upload pre-taken photos.</p>
         </div>
       </div>
@@ -317,19 +357,19 @@
         
             <a class="tool-card" href="../../tools/image-to-pdf/">
               <div class="tool-card-icon">📁</div>
-              <h4>Images to PDF</h4>
+              <h3>Images to PDF</h3>
             </a>
             <a class="tool-card" href="../../tools/compress-pdf/">
               <div class="tool-card-icon">📄</div>
-              <h4>Compress PDF</h4>
+              <h3>Compress PDF</h3>
             </a>
             <a class="tool-card" href="../../tools/merge-pdf/">
               <div class="tool-card-icon">📑</div>
-              <h4>Merge PDF</h4>
+              <h3>Merge PDF</h3>
             </a>
             <a class="tool-card" href="../../tools/organize-pdf/">
               <div class="tool-card-icon">🗂️</div>
-              <h4>Organize PDF</h4>
+              <h3>Organize PDF</h3>
             </a>
       </div>
     </section>
@@ -442,18 +482,61 @@
       }
     }
 
-    async function initCamera() {
+    let cameraStream = null;
+    const cameraPromptView = document.getElementById('cameraPromptView');
+    const cameraActiveView = document.getElementById('cameraActiveView');
+    const cameraDeniedView = document.getElementById('cameraDeniedView');
+    const cameraDeniedMsg = document.getElementById('cameraDeniedMsg');
+
+    async function startCamera() {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        showCameraError('Camera API is not supported on this device or browser.');
+        return;
+      }
       try {
-        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-          const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-          video.srcObject = stream;
-        }
-      } catch (e) {
-        video.style.display = 'none';
-        btnCapture.style.display = 'none';
+        cameraPromptView.style.display = 'none';
+        cameraDeniedView.style.display = 'none';
+        cameraActiveView.style.display = 'block';
+
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: { ideal: 'environment' } }
+        });
+        cameraStream = stream;
+        video.srcObject = stream;
+        video.play().catch(e => console.warn('Video play warning:', e));
+      } catch (err) {
+        console.warn('Camera access denied or failed:', err);
+        stopCamera();
+        showCameraError(err.name === 'NotAllowedError'
+          ? 'Camera permission was denied. Please allow camera access in your browser settings or choose photos from your device.'
+          : (err.message || 'Unable to connect to camera device.'));
       }
     }
-    initCamera();
+
+    function stopCamera() {
+      if (cameraStream) {
+        cameraStream.getTracks().forEach(t => t.stop());
+        cameraStream = null;
+      }
+      if (video) {
+        video.srcObject = null;
+      }
+      cameraActiveView.style.display = 'none';
+      if (cameraDeniedView.style.display !== 'flex') {
+        cameraPromptView.style.display = 'flex';
+      }
+    }
+
+    function showCameraError(msg) {
+      if (cameraDeniedMsg) cameraDeniedMsg.textContent = msg;
+      cameraActiveView.style.display = 'none';
+      cameraPromptView.style.display = 'none';
+      cameraDeniedView.style.display = 'flex';
+    }
+
+    window.startCamera = startCamera;
+    window.stopCamera = stopCamera;
+    window.addEventListener('beforeunload', stopCamera);
 
     function normalizeImageToJpegDataUrl(fileOrBlob) {
       return new Promise((resolve, reject) => {
@@ -496,6 +579,9 @@
     }
 
     btnCapture.onclick = () => {
+      if (window.DocToolKit && typeof DocToolKit.trackFileSelected === 'function') {
+        DocToolKit.trackFileSelected('pdf-scanner');
+      }
       const c = document.createElement('canvas');
       c.width = video.videoWidth || 640;
       c.height = video.videoHeight || 480;
@@ -556,7 +642,7 @@
         const exportName = scanNameInput.value.trim() || 'scan_document.pdf';
         const finalBlob = new Blob([bytes], { type: 'application/pdf' });
 
-        saveDocumentToDB({ name: exportName, origSize: bytes.length, size: bytes.length, type: 'Scan' });
+        saveDocumentToDB({ name: exportName, origSize: bytes.length, size: bytes.length, type: 'Scan', blob: finalBlob });
 
         DocToolKit.showResult('scanResultBox', {
           title: 'Scanned PDF Ready',

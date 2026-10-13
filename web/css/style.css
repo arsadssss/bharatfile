@@ -211,6 +211,18 @@ html, body {
   color: var(--primary);
   background: rgba(13, 89, 242, 0.06);
 }
+.menu-btn.active,
+.menu-btn[aria-current="page"],
+.drawer-item.active,
+.drawer-item[aria-current="page"] {
+  color: var(--primary) !important;
+  background: rgba(13, 89, 242, 0.12) !important;
+  font-weight: 700;
+}
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
 
 .nav-actions {
   display: flex;
@@ -472,8 +484,18 @@ html, body {
   min-height: 44px;
   gap: 8px;
 }
-.btn-choose-file:hover {
+.btn-choose-file:hover:not(:disabled) {
   transform: translateY(-1px);
+}
+.btn-choose-file:disabled,
+button:disabled,
+.preset-pill:disabled {
+  opacity: 0.45 !important;
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+  box-shadow: none !important;
+  transform: none !important;
+  filter: grayscale(40%);
 }
 
 /* Continuous 1% - 100% Slider */
@@ -1498,6 +1520,7 @@ body.dark-mode .doc-back {
   background: rgba(13, 89, 242, 0.1);
 }
 
+.tool-card h3,
 .tool-card h4 {
   font-size: clamp(13px, 2.2vw, 15px);
   font-weight: 700;
@@ -1583,6 +1606,7 @@ body.dark-mode .doc-back {
   flex-direction: column;
   gap: 10px;
 }
+.seo-feature-card h3,
 .seo-feature-card h4 {
   font-size: 16px;
   font-weight: 700;
@@ -1620,6 +1644,7 @@ body.dark-mode .doc-back {
   font-size: 15px;
   flex-shrink: 0;
 }
+.step-content h3,
 .step-content h4 {
   font-size: 16px;
   font-weight: 700;

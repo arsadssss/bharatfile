@@ -3,6 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-FQQFMTFKSF"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-FQQFMTFKSF');
+  </script>
   <title>Resize Image Online – Custom Pixels & Exam Presets | DocToolKit</title>
   <meta name="description" content="Resize image dimensions online for free. Scale width and height in pixels or choose UPSC, SSC, and exam photo presets directly in your browser.">
   <link rel="canonical" href="https://doctoolkit.in/tools/resize-image/">
@@ -31,10 +41,10 @@
   <link rel="manifest" href="../../manifest.json">
 
   <!-- Shared Stylesheet -->
-  <link rel="stylesheet" href="../../css/style.css?v=2.6.0">
+  <link rel="stylesheet" href="../../css/style.css?v=2.7.0">
 
   <!-- Vendor Libraries for 100% In-Browser Execution -->
-  <script src="../../js/app.js?v=2.6.0" defer></script>
+  <script src="../../js/app.js?v=2.7.0" defer></script>
 
   <!-- JSON-LD Structured Data -->
   <script type="application/ld+json">
@@ -222,11 +232,11 @@
             </div>
           </div>
           <div style="display:flex; gap:8px; flex-wrap:wrap;">
-            <button type="button" class="preset-pill" onclick="applyDimensions(200, 230, false)">UPSC Photo (200×230)</button>
-            <button type="button" class="preset-pill" onclick="applyDimensions(140, 60, false)">Signature (140×60)</button>
-            <button type="button" class="preset-pill" onclick="applyDimensions(500, 500, false)">Square (500×500)</button>
-            <button type="button" class="preset-pill" onclick="applyDimensions(1920, 1080, false)">Full HD (1920×1080)</button>
-            <button type="button" class="preset-pill" onclick="applyDimensions(1200, 630, false)">Web (1200×630)</button>
+            <button type="button" class="preset-pill" onclick="applyDimensions(200, 230)">UPSC Photo (200×230)</button>
+            <button type="button" class="preset-pill" onclick="applyDimensions(140, 60)">Signature (140×60)</button>
+            <button type="button" class="preset-pill" onclick="applyDimensions(500, 500)">Square (500×500)</button>
+            <button type="button" class="preset-pill" onclick="applyDimensions(1920, 1080)">Full HD (1920×1080)</button>
+            <button type="button" class="preset-pill" onclick="applyDimensions(1200, 630)">Web (1200×630)</button>
           </div>
           <button class="btn-choose-file" id="btnDoResize" style="width:100%;" disabled>Resize & Download Image</button>
           <div id="resizeResultBox" class="result-feedback-card hidden"></div>
@@ -245,21 +255,21 @@
         <div class="step-item">
           <div class="step-num">1</div>
           <div class="step-content">
-            <h4>Select Your Image</h4>
+            <h3>Select Your Image</h3>
             <p>Upload the photo or graphic you wish to resize.</p>
           </div>
         </div>
         <div class="step-item">
           <div class="step-num">2</div>
           <div class="step-content">
-            <h4>Input Dimensions or Presets</h4>
+            <h3>Input Dimensions or Presets</h3>
             <p>Enter target width & height in pixels, or click an exam preset chip.</p>
           </div>
         </div>
         <div class="step-item">
           <div class="step-num">3</div>
           <div class="step-content">
-            <h4>Download Resized File</h4>
+            <h3>Download Resized File</h3>
             <p>Click Resize & Download to save the exact-dimension photo.</p>
           </div>
         </div>
@@ -275,15 +285,15 @@
       <div class="seo-grid">
         
         <div class="seo-feature-card">
-          <h4>Exam Form Presets</h4>
+          <h3>Exam Form Presets</h3>
           <p>One-click sizing for UPSC (200×230 px) and digital signatures (140×60 px).</p>
         </div>
         <div class="seo-feature-card">
-          <h4>Precise Pixel Scaling</h4>
+          <h3>Precise Pixel Scaling</h3>
           <p>Enter any custom pixel values for web graphics or thumbnails.</p>
         </div>
         <div class="seo-feature-card">
-          <h4>High-Fidelity Resampling</h4>
+          <h3>High-Fidelity Resampling</h3>
           <p>HTML5 Canvas bicubic interpolation produces smooth, artifact-free edges.</p>
         </div>
       </div>
@@ -297,19 +307,19 @@
       </div>
       <div class="seo-grid">
         <div class="seo-feature-card">
-          <h4>Supported Input Format</h4>
+          <h3>Supported Input Format</h3>
           <p>JPG, PNG, WebP image files</p>
         </div>
         <div class="seo-feature-card">
-          <h4>Generated Output Format</h4>
-          <p>Resized JPEG image (.jpg)</p>
+          <h3>Generated Output Format</h3>
+          <p>Preserves format: PNG files export as PNG (.png) with transparency; JPG/WebP export as JPEG (.jpg).</p>
         </div>
         <div class="seo-feature-card">
-          <h4>Browser Processing Scope</h4>
+          <h3>Browser Processing Scope</h3>
           <p>100% on-device client processing. Zero network transmission of your private file bytes.</p>
         </div>
         <div class="seo-feature-card">
-          <h4>System Limitations</h4>
+          <h3>System Limitations</h3>
           <p>Upscaling low-resolution images by large amounts will not restore missing detail.</p>
         </div>
       </div>
@@ -324,19 +334,19 @@
         
             <a class="tool-card" href="../../tools/compress-image/">
               <div class="tool-card-icon">🖼️</div>
-              <h4>Compress Image</h4>
+              <h3>Compress Image</h3>
             </a>
             <a class="tool-card" href="../../tools/convert-image/">
               <div class="tool-card-icon">🔄</div>
-              <h4>Convert Image</h4>
+              <h3>Convert Image</h3>
             </a>
             <a class="tool-card" href="../../tools/passport-photo/">
               <div class="tool-card-icon">👤</div>
-              <h4>Passport Photo</h4>
+              <h3>Passport Photo</h3>
             </a>
             <a class="tool-card" href="../../tools/crop-image/">
               <div class="tool-card-icon">✂️</div>
-              <h4>Crop Image</h4>
+              <h3>Crop Image</h3>
             </a>
       </div>
     </section>
@@ -439,10 +449,17 @@
 
     function updateRatioStatus() {
       if (resLockRatio.checked) {
+        if (origWidth && origHeight) {
+          aspectRatio = origWidth / origHeight;
+        } else {
+          const w = parseInt(resWidth.value, 10);
+          const h = parseInt(resHeight.value, 10);
+          if (w > 0 && h > 0) aspectRatio = w / h;
+        }
         resRatioStatus.textContent = 'Proportional scaling (No distortion)';
         resRatioStatus.style.color = '#10b981';
       } else {
-        resRatioStatus.textContent = '⚠️ Custom aspect (May stretch or squish)';
+        resRatioStatus.textContent = '⚠️ Custom dimensions (Ratio unlocked)';
         resRatioStatus.style.color = '#f59e0b';
       }
     }
@@ -463,14 +480,11 @@
       }
     });
 
-    window.applyDimensions = (w, h, respectLock) => {
-      if (respectLock && resLockRatio.checked && aspectRatio > 0) {
-        resWidth.value = w;
-        resHeight.value = Math.max(1, Math.round(w / aspectRatio));
-      } else {
-        resWidth.value = w;
-        resHeight.value = h;
-      }
+    window.applyDimensions = (w, h) => {
+      resWidth.value = w;
+      resHeight.value = h;
+      resLockRatio.checked = false;
+      updateRatioStatus();
     };
 
     resInput.onchange = (e) => {
@@ -534,8 +548,14 @@
         ctx.drawImage(img, 0, 0, targetW, targetH);
 
         c.toBlob(blob => {
+          if (!blob) {
+            DocToolKit.showError('resizeResultBox', 'Resize Failed', 'Unable to generate resized image data.');
+            btnDoResize.disabled = false;
+            btnDoResize.innerHTML = originalText;
+            return;
+          }
           const exportName = generateExportFilename(resFile.name, DocToolKit.userProfile.name, `${targetW}x${targetH}`, exportExt);
-          saveDocumentToDB({ name: exportName, origSize: resFile.size, size: blob.size, type: exportExt.toUpperCase() });
+          saveDocumentToDB({ name: exportName, origSize: resFile.size, size: blob.size, type: exportExt.toUpperCase(), blob: blob });
 
           DocToolKit.showResult('resizeResultBox', {
             title: 'Image Resized Successfully',
@@ -564,6 +584,12 @@
           btnDoResize.disabled = false;
           btnDoResize.innerHTML = originalText;
         }, exportMime, 0.92);
+      };
+      img.onerror = () => {
+        URL.revokeObjectURL(objUrl);
+        DocToolKit.showError('resizeResultBox', 'Resize Failed', 'Failed to load selected image.');
+        btnDoResize.disabled = false;
+        btnDoResize.innerHTML = originalText;
       };
       img.src = objUrl;
     };

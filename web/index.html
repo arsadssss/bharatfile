@@ -3,6 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-FQQFMTFKSF"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-FQQFMTFKSF');
+  </script>
   <title>DocToolKit – Free Online PDF &amp; Image Tools</title>
   <meta name="description" content="Compress PDFs and images, resize and convert images, merge and split PDFs, and manage documents online with DocToolKit.">
   <link rel="canonical" href="https://doctoolkit.in/">
@@ -31,12 +41,12 @@
   <link rel="manifest" href="manifest.json">
 
   <!-- Stylesheets -->
-  <link rel="stylesheet" href="css/style.css?v=2.6.0">
+  <link rel="stylesheet" href="css/style.css?v=2.7.0">
 
   <!-- Vendor Libraries for 100% Local Processing (Deferred to prevent render blocking) -->
   <script src="js/pdf-lib.min.js" defer></script>
   <script src="js/pdf.min.js" defer></script>
-  <script src="js/app.js?v=2.6.0" defer></script>
+  <script src="js/app.js?v=2.7.0" defer></script>
 
   <!-- JSON-LD Structured Data -->
   <script type="application/ld+json">
@@ -210,12 +220,12 @@
 
       <!-- Right Actions -->
       <div class="nav-actions">
-        <button class="theme-toggle-btn" id="themeToggleBtn" aria-label="Toggle Dark/Light Mode">🌙</button>
+        <button class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()" aria-label="Toggle Dark/Light Mode">🌙</button>
         <button class="btn-get-started" onclick="openInfoModal('profile')" aria-label="User Profile">
           <span>👤</span>
           <span id="navProfileName">User</span>
         </button>
-        <button class="hamburger-btn" id="hamburgerBtn" aria-label="Open Navigation Menu">☰</button>
+        <button class="hamburger-btn" id="hamburgerBtn" onclick="openDrawer()" aria-label="Open Navigation Menu">☰</button>
       </div>
     </header>
 
@@ -410,7 +420,7 @@
               <div class="stacked-doc doc-front">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                   <div class="doc-badge-pdf">PDF</div>
-                  <span class="doc-savings-badge">-82%</span>
+                  <span class="doc-savings-badge">Preview</span>
                 </div>
                 <div style="width: 100%; height: 3px; background: #E2E8F0; border-radius: 2px; margin-top: 10px;"></div>
                 <div style="width: 70%; height: 3px; background: #E2E8F0; border-radius: 2px;"></div>
@@ -516,77 +526,77 @@
       <div class="tools-grid">
         <a class="tool-card" href="tools/compress-pdf/">
           <div class="tool-card-icon">📄</div>
-          <h4>Compress PDF</h4>
+          <h3>Compress PDF</h3>
         </a>
 
         <a class="tool-card" href="tools/compress-image/">
           <div class="tool-card-icon">🖼️</div>
-          <h4>Compress Image</h4>
+          <h3>Compress Image</h3>
         </a>
 
         <a class="tool-card" href="tools/pdf-scanner/">
           <div class="tool-card-icon">📸</div>
-          <h4>PDF Scanner</h4>
+          <h3>PDF Scanner</h3>
         </a>
 
         <a class="tool-card" href="tools/merge-pdf/">
           <div class="tool-card-icon">📑</div>
-          <h4>Merge PDF</h4>
+          <h3>Merge PDF</h3>
         </a>
 
         <a class="tool-card" href="tools/split-pdf/">
           <div class="tool-card-icon">✂️</div>
-          <h4>Split PDF</h4>
+          <h3>Split PDF</h3>
         </a>
 
         <a class="tool-card" href="tools/organize-pdf/">
           <div class="tool-card-icon">🗂️</div>
-          <h4>Organize PDF</h4>
+          <h3>Organize PDF</h3>
         </a>
 
         <a class="tool-card" href="tools/pdf-to-image/">
           <div class="tool-card-icon">🖼️</div>
-          <h4>PDF to Images</h4>
+          <h3>PDF to Images</h3>
         </a>
 
         <a class="tool-card" href="tools/image-to-pdf/">
           <div class="tool-card-icon">📁</div>
-          <h4>Images to PDF</h4>
+          <h3>Images to PDF</h3>
         </a>
 
         <a class="tool-card" href="tools/resize-image/">
           <div class="tool-card-icon">📐</div>
-          <h4>Resize Image</h4>
+          <h3>Resize Image</h3>
         </a>
 
         <a class="tool-card" href="tools/convert-image/">
           <div class="tool-card-icon">🔄</div>
-          <h4>Convert Image</h4>
+          <h3>Convert Image</h3>
         </a>
 
         <a class="tool-card" href="tools/crop-image/">
           <div class="tool-card-icon">✂️</div>
-          <h4>Crop Image</h4>
+          <h3>Crop Image</h3>
         </a>
 
         <a class="tool-card" href="tools/rotate-image/">
           <div class="tool-card-icon">🔄</div>
-          <h4>Rotate Image</h4>
+          <h3>Rotate Image</h3>
         </a>
 
         <a class="tool-card" href="tools/passport-photo/">
           <div class="tool-card-icon">👤</div>
-          <h4>Passport Photo</h4>
+          <h3>Passport Photo</h3>
         </a>
 
         <a class="tool-card" href="tools/signature-maker/">
           <div class="tool-card-icon">✍️</div>
-          <h4>Signature Maker</h4>
+          <h3>Signature Maker</h3>
         </a>
 
         <a class="tool-card" href="tools/document-organizer/">
           <div class="tool-card-icon">📂</div>
-          <h4>Document Organizer</h4>
+          <h3>Document Organizer</h3>
         </a>
       </div>
     </section>
@@ -601,25 +611,25 @@
       <div class="seo-grid">
         <div class="seo-feature-card">
           <div style="font-size: 28px;">🔒</div>
-          <h4>100% On-Device Privacy</h4>
+          <h3>100% On-Device Privacy</h3>
           <p>Files never leave your local device. PDF rendering, image compression, page extraction, and camera scanning execute strictly in browser memory.</p>
         </div>
 
         <div class="seo-feature-card">
           <div style="font-size: 28px;">⚡</div>
-          <h4>Zero Upload Delays</h4>
+          <h3>Zero Upload Delays</h3>
           <p>Experience instant processing. Because files do not travel across the internet to a server queue, multi-page PDFs process in seconds.</p>
         </div>
 
         <div class="seo-feature-card">
           <div style="font-size: 28px;">📶</div>
-          <h4>Offline-Ready PWA</h4>
+          <h3>Offline-Ready PWA</h3>
           <p>Install DocToolKit to your desktop or mobile home screen. Our service worker caches tools locally so you can work without an internet connection.</p>
         </div>
 
         <div class="seo-feature-card">
           <div style="font-size: 28px;">🎯</div>
-          <h4>Exact Size Requirements</h4>
+          <h3>Exact Size Requirements</h3>
           <p>Meet strict upload size limits for government job applications, university portals, and exam forms (50 KB, 100 KB, 200 KB) with precision.</p>
         </div>
       </div>
@@ -636,7 +646,7 @@
         <div class="step-item">
           <div class="step-num">1</div>
           <div class="step-content">
-            <h4>Select or Drop Your File</h4>
+            <h3>Select or Drop Your File</h3>
             <p>Choose your PDF or image from your computer, mobile device, or capture directly using your camera scanner. Your file stays on your device.</p>
           </div>
         </div>
@@ -644,7 +654,7 @@
         <div class="step-item">
           <div class="step-num">2</div>
           <div class="step-content">
-            <h4>Customize Your Settings</h4>
+            <h3>Customize Your Settings</h3>
             <p>Drag the smooth 1%–100% slider, pick a KB target preset, choose dimensions, or arrange pages according to your specifications.</p>
           </div>
         </div>
@@ -652,7 +662,7 @@
         <div class="step-item">
           <div class="step-num">3</div>
           <div class="step-content">
-            <h4>Preview &amp; Save</h4>
+            <h3>Preview &amp; Save</h3>
             <p>Review the optimized file size delta, use our smart naming convention, and download the finished document instantly.</p>
           </div>
         </div>
@@ -882,6 +892,7 @@
         lblLow.textContent = 'Low (1%)';
         lblMed.textContent = 'Recommended (60%)';
         lblHigh.textContent = 'High (100%)';
+        applyTargetPreset(200, 'KB');
       } else {
         tabImg.classList.add('active');
         tabPdf.classList.remove('active');
@@ -893,6 +904,7 @@
         lblLow.textContent = 'Low (1%)';
         lblMed.textContent = 'Balanced (70%)';
         lblHigh.textContent = 'Maximum (100%)';
+        applyTargetPreset(100, 'KB');
       }
     }
 
@@ -997,6 +1009,9 @@
         setMode('image');
       }
       loadedFile = file;
+      if (window.DocToolKit && typeof DocToolKit.trackFileSelected === 'function') {
+        DocToolKit.trackFileSelected('homepage-quick-mode');
+      }
 
       // Show Action Button
       btnCompressAction.style.display = 'flex';
@@ -1062,6 +1077,9 @@
       }
 
       isProcessing = true;
+      if (window.DocToolKit && typeof DocToolKit.trackProcessingStarted === 'function') {
+        DocToolKit.trackProcessingStarted('homepage-quick-mode');
+      }
       mainDropzone.style.display = 'none';
       compBox.style.display = 'none';
       procBox.style.display = 'flex';
@@ -1107,6 +1125,9 @@
         handleCompressionSuccess(loadedFile, result);
 
       } catch (err) {
+        if (window.DocToolKit && typeof DocToolKit.trackProcessingFailed === 'function') {
+          DocToolKit.trackProcessingFailed('homepage-quick-mode');
+        }
         console.error('Compression error:', err);
         alert('Processing error: ' + (err.message || 'Unable to compress file.'));
         inspectorStatusPill.textContent = 'Error';
@@ -1120,6 +1141,9 @@
     function handleCompressionSuccess(origFile, res) {
       isProcessing = false;
       processedBlob = res.blob;
+      if (window.DocToolKit && typeof DocToolKit.trackProcessingCompleted === 'function') {
+        DocToolKit.trackProcessingCompleted('homepage-quick-mode');
+      }
 
       procBox.style.display = 'none';
       compBox.style.display = 'flex';
@@ -1199,6 +1223,7 @@
         origSize: origSize,
         size: newSize,
         type: currentMode === 'pdf' ? 'PDF' : 'Image',
+        blob: res.blob,
         date: new Date().toISOString()
       });
 

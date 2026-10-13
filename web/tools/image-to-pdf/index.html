@@ -3,6 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-FQQFMTFKSF"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-FQQFMTFKSF');
+  </script>
   <title>Convert Images to PDF Online – Combine Photos to A4 PDF | DocToolKit</title>
   <meta name="description" content="Convert JPG, PNG, and WebP images to a standardized A4 PDF online for free. Combine multiple photos into a single PDF document in your browser.">
   <link rel="canonical" href="https://doctoolkit.in/tools/image-to-pdf/">
@@ -31,12 +41,12 @@
   <link rel="manifest" href="../../manifest.json">
 
   <!-- Shared Stylesheet -->
-  <link rel="stylesheet" href="../../css/style.css?v=2.6.0">
+  <link rel="stylesheet" href="../../css/style.css?v=2.7.0">
 
   <!-- Vendor Libraries for 100% In-Browser Execution -->
   <script src="../../js/pdf-lib.min.js" defer></script>
   <script src="../../js/pdf.min.js" defer></script>
-  <script src="../../js/app.js?v=2.6.0" defer></script>
+  <script src="../../js/app.js?v=2.7.0" defer></script>
 
   <!-- JSON-LD Structured Data -->
   <script type="application/ld+json">
@@ -227,21 +237,21 @@
         <div class="step-item">
           <div class="step-num">1</div>
           <div class="step-content">
-            <h4>Choose Image Files</h4>
+            <h3>Choose Image Files</h3>
             <p>Select one or more photos from your device.</p>
           </div>
         </div>
         <div class="step-item">
           <div class="step-num">2</div>
           <div class="step-content">
-            <h4>Verify Selection</h4>
+            <h3>Verify Selection</h3>
             <p>Check the count of selected images.</p>
           </div>
         </div>
         <div class="step-item">
           <div class="step-num">3</div>
           <div class="step-content">
-            <h4>Generate A4 PDF</h4>
+            <h3>Generate A4 PDF</h3>
             <p>Click "Generate A4 PDF" to build and download your document.</p>
           </div>
         </div>
@@ -257,15 +267,15 @@
       <div class="seo-grid">
         
         <div class="seo-feature-card">
-          <h4>Batch Image Conversion</h4>
+          <h3>Batch Image Conversion</h3>
           <p>Combine multiple photos into pages of a single PDF in one operation.</p>
         </div>
         <div class="seo-feature-card">
-          <h4>Standardized A4 Geometry</h4>
+          <h3>Standardized A4 Geometry</h3>
           <p>Images are centered and scaled with clean margins for printing.</p>
         </div>
         <div class="seo-feature-card">
-          <h4>Preserves Photo Colors</h4>
+          <h3>Preserves Photo Colors</h3>
           <p>Embeds JPEG and PNG image data directly into the PDF structure.</p>
         </div>
       </div>
@@ -279,19 +289,19 @@
       </div>
       <div class="seo-grid">
         <div class="seo-feature-card">
-          <h4>Supported Input Format</h4>
+          <h3>Supported Input Format</h3>
           <p>JPG, JPEG, PNG, WebP image files</p>
         </div>
         <div class="seo-feature-card">
-          <h4>Generated Output Format</h4>
+          <h3>Generated Output Format</h3>
           <p>Standardized A4 PDF document (.pdf)</p>
         </div>
         <div class="seo-feature-card">
-          <h4>Browser Processing Scope</h4>
+          <h3>Browser Processing Scope</h3>
           <p>100% on-device client processing. Zero network transmission of your private file bytes.</p>
         </div>
         <div class="seo-feature-card">
-          <h4>System Limitations</h4>
+          <h3>System Limitations</h3>
           <p>Very large images are scaled proportionally to fit standard A4 margins.</p>
         </div>
       </div>
@@ -306,19 +316,19 @@
         
             <a class="tool-card" href="../../tools/pdf-to-image/">
               <div class="tool-card-icon">🖼️</div>
-              <h4>PDF to Images</h4>
+              <h3>PDF to Images</h3>
             </a>
             <a class="tool-card" href="../../tools/pdf-scanner/">
               <div class="tool-card-icon">📸</div>
-              <h4>PDF Scanner</h4>
+              <h3>PDF Scanner</h3>
             </a>
             <a class="tool-card" href="../../tools/compress-pdf/">
               <div class="tool-card-icon">📄</div>
-              <h4>Compress PDF</h4>
+              <h3>Compress PDF</h3>
             </a>
             <a class="tool-card" href="../../tools/merge-pdf/">
               <div class="tool-card-icon">📑</div>
-              <h4>Merge PDF</h4>
+              <h3>Merge PDF</h3>
             </a>
       </div>
     </section>
@@ -486,7 +496,7 @@
         const exportName = imgPdfName.value.trim() || 'compiled_images.pdf';
         const finalBlob = new Blob([pdfBytes], { type: 'application/pdf' });
 
-        saveDocumentToDB({ name: exportName, origSize: pdfBytes.length, size: pdfBytes.length, type: 'PDF' });
+        saveDocumentToDB({ name: exportName, origSize: pdfBytes.length, size: pdfBytes.length, type: 'PDF', blob: finalBlob });
 
         DocToolKit.showResult('imgPdfResultBox', {
           title: 'A4 PDF Created Successfully',

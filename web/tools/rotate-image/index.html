@@ -3,6 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-FQQFMTFKSF"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-FQQFMTFKSF');
+  </script>
   <title>Rotate Image Online – Rotate Photos 90, 180 & 270 Degrees | DocToolKit</title>
   <meta name="description" content="Rotate images online for free. Fix photo orientation by rotating 90°, 180°, or 270° clockwise or counter-clockwise without quality loss.">
   <link rel="canonical" href="https://doctoolkit.in/tools/rotate-image/">
@@ -31,10 +41,10 @@
   <link rel="manifest" href="../../manifest.json">
 
   <!-- Shared Stylesheet -->
-  <link rel="stylesheet" href="../../css/style.css?v=2.6.0">
+  <link rel="stylesheet" href="../../css/style.css?v=2.7.0">
 
   <!-- Vendor Libraries for 100% In-Browser Execution -->
-  <script src="../../js/app.js?v=2.6.0" defer></script>
+  <script src="../../js/app.js?v=2.7.0" defer></script>
 
   <!-- JSON-LD Structured Data -->
   <script type="application/ld+json">
@@ -236,21 +246,21 @@
         <div class="step-item">
           <div class="step-num">1</div>
           <div class="step-content">
-            <h4>Upload Photo</h4>
+            <h3>Upload Photo</h3>
             <p>Select your sideways or upside-down image.</p>
           </div>
         </div>
         <div class="step-item">
           <div class="step-num">2</div>
           <div class="step-content">
-            <h4>Choose Rotation Angle</h4>
+            <h3>Choose Rotation Angle</h3>
             <p>Select 90°, 180°, or 270° from the orientation chips.</p>
           </div>
         </div>
         <div class="step-item">
           <div class="step-num">3</div>
           <div class="step-content">
-            <h4>Save Rotated Image</h4>
+            <h3>Save Rotated Image</h3>
             <p>Click Save Rotated Image to download the corrected photo.</p>
           </div>
         </div>
@@ -266,15 +276,15 @@
       <div class="seo-grid">
         
         <div class="seo-feature-card">
-          <h4>90° Increments</h4>
+          <h3>90° Increments</h3>
           <p>Fix common phone camera orientation errors in one click.</p>
         </div>
         <div class="seo-feature-card">
-          <h4>Lossless Canvas Transform</h4>
+          <h3>Lossless Canvas Transform</h3>
           <p>Adjusts canvas dimensions dynamically to prevent image cropping.</p>
         </div>
         <div class="seo-feature-card">
-          <h4>Safe & Private</h4>
+          <h3>Safe & Private</h3>
           <p>Zero server processing. Runs 100% inside your browser.</p>
         </div>
       </div>
@@ -288,19 +298,19 @@
       </div>
       <div class="seo-grid">
         <div class="seo-feature-card">
-          <h4>Supported Input Format</h4>
+          <h3>Supported Input Format</h3>
           <p>JPG, PNG, WebP image files</p>
         </div>
         <div class="seo-feature-card">
-          <h4>Generated Output Format</h4>
+          <h3>Generated Output Format</h3>
           <p>Rotated JPEG image (.jpg)</p>
         </div>
         <div class="seo-feature-card">
-          <h4>Browser Processing Scope</h4>
+          <h3>Browser Processing Scope</h3>
           <p>100% on-device client processing. Zero network transmission of your private file bytes.</p>
         </div>
         <div class="seo-feature-card">
-          <h4>System Limitations</h4>
+          <h3>System Limitations</h3>
           <p>Applies 90-degree orthogonal rotations.</p>
         </div>
       </div>
@@ -315,19 +325,19 @@
         
             <a class="tool-card" href="../../tools/crop-image/">
               <div class="tool-card-icon">✂️</div>
-              <h4>Crop Image</h4>
+              <h3>Crop Image</h3>
             </a>
             <a class="tool-card" href="../../tools/resize-image/">
               <div class="tool-card-icon">📐</div>
-              <h4>Resize Image</h4>
+              <h3>Resize Image</h3>
             </a>
             <a class="tool-card" href="../../tools/compress-image/">
               <div class="tool-card-icon">🖼️</div>
-              <h4>Compress Image</h4>
+              <h3>Compress Image</h3>
             </a>
             <a class="tool-card" href="../../tools/passport-photo/">
               <div class="tool-card-icon">👤</div>
-              <h4>Passport Photo</h4>
+              <h3>Passport Photo</h3>
             </a>
       </div>
     </section>
@@ -493,8 +503,14 @@
         ctx.drawImage(img, -img.width / 2, -img.height / 2);
 
         c.toBlob(blob => {
+          if (!blob) {
+            DocToolKit.showError('rotateResultBox', 'Rotation Failed', 'Unable to generate rotated image data.');
+            btnDoRotate.disabled = false;
+            btnDoRotate.innerHTML = originalText;
+            return;
+          }
           const exportName = generateExportFilename(rotFile.name, DocToolKit.userProfile.name, `rot${rotAngle}`, exportExt);
-          saveDocumentToDB({ name: exportName, origSize: rotFile.size, size: blob.size, type: exportExt.toUpperCase() });
+          saveDocumentToDB({ name: exportName, origSize: rotFile.size, size: blob.size, type: exportExt.toUpperCase(), blob: blob });
 
           DocToolKit.showResult('rotateResultBox', {
             title: 'Image Rotated Successfully',
@@ -522,6 +538,12 @@
           btnDoRotate.disabled = false;
           btnDoRotate.innerHTML = originalText;
         }, exportMime, 0.92);
+      };
+      img.onerror = () => {
+        URL.revokeObjectURL(objUrl);
+        DocToolKit.showError('rotateResultBox', 'Rotation Failed', 'Failed to load selected image.');
+        btnDoRotate.disabled = false;
+        btnDoRotate.innerHTML = originalText;
       };
       img.src = objUrl;
     };

@@ -3,6 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-FQQFMTFKSF"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-FQQFMTFKSF');
+  </script>
   <title>Merge PDF Files Online – Combine Multiple PDFs | DocToolKit</title>
   <meta name="description" content="Merge multiple PDF files into a single document online for free. Combine certificates, applications, and documents on your device without file size limits.">
   <link rel="canonical" href="https://doctoolkit.in/tools/merge-pdf/">
@@ -31,12 +41,12 @@
   <link rel="manifest" href="../../manifest.json">
 
   <!-- Shared Stylesheet -->
-  <link rel="stylesheet" href="../../css/style.css?v=2.6.0">
+  <link rel="stylesheet" href="../../css/style.css?v=2.7.0">
 
   <!-- Vendor Libraries for 100% In-Browser Execution -->
   <script src="../../js/pdf-lib.min.js" defer></script>
   <script src="../../js/pdf.min.js" defer></script>
-  <script src="../../js/app.js?v=2.6.0" defer></script>
+  <script src="../../js/app.js?v=2.7.0" defer></script>
 
   <!-- JSON-LD Structured Data -->
   <script type="application/ld+json">
@@ -237,21 +247,21 @@
         <div class="step-item">
           <div class="step-num">1</div>
           <div class="step-content">
-            <h4>Select PDF Files</h4>
+            <h3>Select PDF Files</h3>
             <p>Choose two or more PDF files from your device.</p>
           </div>
         </div>
         <div class="step-item">
           <div class="step-num">2</div>
           <div class="step-content">
-            <h4>Review Sequence</h4>
+            <h3>Review Sequence</h3>
             <p>Inspect the list of uploaded PDFs in your desired order.</p>
           </div>
         </div>
         <div class="step-item">
           <div class="step-num">3</div>
           <div class="step-content">
-            <h4>Merge & Download</h4>
+            <h3>Merge & Download</h3>
             <p>Click Merge & Download to generate the unified document immediately.</p>
           </div>
         </div>
@@ -267,15 +277,15 @@
       <div class="seo-grid">
         
         <div class="seo-feature-card">
-          <h4>Unlimited PDF Files</h4>
+          <h3>Unlimited PDF Files</h3>
           <p>Merge as many documents as your browser memory can hold.</p>
         </div>
         <div class="seo-feature-card">
-          <h4>Lossless Page Copying</h4>
+          <h3>Lossless Page Copying</h3>
           <p>Preserves original vector text, embedded fonts, and vector graphics without rasterization.</p>
         </div>
         <div class="seo-feature-card">
-          <h4>Complete Client-Side Security</h4>
+          <h3>Complete Client-Side Security</h3>
           <p>Safe for confidential contracts, financial statements, and personal identity documents.</p>
         </div>
       </div>
@@ -289,19 +299,19 @@
       </div>
       <div class="seo-grid">
         <div class="seo-feature-card">
-          <h4>Supported Input Format</h4>
+          <h3>Supported Input Format</h3>
           <p>Two or more PDF documents (.pdf)</p>
         </div>
         <div class="seo-feature-card">
-          <h4>Generated Output Format</h4>
+          <h3>Generated Output Format</h3>
           <p>Single combined PDF document (.pdf)</p>
         </div>
         <div class="seo-feature-card">
-          <h4>Browser Processing Scope</h4>
+          <h3>Browser Processing Scope</h3>
           <p>100% on-device client processing. Zero network transmission of your private file bytes.</p>
         </div>
         <div class="seo-feature-card">
-          <h4>System Limitations</h4>
+          <h3>System Limitations</h3>
           <p>Corrupted or password-encrypted PDFs cannot be combined until decrypted.</p>
         </div>
       </div>
@@ -316,19 +326,19 @@
         
             <a class="tool-card" href="../../tools/split-pdf/">
               <div class="tool-card-icon">✂️</div>
-              <h4>Split PDF</h4>
+              <h3>Split PDF</h3>
             </a>
             <a class="tool-card" href="../../tools/organize-pdf/">
               <div class="tool-card-icon">🗂️</div>
-              <h4>Organize PDF</h4>
+              <h3>Organize PDF</h3>
             </a>
             <a class="tool-card" href="../../tools/compress-pdf/">
               <div class="tool-card-icon">📄</div>
-              <h4>Compress PDF</h4>
+              <h3>Compress PDF</h3>
             </a>
             <a class="tool-card" href="../../tools/image-to-pdf/">
               <div class="tool-card-icon">📁</div>
-              <h4>Images to PDF</h4>
+              <h3>Images to PDF</h3>
             </a>
       </div>
     </section>
@@ -485,7 +495,7 @@
         const exportName = mergeNameInput.value.trim() || 'merged_document.pdf';
         const finalBlob = new Blob([bytes], { type: 'application/pdf' });
 
-        saveDocumentToDB({ name: exportName, origSize: bytes.length, size: bytes.length, type: 'PDF' });
+        saveDocumentToDB({ name: exportName, origSize: bytes.length, size: bytes.length, type: 'PDF', blob: finalBlob });
 
         DocToolKit.showResult('mergeResultBox', {
           title: 'PDFs Merged Successfully',

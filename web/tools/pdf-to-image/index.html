@@ -3,6 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-FQQFMTFKSF"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-FQQFMTFKSF');
+  </script>
   <title>Convert PDF to Images Online – Extract High-Res JPGs | DocToolKit</title>
   <meta name="description" content="Convert PDF pages to JPG images online for free. Extract high-resolution images from every page of your PDF file locally on your device.">
   <link rel="canonical" href="https://doctoolkit.in/tools/pdf-to-image/">
@@ -31,12 +41,12 @@
   <link rel="manifest" href="../../manifest.json">
 
   <!-- Shared Stylesheet -->
-  <link rel="stylesheet" href="../../css/style.css?v=2.6.0">
+  <link rel="stylesheet" href="../../css/style.css?v=2.7.0">
 
   <!-- Vendor Libraries for 100% In-Browser Execution -->
   <script src="../../js/pdf-lib.min.js" defer></script>
   <script src="../../js/pdf.min.js" defer></script>
-  <script src="../../js/app.js?v=2.6.0" defer></script>
+  <script src="../../js/app.js?v=2.7.0" defer></script>
 
   <!-- JSON-LD Structured Data -->
   <script type="application/ld+json">
@@ -223,21 +233,21 @@
         <div class="step-item">
           <div class="step-num">1</div>
           <div class="step-content">
-            <h4>Select PDF Document</h4>
+            <h3>Select PDF Document</h3>
             <p>Drop your PDF into the converter.</p>
           </div>
         </div>
         <div class="step-item">
           <div class="step-num">2</div>
           <div class="step-content">
-            <h4>Render Pages</h4>
+            <h3>Render Pages</h3>
             <p>DocToolKit renders each page using high-DPI HTML5 Canvas.</p>
           </div>
         </div>
         <div class="step-item">
           <div class="step-num">3</div>
           <div class="step-content">
-            <h4>Download Image</h4>
+            <h3>Download Image</h3>
             <p>Download your extracted page images directly to your device.</p>
           </div>
         </div>
@@ -253,15 +263,15 @@
       <div class="seo-grid">
         
         <div class="seo-feature-card">
-          <h4>High-DPI Rendering</h4>
+          <h3>High-DPI Rendering</h3>
           <p>Renders sharp, readable text and clear figures from PDF pages.</p>
         </div>
         <div class="seo-feature-card">
-          <h4>No Watermarks</h4>
+          <h3>No Watermarks</h3>
           <p>Clean, original-quality JPEG outputs with zero branding overlays.</p>
         </div>
         <div class="seo-feature-card">
-          <h4>100% In-Browser Privacy</h4>
+          <h3>100% In-Browser Privacy</h3>
           <p>Pages are converted in client RAM without sending documents to cloud APIs.</p>
         </div>
       </div>
@@ -275,19 +285,19 @@
       </div>
       <div class="seo-grid">
         <div class="seo-feature-card">
-          <h4>Supported Input Format</h4>
+          <h3>Supported Input Format</h3>
           <p>PDF document (.pdf)</p>
         </div>
         <div class="seo-feature-card">
-          <h4>Generated Output Format</h4>
+          <h3>Generated Output Format</h3>
           <p>High-resolution JPEG images (.jpg)</p>
         </div>
         <div class="seo-feature-card">
-          <h4>Browser Processing Scope</h4>
+          <h3>Browser Processing Scope</h3>
           <p>100% on-device client processing. Zero network transmission of your private file bytes.</p>
         </div>
         <div class="seo-feature-card">
-          <h4>System Limitations</h4>
+          <h3>System Limitations</h3>
           <p>Large documents with dozens of pages may take a few seconds to render on mobile devices.</p>
         </div>
       </div>
@@ -302,19 +312,19 @@
         
             <a class="tool-card" href="../../tools/image-to-pdf/">
               <div class="tool-card-icon">📁</div>
-              <h4>Images to PDF</h4>
+              <h3>Images to PDF</h3>
             </a>
             <a class="tool-card" href="../../tools/compress-pdf/">
               <div class="tool-card-icon">📄</div>
-              <h4>Compress PDF</h4>
+              <h3>Compress PDF</h3>
             </a>
             <a class="tool-card" href="../../tools/pdf-scanner/">
               <div class="tool-card-icon">📸</div>
-              <h4>PDF Scanner</h4>
+              <h3>PDF Scanner</h3>
             </a>
             <a class="tool-card" href="../../tools/split-pdf/">
               <div class="tool-card-icon">✂️</div>
-              <h4>Split PDF</h4>
+              <h3>Split PDF</h3>
             </a>
       </div>
     </section>
@@ -456,12 +466,13 @@
           const dlMsg = card.querySelector(`#dlMsg_${i}`);
           btnDl.onclick = () => {
             triggerDownload(blob, pageFilename);
-            saveDocumentToDB({ name: pageFilename, origSize: blob.size, size: blob.size, type: 'JPEG' });
+            saveDocumentToDB({ name: pageFilename, origSize: blob.size, size: blob.size, type: 'JPEG', blob: blob });
             dlMsg.style.display = 'block';
             setTimeout(() => { dlMsg.style.display = 'none'; }, 3000);
           };
         }
 
+        saveDocumentToDB({ name: firstFilename, origSize: firstBlob.size, size: firstBlob.size, type: 'JPEG', blob: firstBlob });
         status.textContent = `Completed: ${pluralize(total, 'page', 'pages')} extracted.`;
 
         DocToolKit.showResult('p2iResultBox', {

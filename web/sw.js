@@ -1,5 +1,5 @@
-// DocToolKit Service Worker for Offline PWA - v2.6.0
-const CACHE_NAME = 'doctoolkit-v2.6.0';
+// DocToolKit Service Worker for Offline PWA - v2.7.0
+const CACHE_NAME = 'doctoolkit-v2.7.0';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -20,9 +20,9 @@ const ASSETS_TO_CACHE = [
   './icons/icon-192.webp',
   './icons/icon-512.webp',
   './css/style.css',
-  './css/style.css?v=2.6.0',
+  './css/style.css?v=2.7.0',
   './js/app.js',
-  './js/app.js?v=2.6.0',
+  './js/app.js?v=2.7.0',
   './js/pdf-lib.min.js',
   './js/pdf.min.js',
   './js/pdf.worker.min.js'
@@ -57,9 +57,10 @@ self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
   const url = event.request.url;
 
-  // Never intercept or cache blob/data URLs or search-engine metadata
+  // Never intercept or cache blob/data URLs, search-engine metadata, or Google Analytics
   if (url.startsWith('blob:') || url.startsWith('data:')) return;
   if (url.includes('sitemap.xml') || url.includes('robots.txt')) return;
+  if (url.includes('google-analytics.com') || url.includes('googletagmanager.com')) return;
 
   // Network-First for HTML navigation requests (ensures fresh metadata & SEO tags when online)
   if (event.request.mode === 'navigate') {

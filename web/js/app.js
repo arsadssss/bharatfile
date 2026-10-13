@@ -107,7 +107,7 @@
   }
 
   window.DocToolKit = {
-    version: '2.6.0',
+    version: '2.7.0',
     getPref,
     setPref,
     parseTargetBytes,
@@ -120,8 +120,51 @@
       defaultFormat: getPref('format', 'jpeg'),
       defaultComp: getPref('comp', '60')
     },
+    // Google Analytics 4 (GA4) Tracking Integration (Measurement ID: G-FQQFMTFKSF)
+    trackEvent(eventName, params = {}) {
+      try {
+        if (!eventName) return;
+        const toolName = params.tool_name || DocToolKit.getCurrentToolName();
+        const dedupKey = `${eventName}:${toolName}`;
+        const now = Date.now();
+        DocToolKit._lastEvents = DocToolKit._lastEvents || {};
+        if (now - (DocToolKit._lastEvents[dedupKey] || 0) < 400) return;
+        DocToolKit._lastEvents[dedupKey] = now;
+
+        if (typeof window.gtag === 'function') {
+          window.gtag('event', eventName, { tool_name: toolName });
+        }
+      } catch (err) {}
+    },
+    getCurrentToolName() {
+      try {
+        const path = window.location.pathname;
+        const match = path.match(/\/tools\/([^\/]+)/);
+        if (match && match[1]) return match[1];
+        if (path === '/' || path.endsWith('/index.html') || !path) return 'homepage-quick-mode';
+        return path.replace(/^\/|\/$/g, '').replace(/\//g, '_') || 'home';
+      } catch (e) {
+        return 'doctoolkit';
+      }
+    },
+    trackFileSelected(toolName) {
+      DocToolKit.trackEvent('tool_file_selected', { tool_name: toolName || DocToolKit.getCurrentToolName() });
+    },
+    trackProcessingStarted(toolName) {
+      DocToolKit.trackEvent('tool_processing_started', { tool_name: toolName || DocToolKit.getCurrentToolName() });
+    },
+    trackProcessingCompleted(toolName) {
+      DocToolKit.trackEvent('tool_processing_completed', { tool_name: toolName || DocToolKit.getCurrentToolName() });
+    },
+    trackProcessingFailed(toolName) {
+      DocToolKit.trackEvent('tool_processing_failed', { tool_name: toolName || DocToolKit.getCurrentToolName() });
+    },
+    trackFileDownloaded(toolName) {
+      DocToolKit.trackEvent('tool_file_downloaded', { tool_name: toolName || DocToolKit.getCurrentToolName() });
+    },
     // Standardized UI Result & Feedback Component
     showProcessing(containerId, actionText, subText) {
+      DocToolKit.trackProcessingStarted();
       const container = typeof containerId === 'string' ? document.getElementById(containerId) : containerId;
       if (!container) return;
       container.className = 'result-feedback-card';
@@ -138,6 +181,7 @@
       `;
     },
     showError(containerId, title, message, onRetry) {
+      DocToolKit.trackProcessingFailed();
       const container = typeof containerId === 'string' ? document.getElementById(containerId) : containerId;
       if (!container) return;
       container.className = 'result-feedback-card';
@@ -155,9 +199,15 @@
         </div>
       `;
       const btn = container.querySelector('#btnRetryFeedbackOp');
-      if (btn && onRetry) btn.onclick = onRetry;
+      if (btn) {
+        btn.onclick = () => {
+          if (onRetry) onRetry();
+          else DocToolKit.hideResult(containerId);
+        };
+      }
     },
     showResult(containerId, options = {}) {
+      DocToolKit.trackProcessingCompleted();
       const container = typeof containerId === 'string' ? document.getElementById(containerId) : containerId;
       if (!container) return;
       const title = options.title || 'Operation Completed Successfully';
@@ -277,19 +327,30 @@
     const isDark = saved === 'dark' || (!saved && prefersDark);
     if (isDark) {
       document.body.classList.add('dark-mode');
+      document.documentElement.setAttribute('data-theme', 'dark');
     } else {
       document.body.classList.remove('dark-mode');
+      document.documentElement.setAttribute('data-theme', 'light');
     }
     const btns = document.querySelectorAll('.theme-toggle-btn');
-    btns.forEach(b => b.textContent = isDark ? '☀️' : '🌙');
+    btns.forEach(b => {
+      b.textContent = isDark ? '☀️' : '🌙';
+      b.setAttribute('aria-label', isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode');
+      b.setAttribute('title', isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode');
+    });
   };
 
   window.toggleTheme = function() {
     document.body.classList.toggle('dark-mode');
     const isDark = document.body.classList.contains('dark-mode');
+    document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
     setPref('theme', isDark ? 'dark' : 'light');
     const btns = document.querySelectorAll('.theme-toggle-btn');
-    btns.forEach(b => b.textContent = isDark ? '☀️' : '🌙');
+    btns.forEach(b => {
+      b.textContent = isDark ? '☀️' : '🌙';
+      b.setAttribute('aria-label', isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode');
+      b.setAttribute('title', isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode');
+    });
   };
 
   // 5. Drawer Controls
@@ -377,11 +438,30 @@
           resolve(null);
         }
       }
+    }).then(db => {
+      if (!db) dbPromise = null;
+      return db;
     });
     return dbPromise;
   };
 
+  function saveToSessionFallback(doc) {
+    try {
+      const items = JSON.parse(sessionStorage.getItem('doctoolkit_session_docs') || '[]');
+      items.unshift({
+        id: doc.id || Date.now(),
+        name: doc.name,
+        origSize: doc.origSize,
+        size: doc.size,
+        type: doc.type,
+        date: doc.date || new Date().toISOString()
+      });
+      sessionStorage.setItem('doctoolkit_session_docs', JSON.stringify(items.slice(0, 25)));
+    } catch (e) {}
+  }
+
   window.saveDocumentToDB = async function(doc) {
+    saveToSessionFallback(doc);
     try {
       const db = await openDocDB();
       if (!db) return false;
@@ -402,14 +482,21 @@
   window.getAllDocumentsFromDB = async function() {
     try {
       const db = await openDocDB();
-      if (!db) return [];
-      const tx = db.transaction('documents', 'readonly');
-      const store = tx.objectStore('documents');
-      const req = store.getAll();
-      return new Promise((resolve) => {
-        req.onsuccess = () => resolve(req.result || []);
-        req.onerror = () => resolve([]);
-      });
+      if (db) {
+        const tx = db.transaction('documents', 'readonly');
+        const store = tx.objectStore('documents');
+        const req = store.getAll();
+        const docs = await new Promise((resolve) => {
+          req.onsuccess = () => resolve(req.result || []);
+          req.onerror = () => resolve(null);
+        });
+        if (docs !== null) return docs;
+      }
+    } catch (e) {}
+
+    try {
+      const sessionDocs = JSON.parse(sessionStorage.getItem('doctoolkit_session_docs') || '[]');
+      return sessionDocs;
     } catch (e) {
       return [];
     }
@@ -417,8 +504,14 @@
 
   window.deleteDocumentFromDB = async function(id) {
     try {
+      const items = JSON.parse(sessionStorage.getItem('doctoolkit_session_docs') || '[]');
+      const filtered = items.filter(d => d.id !== id);
+      sessionStorage.setItem('doctoolkit_session_docs', JSON.stringify(filtered));
+    } catch (e) {}
+
+    try {
       const db = await openDocDB();
-      if (!db) return false;
+      if (!db) return true;
       const tx = db.transaction('documents', 'readwrite');
       tx.objectStore('documents').delete(id);
       return new Promise(resolve => {
@@ -432,6 +525,9 @@
 
   // 8. Download Helper
   window.triggerDownload = function(blob, filename) {
+    if (window.DocToolKit && typeof DocToolKit.trackFileDownloaded === 'function') {
+      DocToolKit.trackFileDownloaded();
+    }
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -446,6 +542,35 @@
 
   // 9. Client-Side Image Compression Engine (Target Size & Level Modes)
   window.compressImageEngine = async function(file, opts) {
+    if (!file) throw new Error('No file provided for compression.');
+
+    const fileNameLower = (file.name || '').toLowerCase();
+    const fileType = (file.type || '').toLowerCase();
+
+    // Check for PDF input
+    if (fileType === 'application/pdf' || fileNameLower.endsWith('.pdf')) {
+      throw new Error('PDF files cannot be compressed as images. Please use the Compress PDF tool.');
+    }
+
+    // Check for valid image extensions or MIME types
+    const validImageExts = ['.jpg', '.jpeg', '.png', '.webp', '.bmp', '.gif', '.svg'];
+    const hasValidExt = validImageExts.some(ext => fileNameLower.endsWith(ext));
+    if (fileType && !fileType.startsWith('image/') && !hasValidExt) {
+      throw new Error('Unsupported file format. Please upload a valid image file (JPEG, PNG, WebP, GIF, or BMP).');
+    }
+
+    // Inspect first 8 bytes for PDF magic bytes (%PDF)
+    try {
+      const slice = file.slice(0, 8);
+      const buffer = await slice.arrayBuffer();
+      const bytes = new Uint8Array(buffer);
+      if (bytes.length >= 4 && bytes[0] === 0x25 && bytes[1] === 0x50 && bytes[2] === 0x44 && bytes[3] === 0x46) {
+        throw new Error('PDF files cannot be compressed as images. Please use the Compress PDF tool.');
+      }
+    } catch (e) {
+      if (e.message && e.message.includes('PDF files cannot be compressed')) throw e;
+    }
+
     const origSize = file.size;
     const mode = (opts && opts.mode) || 'target'; // 'target' or 'slider'
     const targetBytes = opts && opts.targetBytes ? opts.targetBytes : null;
@@ -458,8 +583,19 @@
     const img = new Image();
     const objUrl = URL.createObjectURL(file);
     await new Promise((res, rej) => {
-      img.onload = res;
-      img.onerror = () => rej(new Error('Failed to decode image file. File may be corrupted or unsupported.'));
+      let settled = false;
+      const timeout = setTimeout(() => {
+        if (!settled) {
+          settled = true;
+          rej(new Error('Image decoding timed out. The file may be corrupted or in an unsupported format.'));
+        }
+      }, 8000);
+      img.onload = () => {
+        if (!settled) { settled = true; clearTimeout(timeout); res(); }
+      };
+      img.onerror = () => {
+        if (!settled) { settled = true; clearTimeout(timeout); rej(new Error('Failed to decode image file. File may be corrupted or unsupported.')); }
+      };
       img.src = objUrl;
     });
     URL.revokeObjectURL(objUrl);
@@ -470,6 +606,9 @@
     const origHeight = img.naturalHeight || img.height;
     if (!origWidth || !origHeight) {
       throw new Error('Invalid image dimensions.');
+    }
+    if (origWidth > 16384 || origHeight > 16384 || (origWidth * origHeight > 100000000)) {
+      throw new Error('Image dimensions exceed browser processing limits (100 MP). Please select a smaller image.');
     }
 
     // Determine target format strictly based on user selection or original file
@@ -519,7 +658,10 @@
       // PNG is lossless in standard canvas.toBlob
       onProgress(60, 'Encoding lossless PNG...');
       finalBlob = await new Promise(r => canvas.toBlob(r, 'image/png'));
-      if (mode === 'target' && targetBytes && finalBlob && finalBlob.size > targetBytes) {
+      if (finalBlob && finalBlob.size > origSize) {
+        achieved = false;
+        statusMessage = `PNG format is lossless. Re-encoded output (${formatBytes(finalBlob.size)}) is larger than original file (${formatBytes(origSize)}). Consider converting to WebP or JPEG for smaller file size.`;
+      } else if (mode === 'target' && targetBytes && finalBlob && finalBlob.size > targetBytes) {
         achieved = false;
         statusMessage = `PNG format is lossless. Standard PNG compression reached ${formatBytes(finalBlob.size)}. To achieve smaller target file sizes (such as ${formatBytes(targetBytes)}), consider selecting WebP or JPEG format.`;
       } else {
@@ -580,6 +722,7 @@
 
     onProgress(100, 'Optimization complete!');
     const newSize = finalBlob.size;
+    const isLarger = newSize > origSize;
     const savedPct = Math.round(((origSize - newSize) / origSize) * 100);
 
     return {
@@ -588,6 +731,7 @@
       origSize,
       newSize,
       savedPct,
+      isLarger,
       achieved,
       statusMessage,
       width: origWidth,
@@ -745,15 +889,56 @@
     };
   };
 
-  // Initialize Theme on DOM Ready
+  // Initialize Theme & Navigation on DOM Ready
   document.addEventListener('DOMContentLoaded', () => {
     initTheme();
+    // Bind all theme toggles
+    document.querySelectorAll('.theme-toggle-btn').forEach(btn => {
+      if (!btn.hasAttribute('onclick')) {
+        btn.addEventListener('click', toggleTheme);
+      }
+    });
+
     const closeBtn = document.getElementById('closeDrawerBtn');
     if (closeBtn) closeBtn.addEventListener('click', closeDrawer);
     const backdrop = document.getElementById('drawerBackdrop');
     if (backdrop) backdrop.addEventListener('click', closeDrawer);
     const hb = document.getElementById('hamburgerBtn');
     if (hb) hb.addEventListener('click', openDrawer);
+
+    // Auto-highlight active navigation link
+    try {
+      const currentPath = window.location.pathname.replace(/\/$/, '');
+      document.querySelectorAll('.desktop-menu .menu-btn, .mobile-drawer .drawer-item').forEach(link => {
+        const href = link.getAttribute('href');
+        if (href) {
+          const resolvedPath = new URL(href, window.location.href).pathname.replace(/\/$/, '');
+          if (resolvedPath === currentPath || (currentPath === '' && resolvedPath.endsWith('index.html'))) {
+            link.classList.add('active');
+            link.setAttribute('aria-current', 'page');
+          }
+        }
+      });
+    } catch (e) {}
   });
+
+  // Global file selection & drop listener for GA4 tool_file_selected event
+  document.addEventListener('change', function(e) {
+    if (e.target && e.target.tagName === 'INPUT' && e.target.type === 'file') {
+      if (e.target.files && e.target.files.length > 0) {
+        if (window.DocToolKit && typeof DocToolKit.trackFileSelected === 'function') {
+          DocToolKit.trackFileSelected();
+        }
+      }
+    }
+  }, true);
+
+  document.addEventListener('drop', function(e) {
+    if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      if (window.DocToolKit && typeof DocToolKit.trackFileSelected === 'function') {
+        DocToolKit.trackFileSelected();
+      }
+    }
+  }, true);
 
 })();

@@ -3,6 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-FQQFMTFKSF"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-FQQFMTFKSF');
+  </script>
   <title>Organize PDF Pages Online – Rotate, Delete & Reorder | DocToolKit</title>
   <meta name="description" content="Organize PDF pages online for free. Rotate sideways pages, delete unwanted sheets, and reorder document pages with interactive visual previews.">
   <link rel="canonical" href="https://doctoolkit.in/tools/organize-pdf/">
@@ -31,12 +41,12 @@
   <link rel="manifest" href="../../manifest.json">
 
   <!-- Shared Stylesheet -->
-  <link rel="stylesheet" href="../../css/style.css?v=2.6.0">
+  <link rel="stylesheet" href="../../css/style.css?v=2.7.0">
 
   <!-- Vendor Libraries for 100% In-Browser Execution -->
   <script src="../../js/pdf-lib.min.js" defer></script>
   <script src="../../js/pdf.min.js" defer></script>
-  <script src="../../js/app.js?v=2.6.0" defer></script>
+  <script src="../../js/app.js?v=2.7.0" defer></script>
 
   <!-- JSON-LD Structured Data -->
   <script type="application/ld+json">
@@ -224,21 +234,21 @@
         <div class="step-item">
           <div class="step-num">1</div>
           <div class="step-content">
-            <h4>Upload PDF File</h4>
+            <h3>Upload PDF File</h3>
             <p>Select the document you wish to reorganize.</p>
           </div>
         </div>
         <div class="step-item">
           <div class="step-num">2</div>
           <div class="step-content">
-            <h4>Rotate or Delete Pages</h4>
+            <h3>Rotate or Delete Pages</h3>
             <p>Click the Rotate button to turn pages 90 degrees or Delete to remove unwanted sheets.</p>
           </div>
         </div>
         <div class="step-item">
           <div class="step-num">3</div>
           <div class="step-content">
-            <h4>Save Reorganized PDF</h4>
+            <h3>Save Reorganized PDF</h3>
             <p>Download your cleaned-up document immediately.</p>
           </div>
         </div>
@@ -254,15 +264,15 @@
       <div class="seo-grid">
         
         <div class="seo-feature-card">
-          <h4>Visual Page Cards</h4>
+          <h3>Visual Page Cards</h3>
           <p>Inspect every page number, rotation angle, and status in an interactive grid.</p>
         </div>
         <div class="seo-feature-card">
-          <h4>90° Incremental Rotation</h4>
+          <h3>90° Incremental Rotation</h3>
           <p>Correct landscape or upside-down scans with one tap.</p>
         </div>
         <div class="seo-feature-card">
-          <h4>Instant Page Removal</h4>
+          <h3>Instant Page Removal</h3>
           <p>Discard blank or redundant pages to reduce document size.</p>
         </div>
       </div>
@@ -276,19 +286,19 @@
       </div>
       <div class="seo-grid">
         <div class="seo-feature-card">
-          <h4>Supported Input Format</h4>
+          <h3>Supported Input Format</h3>
           <p>PDF document (.pdf)</p>
         </div>
         <div class="seo-feature-card">
-          <h4>Generated Output Format</h4>
+          <h3>Generated Output Format</h3>
           <p>Reorganized PDF document (.pdf)</p>
         </div>
         <div class="seo-feature-card">
-          <h4>Browser Processing Scope</h4>
+          <h3>Browser Processing Scope</h3>
           <p>100% on-device client processing. Zero network transmission of your private file bytes.</p>
         </div>
         <div class="seo-feature-card">
-          <h4>System Limitations</h4>
+          <h3>System Limitations</h3>
           <p>Encrypted PDFs must be unlocked prior to page modification.</p>
         </div>
       </div>
@@ -303,19 +313,19 @@
         
             <a class="tool-card" href="../../tools/split-pdf/">
               <div class="tool-card-icon">✂️</div>
-              <h4>Split PDF</h4>
+              <h3>Split PDF</h3>
             </a>
             <a class="tool-card" href="../../tools/merge-pdf/">
               <div class="tool-card-icon">📑</div>
-              <h4>Merge PDF</h4>
+              <h3>Merge PDF</h3>
             </a>
             <a class="tool-card" href="../../tools/compress-pdf/">
               <div class="tool-card-icon">📄</div>
-              <h4>Compress PDF</h4>
+              <h3>Compress PDF</h3>
             </a>
             <a class="tool-card" href="../../tools/pdf-scanner/">
               <div class="tool-card-icon">📸</div>
-              <h4>PDF Scanner</h4>
+              <h3>PDF Scanner</h3>
             </a>
       </div>
     </section>
@@ -490,7 +500,7 @@
         const exportName = generateExportFilename(orgOrigName, DocToolKit.userProfile.name, 'organized', 'pdf');
         const finalBlob = new Blob([bytes], { type: 'application/pdf' });
 
-        saveDocumentToDB({ name: exportName, origSize: bytes.length, size: bytes.length, type: 'PDF' });
+        saveDocumentToDB({ name: exportName, origSize: bytes.length, size: bytes.length, type: 'PDF', blob: finalBlob });
 
         DocToolKit.showResult('orgResultBox', {
           title: 'PDF Reorganized Successfully',
