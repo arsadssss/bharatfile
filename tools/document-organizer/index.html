@@ -3,6 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-FQQFMTFKSF"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-FQQFMTFKSF');
+  </script>
   <title>Document Organizer Online – Manage Offline Files | DocToolKit</title>
   <meta name="description" content="Organize and manage your processed documents locally with DocToolKit's offline Document Organizer powered by private in-browser IndexedDB storage.">
   <link rel="canonical" href="https://doctoolkit.in/tools/document-organizer/">
@@ -31,10 +41,10 @@
   <link rel="manifest" href="../../manifest.json">
 
   <!-- Shared Stylesheet -->
-  <link rel="stylesheet" href="../../css/style.css?v=2.6.0">
+  <link rel="stylesheet" href="../../css/style.css?v=2.7.0">
 
   <!-- Vendor Libraries for 100% In-Browser Execution -->
-  <script src="../../js/app.js?v=2.6.0" defer></script>
+  <script src="../../js/app.js?v=2.7.0" defer></script>
 
   <!-- JSON-LD Structured Data -->
   <script type="application/ld+json">
@@ -197,9 +207,11 @@
       <!-- Mounted Interactive Tool Interface -->
       
         <div style="display:flex; flex-direction:column; gap:16px;">
-          <div style="display:flex; gap:10px;">
-            <input type="text" id="orgSearch" placeholder="🔍 Search saved documents..." class="rename-input" style="flex:1;">
-            <button class="preset-pill" onclick="clearLibrary()" style="color:red;">Clear Library</button>
+          <input type="file" id="orgDirectInput" multiple style="display:none;" onchange="handleDirectImport(event)">
+          <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+            <input type="text" id="orgSearch" placeholder="🔍 Search saved documents..." class="rename-input" style="flex:1; min-width:180px;">
+            <button type="button" class="btn-choose-file" onclick="document.getElementById('orgDirectInput').click()" style="padding:10px 16px; font-size:12px;">📁 Import Files</button>
+            <button type="button" class="preset-pill" onclick="clearLibrary()" style="color:#ef4444;">Clear Library</button>
           </div>
           <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--text-muted);">
             <span id="libCount">Loading library...</span>
@@ -221,21 +233,21 @@
         <div class="step-item">
           <div class="step-num">1</div>
           <div class="step-content">
-            <h4>Process Files in DocToolKit</h4>
-            <p>Any file you compress, convert, or scan is saved to your private local library.</p>
+            <h3>Process or Import Files</h3>
+            <p>Files you compress, convert, scan, or import directly are saved to your private local library.</p>
           </div>
         </div>
         <div class="step-item">
           <div class="step-num">2</div>
           <div class="step-content">
-            <h4>Search & Review</h4>
+            <h3>Search &amp; Review</h3>
             <p>Search by filename, sort by date, and view original vs. optimized file sizes.</p>
           </div>
         </div>
         <div class="step-item">
           <div class="step-num">3</div>
           <div class="step-content">
-            <h4>Download or Remove</h4>
+            <h3>Download or Remove</h3>
             <p>Re-download processed files or clear storage whenever you wish.</p>
           </div>
         </div>
@@ -251,15 +263,15 @@
       <div class="seo-grid">
         
         <div class="seo-feature-card">
-          <h4>100% Offline IndexedDB</h4>
+          <h3>100% Offline IndexedDB</h3>
           <p>Your library stays active even when offline, with zero server accounts required.</p>
         </div>
         <div class="seo-feature-card">
-          <h4>Real-Time Search</h4>
+          <h3>Real-Time Search</h3>
           <p>Quickly locate previous scans or compressed certificates by typing their name.</p>
         </div>
         <div class="seo-feature-card">
-          <h4>Zero Cloud Exposure</h4>
+          <h3>Zero Cloud Exposure</h3>
           <p>Data stays strictly on your local disk.</p>
         </div>
       </div>
@@ -273,19 +285,19 @@
       </div>
       <div class="seo-grid">
         <div class="seo-feature-card">
-          <h4>Supported Input Format</h4>
-          <p>Browser-stored document records</p>
+          <h3>Supported Input Format</h3>
+          <p>Browser-stored document records and direct file imports</p>
         </div>
         <div class="seo-feature-card">
-          <h4>Generated Output Format</h4>
+          <h3>Generated Output Format</h3>
           <p>Searchable offline local document library</p>
         </div>
         <div class="seo-feature-card">
-          <h4>Browser Processing Scope</h4>
+          <h3>Browser Processing Scope</h3>
           <p>100% on-device client processing. Zero network transmission of your private file bytes.</p>
         </div>
         <div class="seo-feature-card">
-          <h4>System Limitations</h4>
+          <h3>System Limitations</h3>
           <p>Storage is tied to your specific web browser profile on this device.</p>
         </div>
       </div>
@@ -300,19 +312,19 @@
         
             <a class="tool-card" href="../../tools/compress-pdf/">
               <div class="tool-card-icon">📄</div>
-              <h4>Compress PDF</h4>
+              <h3>Compress PDF</h3>
             </a>
             <a class="tool-card" href="../../tools/compress-image/">
               <div class="tool-card-icon">🖼️</div>
-              <h4>Compress Image</h4>
+              <h3>Compress Image</h3>
             </a>
             <a class="tool-card" href="../../tools/pdf-scanner/">
               <div class="tool-card-icon">📸</div>
-              <h4>PDF Scanner</h4>
+              <h3>PDF Scanner</h3>
             </a>
             <a class="tool-card" href="../../tools/merge-pdf/">
               <div class="tool-card-icon">📑</div>
-              <h4>Merge PDF</h4>
+              <h3>Merge PDF</h3>
             </a>
       </div>
     </section>
@@ -493,17 +505,39 @@
       if (!confirm('Clear all stored document history from this browser?')) return;
       try {
         const db = await openDocDB();
-        const tx = db.transaction('documents', 'readwrite');
-        tx.objectStore('documents').clear();
-        tx.oncomplete = () => loadLibrary();
+        if (db) {
+          const tx = db.transaction('documents', 'readwrite');
+          tx.objectStore('documents').clear();
+          tx.oncomplete = () => loadLibrary();
+        } else {
+          sessionStorage.removeItem('dtk_session_docs');
+          loadLibrary();
+        }
       } catch (e) {
         console.warn('Failed to clear library:', e);
+        sessionStorage.removeItem('dtk_session_docs');
         loadLibrary();
       }
     };
 
-    loadLibrary();
-        
+    async function handleDirectImport(e) {
+      const files = Array.from(e.target.files || []);
+      if (!files.length) return;
+      for (const f of files) {
+        const isPdf = f.type.includes('pdf') || f.name.toLowerCase().endsWith('.pdf');
+        const type = isPdf ? 'PDF' : (f.type.includes('image') ? 'Image' : 'Doc');
+        await saveDocumentToDB({ name: f.name, origSize: f.size, size: f.size, type, blob: f });
+      }
+      e.target.value = '';
+      loadLibrary();
+    }
+    window.handleDirectImport = handleDirectImport;
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', loadLibrary);
+    } else {
+      loadLibrary();
+    }
   </script>
 </body>
 </html>

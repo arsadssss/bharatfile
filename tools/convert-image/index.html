@@ -3,6 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-FQQFMTFKSF"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-FQQFMTFKSF');
+  </script>
   <title>Image Converter Online – Convert JPG, PNG & WebP | DocToolKit</title>
   <meta name="description" content="Convert images between JPG, PNG, and WebP formats online for free. Fast, high-quality on-device conversion with transparency and quality controls.">
   <link rel="canonical" href="https://doctoolkit.in/tools/convert-image/">
@@ -31,10 +41,10 @@
   <link rel="manifest" href="../../manifest.json">
 
   <!-- Shared Stylesheet -->
-  <link rel="stylesheet" href="../../css/style.css?v=2.6.0">
+  <link rel="stylesheet" href="../../css/style.css?v=2.7.0">
 
   <!-- Vendor Libraries for 100% In-Browser Execution -->
-  <script src="../../js/app.js?v=2.6.0" defer></script>
+  <script src="../../js/app.js?v=2.7.0" defer></script>
 
   <!-- JSON-LD Structured Data -->
   <script type="application/ld+json">
@@ -226,22 +236,22 @@
         <div class="step-item">
           <div class="step-num">1</div>
           <div class="step-content">
-            <h4>Choose Source Image</h4>
+            <h3>Choose Source Image</h3>
             <p>Select any JPG, PNG, or WebP photo.</p>
           </div>
         </div>
         <div class="step-item">
           <div class="step-num">2</div>
           <div class="step-content">
-            <h4>Select Target Format</h4>
+            <h3>Select Target Format</h3>
             <p>Pick JPG, PNG, or WebP using the format buttons.</p>
           </div>
         </div>
         <div class="step-item">
           <div class="step-num">3</div>
           <div class="step-content">
-            <h4>Convert & Save</h4>
-            <p>Click Convert & Save to download your converted graphic.</p>
+            <h3>Convert &amp; Save</h3>
+            <p>Click Convert &amp; Save to download your converted graphic.</p>
           </div>
         </div>
       </div>
@@ -256,15 +266,15 @@
       <div class="seo-grid">
         
         <div class="seo-feature-card">
-          <h4>Three Major Formats</h4>
+          <h3>Three Major Formats</h3>
           <p>Seamlessly convert between JPG, PNG, and modern WebP.</p>
         </div>
         <div class="seo-feature-card">
-          <h4>Alpha Channel Handling</h4>
+          <h3>Alpha Channel Handling</h3>
           <p>Maintains transparency for PNG and WebP, adds white matte for JPG.</p>
         </div>
         <div class="seo-feature-card">
-          <h4>Instant Local Conversion</h4>
+          <h3>Instant Local Conversion</h3>
           <p>Converts on HTML5 Canvas in milliseconds with zero server upload.</p>
         </div>
       </div>
@@ -278,19 +288,19 @@
       </div>
       <div class="seo-grid">
         <div class="seo-feature-card">
-          <h4>Supported Input Format</h4>
+          <h3>Supported Input Format</h3>
           <p>JPG, PNG, WebP, BMP image files</p>
         </div>
         <div class="seo-feature-card">
-          <h4>Generated Output Format</h4>
+          <h3>Generated Output Format</h3>
           <p>Converted JPG, PNG, or WebP image</p>
         </div>
         <div class="seo-feature-card">
-          <h4>Browser Processing Scope</h4>
+          <h3>Browser Processing Scope</h3>
           <p>100% on-device client processing. Zero network transmission of your private file bytes.</p>
         </div>
         <div class="seo-feature-card">
-          <h4>System Limitations</h4>
+          <h3>System Limitations</h3>
           <p>Converting transparent PNGs to JPG replaces transparent areas with a clean white background.</p>
         </div>
       </div>
@@ -305,19 +315,19 @@
         
             <a class="tool-card" href="../../tools/compress-image/">
               <div class="tool-card-icon">🖼️</div>
-              <h4>Compress Image</h4>
+              <h3>Compress Image</h3>
             </a>
             <a class="tool-card" href="../../tools/resize-image/">
               <div class="tool-card-icon">📐</div>
-              <h4>Resize Image</h4>
+              <h3>Resize Image</h3>
             </a>
             <a class="tool-card" href="../../tools/crop-image/">
               <div class="tool-card-icon">✂️</div>
-              <h4>Crop Image</h4>
+              <h3>Crop Image</h3>
             </a>
             <a class="tool-card" href="../../tools/rotate-image/">
               <div class="tool-card-icon">🔄</div>
-              <h4>Rotate Image</h4>
+              <h3>Rotate Image</h3>
             </a>
       </div>
     </section>
@@ -428,7 +438,32 @@
 
     convInput.onchange = (e) => {
       if (!e.target.files || !e.target.files[0]) return;
-      convFile = e.target.files[0];
+      const file = e.target.files[0];
+      const name = (file.name || '').toLowerCase();
+      const type = (file.type || '').toLowerCase();
+      if (type.includes('pdf') || name.endsWith('.pdf')) {
+        DocToolKit.showError('convResultBox', 'Invalid File Type', 'You selected a PDF file. Please use the PDF to Images tool to extract images from a PDF.', () => {
+          convInput.value = '';
+          DocToolKit.hideResult('convResultBox');
+        });
+        alert('Invalid file format: PDF files cannot be converted with Convert Image. Please use PDF to Images tool.');
+        convInput.value = '';
+        return;
+      }
+      const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/bmp', 'image/gif', 'image/svg+xml'];
+      const validExts = ['.jpg', '.jpeg', '.png', '.webp', '.bmp', '.gif', '.svg'];
+      const hasValidExt = validExts.some(ext => name.endsWith(ext));
+      if (!validTypes.includes(type) && !hasValidExt) {
+        DocToolKit.showError('convResultBox', 'Unsupported File Format', 'Please upload a valid image file (JPG, PNG, WebP).', () => {
+          convInput.value = '';
+          DocToolKit.hideResult('convResultBox');
+        });
+        alert('Unsupported file format: Please select a valid JPG, PNG, or WebP image.');
+        convInput.value = '';
+        return;
+      }
+
+      convFile = file;
       DocToolKit.hideResult('convResultBox');
       convStatus.textContent = `Selected: ${convFile.name} (${formatBytes(convFile.size)})`;
 
@@ -445,9 +480,22 @@
       btnDoConvert.innerHTML = '<span class="result-spinner" style="width:16px;height:16px;display:inline-block;margin-right:6px;vertical-align:middle;"></span> Converting Image...';
       DocToolKit.showProcessing('convResultBox', 'Converting Image...', `Encoding canvas into ${targetFmt.toUpperCase()} format...`);
 
+      let settled = false;
+      const timeout = setTimeout(() => {
+        if (!settled) {
+          settled = true;
+          btnDoConvert.disabled = false;
+          btnDoConvert.innerHTML = originalText;
+          DocToolKit.showError('convResultBox', 'Conversion Timed Out', 'The image could not be decoded within the timeout limit.');
+        }
+      }, 10000);
+
       const img = new Image();
       const objUrl = URL.createObjectURL(convFile);
       img.onload = () => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timeout);
         URL.revokeObjectURL(objUrl);
         const c = document.createElement('canvas');
         c.width = img.width;
@@ -462,7 +510,7 @@
         const ext = targetFmt === 'jpeg' ? 'jpg' : targetFmt;
         c.toBlob(blob => {
           const exportName = generateExportFilename(convFile.name, DocToolKit.userProfile.name, 'converted', ext);
-          saveDocumentToDB({ name: exportName, origSize: convFile.size, size: blob.size, type: ext.toUpperCase() });
+          saveDocumentToDB({ name: exportName, origSize: convFile.size, size: blob.size, type: ext.toUpperCase(), blob: blob });
 
           DocToolKit.showResult('convResultBox', {
             title: 'Image Converted Successfully',
@@ -491,8 +539,11 @@
         }, `image/${targetFmt}`, 0.92);
       };
       img.onerror = () => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timeout);
         URL.revokeObjectURL(objUrl);
-        DocToolKit.showError('convResultBox', 'Conversion Failed', 'Unable to parse the image file.');
+        DocToolKit.showError('convResultBox', 'Conversion Failed', 'Unable to decode or process this image file. Please verify the file is not corrupted.');
         btnDoConvert.disabled = false;
         btnDoConvert.innerHTML = originalText;
       };

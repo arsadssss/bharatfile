@@ -3,6 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-FQQFMTFKSF"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-FQQFMTFKSF');
+  </script>
   <title>Compress PDF Online – Free & 100% Private | DocToolKit</title>
   <meta name="description" content="Compress PDF files online for free. Reduce PDF file size with a continuous 1%–100% slider or target KB presets without uploading files to any server.">
   <link rel="canonical" href="https://doctoolkit.in/tools/compress-pdf/">
@@ -31,12 +41,12 @@
   <link rel="manifest" href="../../manifest.json">
 
   <!-- Shared Stylesheet -->
-  <link rel="stylesheet" href="../../css/style.css?v=2.6.0">
+  <link rel="stylesheet" href="../../css/style.css?v=2.7.0">
 
   <!-- Vendor Libraries for 100% In-Browser Execution (Deferred to prevent render blocking) -->
   <script src="../../js/pdf-lib.min.js" defer></script>
   <script src="../../js/pdf.min.js" defer></script>
-  <script src="../../js/app.js?v=2.6.0" defer></script>
+  <script src="../../js/app.js?v=2.7.0" defer></script>
 
   <!-- JSON-LD Structured Data -->
   <script type="application/ld+json">
@@ -345,7 +355,7 @@
               <div class="stacked-doc doc-front">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                   <div class="doc-badge-pdf">PDF</div>
-                  <span class="doc-savings-badge">-82%</span>
+                  <span class="doc-savings-badge">Preview</span>
                 </div>
                 <div style="width: 100%; height: 3px; background: #E2E8F0; border-radius: 2px; margin-top: 10px;"></div>
                 <div style="width: 70%; height: 3px; background: #E2E8F0; border-radius: 2px;"></div>
@@ -452,21 +462,21 @@
         <div class="step-item">
           <div class="step-num">1</div>
           <div class="step-content">
-            <h4>Upload PDF File</h4>
+            <h3>Upload PDF File</h3>
             <p>Click "Choose File" or drag and drop your PDF into the upload area. Your file never leaves your device.</p>
           </div>
         </div>
         <div class="step-item">
           <div class="step-num">2</div>
           <div class="step-content">
-            <h4>Adjust Compression Percentage</h4>
+            <h3>Adjust Compression Percentage</h3>
             <p>Move the 1% to 100% slider or click a target preset (e.g. 100 KB) to configure your desired reduction.</p>
           </div>
         </div>
         <div class="step-item">
           <div class="step-num">3</div>
           <div class="step-content">
-            <h4>Download Compressed Document</h4>
+            <h3>Download Compressed Document</h3>
             <p>Preview the before/after file size reduction, customize the smart filename, and download your optimized PDF.</p>
           </div>
         </div>
@@ -482,15 +492,15 @@
       <div class="seo-grid">
         
         <div class="seo-feature-card">
-          <h4>Continuous 1%–100% Slider</h4>
+          <h3>Continuous 1%–100% Slider</h3>
           <p>Fine-tune exact compression strength rather than being locked to rigid low/medium/high presets.</p>
         </div>
         <div class="seo-feature-card">
-          <h4>Target File Size Presets</h4>
+          <h3>Target File Size Presets</h3>
           <p>Instantly hit required file size ceilings like 50 KB, 100 KB, 200 KB, or 500 KB for exam and portal submissions.</p>
         </div>
         <div class="seo-feature-card">
-          <h4>Zero Server Uploads</h4>
+          <h3>Zero Server Uploads</h3>
           <p>PDF.js and WebAssembly rasterize and compress pages directly inside your browser memory.</p>
         </div>
       </div>
@@ -504,19 +514,19 @@
       </div>
       <div class="seo-grid">
         <div class="seo-feature-card">
-          <h4>Supported Input Format</h4>
+          <h3>Supported Input Format</h3>
           <p>PDF documents (.pdf)</p>
         </div>
         <div class="seo-feature-card">
-          <h4>Generated Output Format</h4>
+          <h3>Generated Output Format</h3>
           <p>Compressed PDF document (.pdf)</p>
         </div>
         <div class="seo-feature-card">
-          <h4>Browser Processing Scope</h4>
+          <h3>Browser Processing Scope</h3>
           <p>100% on-device client processing. Zero network transmission of your private file bytes.</p>
         </div>
         <div class="seo-feature-card">
-          <h4>System Limitations</h4>
+          <h3>System Limitations</h3>
           <p>Processing is bound by your local device browser memory. Password-protected PDFs must be unlocked before compression.</p>
         </div>
       </div>
@@ -531,19 +541,19 @@
         
             <a class="tool-card" href="../../tools/merge-pdf/">
               <div class="tool-card-icon">📑</div>
-              <h4>Merge PDF</h4>
+              <h3>Merge PDF</h3>
             </a>
             <a class="tool-card" href="../../tools/split-pdf/">
               <div class="tool-card-icon">✂️</div>
-              <h4>Split PDF</h4>
+              <h3>Split PDF</h3>
             </a>
             <a class="tool-card" href="../../tools/organize-pdf/">
               <div class="tool-card-icon">🗂️</div>
-              <h4>Organize PDF</h4>
+              <h3>Organize PDF</h3>
             </a>
             <a class="tool-card" href="../../tools/pdf-to-image/">
               <div class="tool-card-icon">🖼️</div>
-              <h4>PDF to Images</h4>
+              <h3>PDF to Images</h3>
             </a>
       </div>
     </section>
@@ -750,6 +760,9 @@
 
     function handleFile(f) {
       loadedFile = f;
+      if (window.DocToolKit && typeof DocToolKit.trackFileSelected === 'function') {
+        DocToolKit.trackFileSelected('compress-pdf');
+      }
       if (inspectorEmptyWrap) inspectorEmptyWrap.style.display = 'none';
       if (inspectorActiveWrap) inspectorActiveWrap.style.display = 'flex';
       if (inspectorStatusPill) {
@@ -783,6 +796,9 @@
       }
 
       isProcessing = true;
+      if (window.DocToolKit && typeof DocToolKit.trackProcessingStarted === 'function') {
+        DocToolKit.trackProcessingStarted('compress-pdf');
+      }
       mainDropzone.style.display = 'none';
       compBox.style.display = 'none';
       procBox.style.display = 'flex';
@@ -806,6 +822,9 @@
         });
 
         processedBlob = result.blob;
+        if (window.DocToolKit && typeof DocToolKit.trackProcessingCompleted === 'function') {
+          DocToolKit.trackProcessingCompleted('compress-pdf');
+        }
         procBox.style.display = 'none';
         compBox.style.display = 'flex';
         document.getElementById('compOriginalName').textContent = loadedFile.name;
@@ -858,6 +877,9 @@
 
         renderRecentActivity();
       } catch (e) {
+        if (window.DocToolKit && typeof DocToolKit.trackProcessingFailed === 'function') {
+          DocToolKit.trackProcessingFailed('compress-pdf');
+        }
         alert('Error compressing PDF: ' + e.message);
         resetToUpload();
       }

@@ -3,6 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-FQQFMTFKSF"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-FQQFMTFKSF');
+  </script>
   <title>Compress Image Online – Reduce JPG, PNG & WebP | DocToolKit</title>
   <meta name="description" content="Compress images online for free. Reduce JPEG, PNG, and WebP file size with custom compression percentages and target size presets directly in your browser.">
   <link rel="canonical" href="https://doctoolkit.in/tools/compress-image/">
@@ -31,10 +41,10 @@
   <link rel="manifest" href="../../manifest.json">
 
   <!-- Shared Stylesheet -->
-  <link rel="stylesheet" href="../../css/style.css?v=2.6.0">
+  <link rel="stylesheet" href="../../css/style.css?v=2.7.0">
 
   <!-- Client-Side Script Engine (Deferred to prevent render blocking) -->
-  <script src="../../js/app.js?v=2.6.0" defer></script>
+  <script src="../../js/app.js?v=2.7.0" defer></script>
 
   <!-- JSON-LD Structured Data -->
   <script type="application/ld+json">
@@ -297,6 +307,13 @@
             <div id="imgTargetStatusMsg" class="target-result-badge achieved" style="width: 100%; display: none;">
               ✓ Target Achieved: Output meets your goal.
             </div>
+            <div id="imgPngWarning" style="display: none; background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.35); border-radius: 8px; padding: 10px; font-size: 12px; color: #b45309; line-height: 1.4; width: 100%; text-align: left;">
+              <span id="imgPngWarningText">⚠️ Notice: PNG is lossless. Re-encoding an already optimized PNG can result in a slightly larger file. For smaller sizes, try WebP or JPG.</span>
+              <div style="margin-top: 8px; display: flex; gap: 8px;">
+                <button type="button" class="preset-pill" onclick="setImgFormat('webp', null)" style="font-size: 11px; padding: 4px 10px;">Switch to WebP</button>
+                <button type="button" class="preset-pill" onclick="setImgFormat('jpeg', null)" style="font-size: 11px; padding: 4px 10px;">Switch to JPG</button>
+              </div>
+            </div>
             <div style="width: 100%; text-align: left;">
               <label for="imgExportName" style="font-size: 12px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">Customize Filename:</label>
               <input type="text" class="rename-input" id="imgExportName" value="image_compressed.jpg">
@@ -330,7 +347,7 @@
               <div class="stacked-doc doc-front">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                   <div class="doc-badge-img">IMG</div>
-                  <span class="doc-savings-badge">-75%</span>
+                  <span class="doc-savings-badge">Preview</span>
                 </div>
                 <div style="width: 100%; height: 3px; background: #E2E8F0; border-radius: 2px; margin-top: 10px;"></div>
                 <div style="width: 70%; height: 3px; background: #E2E8F0; border-radius: 2px;"></div>
@@ -437,21 +454,21 @@
         <div class="step-item">
           <div class="step-num">1</div>
           <div class="step-content">
-            <h4>Select Your Image</h4>
+            <h3>Select Your Image</h3>
             <p>Drop your JPG, PNG, or WebP photo into the tool card.</p>
           </div>
         </div>
         <div class="step-item">
           <div class="step-num">2</div>
           <div class="step-content">
-            <h4>Choose Quality Level</h4>
+            <h3>Choose Quality Level</h3>
             <p>Adjust the quality slider to find your preferred balance between visual clarity and file size.</p>
           </div>
         </div>
         <div class="step-item">
           <div class="step-num">3</div>
           <div class="step-content">
-            <h4>Export Optimized Image</h4>
+            <h3>Export Optimized Image</h3>
             <p>Download your compressed image instantly with smart profile naming.</p>
           </div>
         </div>
@@ -467,15 +484,15 @@
       <div class="seo-grid">
         
         <div class="seo-feature-card">
-          <h4>Precise KB Size Targeting</h4>
+          <h3>Precise KB Size Targeting</h3>
           <p>Shrink large phone camera photos (5 MB+) down to under 50 KB or 100 KB in milliseconds.</p>
         </div>
         <div class="seo-feature-card">
-          <h4>Multi-Format Support</h4>
+          <h3>Multi-Format Support</h3>
           <p>Handles standard camera JPEGs, transparent PNG graphics, and modern WebP images.</p>
         </div>
         <div class="seo-feature-card">
-          <h4>On-Device Canvas Optimization</h4>
+          <h3>On-Device Canvas Optimization</h3>
           <p>Zero upload wait times. Processing takes place immediately on HTML5 Canvas.</p>
         </div>
       </div>
@@ -489,19 +506,19 @@
       </div>
       <div class="seo-grid">
         <div class="seo-feature-card">
-          <h4>Supported Input Format</h4>
+          <h3>Supported Input Format</h3>
           <p>JPG, JPEG, PNG, WebP image formats</p>
         </div>
         <div class="seo-feature-card">
-          <h4>Generated Output Format</h4>
+          <h3>Generated Output Format</h3>
           <p>JPEG, PNG, or WebP (strictly matches your format selection or source file)</p>
         </div>
         <div class="seo-feature-card">
-          <h4>Browser Processing Scope</h4>
+          <h3>Browser Processing Scope</h3>
           <p>100% on-device client processing. Zero network transmission of your private file bytes.</p>
         </div>
         <div class="seo-feature-card">
-          <h4>System Limitations</h4>
+          <h3>System Limitations</h3>
           <p>Animated GIF and SVG formats are not supported for lossy canvas compression.</p>
         </div>
       </div>
@@ -516,19 +533,19 @@
         
             <a class="tool-card" href="../../tools/resize-image/">
               <div class="tool-card-icon">📐</div>
-              <h4>Resize Image</h4>
+              <h3>Resize Image</h3>
             </a>
             <a class="tool-card" href="../../tools/convert-image/">
               <div class="tool-card-icon">🔄</div>
-              <h4>Convert Image</h4>
+              <h3>Convert Image</h3>
             </a>
             <a class="tool-card" href="../../tools/crop-image/">
               <div class="tool-card-icon">✂️</div>
-              <h4>Crop Image</h4>
+              <h3>Crop Image</h3>
             </a>
             <a class="tool-card" href="../../tools/passport-photo/">
               <div class="tool-card-icon">👤</div>
-              <h4>Passport Photo</h4>
+              <h3>Passport Photo</h3>
             </a>
       </div>
     </section>
@@ -675,7 +692,27 @@
     };
 
     function handleImgFile(file) {
+      if (!file) return;
+      const name = (file.name || '').toLowerCase();
+      const type = (file.type || '').toLowerCase();
+      if (type.includes('pdf') || name.endsWith('.pdf')) {
+        alert('Invalid file format: You uploaded a PDF file. Please use the Compress PDF tool instead.');
+        resetImgUpload();
+        return;
+      }
+      const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+      const validExts = ['.jpg', '.jpeg', '.png', '.webp'];
+      const hasValidExt = validExts.some(ext => name.endsWith(ext));
+      if (!validTypes.includes(type) && !hasValidExt) {
+        alert('Unsupported file format: Please select a valid JPG, PNG, or WebP image.');
+        resetImgUpload();
+        return;
+      }
+
       imgFile = file;
+      if (window.DocToolKit && typeof DocToolKit.trackFileSelected === 'function') {
+        DocToolKit.trackFileSelected('compress-image');
+      }
       if (inspectorEmptyWrap) inspectorEmptyWrap.style.display = 'none';
       if (inspectorActiveWrap) inspectorActiveWrap.style.display = 'flex';
       if (inspectorStatusPill) {
@@ -761,7 +798,13 @@
     let selectedImgFormat = 'original';
     window.setImgFormat = function(fmt, btn) {
       selectedImgFormat = fmt;
-      document.querySelectorAll('#imgFormatPills .preset-pill').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('#imgFormatPills .preset-pill').forEach(b => {
+        b.classList.remove('active');
+        if (fmt === 'original' && b.textContent.includes('Original')) b.classList.add('active');
+        else if (fmt === 'jpeg' && b.textContent.includes('JPG')) b.classList.add('active');
+        else if (fmt === 'png' && b.textContent.includes('PNG')) b.classList.add('active');
+        else if (fmt === 'webp' && b.textContent.includes('WebP')) b.classList.add('active');
+      });
       if (btn) btn.classList.add('active');
       if (imgFile) compressImage();
     };
@@ -780,6 +823,9 @@
         targetBytes = DocToolKit.parseTargetBytes(val, imgTargetUnit.value);
       }
 
+      if (window.DocToolKit && typeof DocToolKit.trackProcessingStarted === 'function') {
+        DocToolKit.trackProcessingStarted('compress-image');
+      }
       if (inspectorStatusPill) {
         inspectorStatusPill.textContent = 'Processing...';
         inspectorStatusPill.className = 'status-pill active';
@@ -794,10 +840,31 @@
         });
 
         imgBlob = result.blob;
+        if (window.DocToolKit && typeof DocToolKit.trackProcessingCompleted === 'function') {
+          DocToolKit.trackProcessingCompleted('compress-image');
+        }
         imgDropzone.style.display = 'none';
         imgCompBox.style.display = 'flex';
         document.getElementById('imgOriginalName').textContent = imgFile.name;
-        document.getElementById('imgSizesDelta').textContent = `${formatBytes(imgFile.size)} ➔ ${formatBytes(result.newSize)} (${result.savedPct > 0 ? '-' + result.savedPct + '%' : 'Optimized'}) • ${result.ext.toUpperCase()}`;
+        
+        const pngWarn = document.getElementById('imgPngWarning');
+        if (result.isLarger) {
+          const deltaPct = Math.round(((result.newSize - imgFile.size) / imgFile.size) * 100);
+          document.getElementById('imgSizesDelta').textContent = `${formatBytes(imgFile.size)} ➔ ${formatBytes(result.newSize)} (+${deltaPct}% Re-encoded) • ${result.ext.toUpperCase()}`;
+          document.getElementById('imgSizesDelta').style.background = 'rgba(245, 158, 11, 0.12)';
+          document.getElementById('imgSizesDelta').style.color = '#b45309';
+          if (pngWarn) {
+            pngWarn.style.display = 'block';
+            const warnText = document.getElementById('imgPngWarningText');
+            if (warnText) warnText.textContent = `Notice: ${result.ext.toUpperCase()} is lossless and re-encoding this file produced a slightly larger output (${formatBytes(result.newSize)} vs ${formatBytes(imgFile.size)}). Switch to WebP or JPG for smaller file size.`;
+          }
+        } else {
+          document.getElementById('imgSizesDelta').textContent = `${formatBytes(imgFile.size)} ➔ ${formatBytes(result.newSize)} (${result.savedPct > 0 ? '-' + result.savedPct + '%' : 'Optimized'}) • ${result.ext.toUpperCase()}`;
+          document.getElementById('imgSizesDelta').style.background = 'var(--success-bg)';
+          document.getElementById('imgSizesDelta').style.color = 'var(--success)';
+          if (pngWarn) pngWarn.style.display = 'none';
+        }
+
         document.getElementById('imgExportName').value = generateExportFilename(imgFile.name, DocToolKit.userProfile.name, 'compressed', result.ext);
 
         const targetStatusBanner = document.getElementById('imgTargetStatusMsg');
@@ -862,6 +929,9 @@
 
         renderRecentActivity();
       } catch (err) {
+        if (window.DocToolKit && typeof DocToolKit.trackProcessingFailed === 'function') {
+          DocToolKit.trackProcessingFailed('compress-image');
+        }
         alert('Error compressing image: ' + err.message);
         resetImgUpload();
       }
