@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-FQQFMTFKSF"></script>
@@ -21,8 +21,8 @@
   <link rel="icon" type="image/png" sizes="32x32" href="../icons/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="../icons/favicon-16x16.png">
   <link rel="apple-touch-icon" href="../icons/apple-touch-icon.png">
-  <link rel="stylesheet" href="../css/style.css?v=2.7.0">
-  <script src="../js/app.js?v=2.7.0" defer></script>
+  <link rel="stylesheet" href="../css/style.css?v=2.8.0">
+  <script src="../js/app.js?v=2.8.0" defer></script>
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -100,14 +100,19 @@
     <!-- Top Floating Navbar -->
     <header class="navbar">
       <a class="nav-brand" href="../" aria-label="DocToolKit Homepage">
-        <picture>
+        <picture class="logo-light">
           <source srcset="../icons/doctoolkit-logo-horizontal.webp" type="image/webp">
           <img src="../icons/doctoolkit-logo-horizontal.png" alt="DocToolKit" width="199" height="36" class="nav-brand-logo" fetchpriority="high">
+        </picture>
+        <picture class="logo-dark">
+          <source srcset="../icons/doctoolkit-logo-horizontal-dark.webp" type="image/webp">
+          <img src="../icons/doctoolkit-logo-horizontal-dark.png" alt="DocToolKit" width="199" height="36" class="nav-brand-logo" fetchpriority="high">
         </picture>
       </a>
 
       <!-- Desktop Center Menu -->
       <nav class="desktop-menu" aria-label="Main Navigation">
+        <a class="menu-btn" href="../tools/">🛠️ All Tools</a>
         <a class="menu-btn" href="../tools/compress-pdf/">📄 Compress PDF</a>
         <a class="menu-btn" href="../tools/compress-image/">🖼️ Compress Image</a>
         <a class="menu-btn" href="../tools/pdf-scanner/">📸 Scanner</a>

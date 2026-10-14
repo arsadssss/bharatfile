@@ -164,6 +164,32 @@ html, body {
   }
 }
 
+/* Logo Light / Dark Responsive Theme Switching */
+.logo-dark {
+  display: none !important;
+}
+.logo-light {
+  display: inline-block !important;
+}
+
+body.dark-mode .logo-dark,
+[data-theme="dark"] .logo-dark {
+  display: inline-block !important;
+}
+body.dark-mode .logo-light,
+[data-theme="dark"] .logo-light {
+  display: none !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  body:not(.light-mode):not([data-theme="light"]):not(.dark-mode) .logo-dark {
+    display: inline-block !important;
+  }
+  body:not(.light-mode):not([data-theme="light"]):not(.dark-mode) .logo-light {
+    display: none !important;
+  }
+}
+
 .brand-icon-3d {
   width: 38px;
   height: 38px;
