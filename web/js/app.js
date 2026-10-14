@@ -20,16 +20,64 @@
     });
   }
 
-  // 2. Configure PDF.js Worker
-  if (window.pdfjsLib) {
-    let workerSrc = '/js/pdf.worker.min.js';
-    if (!window.location.origin.includes('doctoolkit.in')) {
-      const path = window.location.pathname;
-      if (path.includes('/tools/')) workerSrc = '../../js/pdf.worker.min.js';
-      else if (path.match(/\/(about|contact|privacy|terms)\//)) workerSrc = '../js/pdf.worker.min.js';
-      else workerSrc = 'js/pdf.worker.min.js';
+  // 2. Dynamic PDF Libraries Loader (load on-demand only when tools require it)
+  function initPdfWorker() {
+    if (window.pdfjsLib && (!pdfjsLib.GlobalWorkerOptions || !pdfjsLib.GlobalWorkerOptions.workerSrc)) {
+      let workerSrc = '/js/pdf.worker.min.js';
+      if (!window.location.origin.includes('doctoolkit.in')) {
+        const path = window.location.pathname;
+        if (path.includes('/tools/')) workerSrc = '../../js/pdf.worker.min.js';
+        else if (path.match(/\/(about|contact|privacy|terms)\//)) workerSrc = '../js/pdf.worker.min.js';
+        else workerSrc = 'js/pdf.worker.min.js';
+      }
+      pdfjsLib.GlobalWorkerOptions.workerSrc = workerSrc;
     }
-    pdfjsLib.GlobalWorkerOptions.workerSrc = workerSrc;
+  }
+
+  window.loadPdfLibraries = function() {
+    if (window._pdfLibPromise) return window._pdfLibPromise;
+    window._pdfLibPromise = new Promise((resolve, reject) => {
+      if (window.PDFLib && window.pdfjsLib) {
+        initPdfWorker();
+        return resolve();
+      }
+
+      let basePath = 'js/';
+      const path = window.location.pathname;
+      if (path.includes('/tools/')) basePath = '../../js/';
+      else if (path.match(/\/(about|contact|privacy|terms)\//)) basePath = '../js/';
+
+      function loadScript(src) {
+        return new Promise((res, rej) => {
+          const existing = document.querySelector(`script[src*="${src}"]`);
+          if (existing) {
+            if (existing.getAttribute('data-loaded') === 'true' || window.PDFLib || window.pdfjsLib) return res();
+            existing.addEventListener('load', () => res());
+            existing.addEventListener('error', rej);
+            return;
+          }
+          const s = document.createElement('script');
+          s.src = basePath + src;
+          s.defer = true;
+          s.onload = () => { s.setAttribute('data-loaded', 'true'); res(); };
+          s.onerror = (e) => rej(new Error('Failed to load dependency: ' + src));
+          document.head.appendChild(s);
+        });
+      }
+
+      Promise.all([
+        loadScript('pdf-lib.min.js'),
+        loadScript('pdf.min.js')
+      ]).then(() => {
+        initPdfWorker();
+        resolve();
+      }).catch(reject);
+    });
+    return window._pdfLibPromise;
+  };
+
+  if (window.pdfjsLib) {
+    initPdfWorker();
   }
 
   // 3. User Preferences & Storage
@@ -107,7 +155,7 @@
   }
 
   window.DocToolKit = {
-    version: '2.7.0',
+    version: '2.8.0',
     getPref,
     setPref,
     parseTargetBytes,
@@ -675,33 +723,68 @@
       achieved = true;
       statusMessage = `Compressed at ${sliderPct}% compression level in ${ext.toUpperCase()} format.`;
     } else {
-      // Target File Size Mode: Iterative Binary Search
-      onProgress(50, 'Calibrating quality to reach target size...');
+      // Target File Size Mode: Controlled Precision Search for Highest Quality <= Target
+      onProgress(45, 'Calibrating quality to achieve requested target size...');
 
       if (targetBytes >= origSize) {
-        finalBlob = await new Promise(r => canvas.toBlob(r, targetMime, 0.94));
-        achieved = true;
-        statusMessage = `Target size (${formatBytes(targetBytes)}) is greater than or equal to original size. File saved at maximum quality.`;
-      } else {
-        // Test lowest quality floor
-        const floorBlob = await new Promise(r => canvas.toBlob(r, targetMime, 0.08));
-        if (floorBlob && floorBlob.size > targetBytes) {
-          finalBlob = floorBlob;
-          achieved = false;
-          statusMessage = `Target of ${formatBytes(targetBytes)} could not be reached without altering image resolution. Output reached quality floor (${formatBytes(floorBlob.size)}).`;
-        } else {
-          let lowQ = 0.08;
-          let highQ = 0.96;
-          let bestBlob = floorBlob;
+        const candidate = await new Promise(r => canvas.toBlob(r, targetMime, 0.95));
+        if (candidate && candidate.size <= targetBytes) {
+          finalBlob = candidate;
+          achieved = true;
+          statusMessage = `Target size (${formatBytes(targetBytes)}) is greater than or equal to original size. File saved at maximum quality (${formatBytes(finalBlob.size)}).`;
+        }
+      }
 
-          for (let iter = 0; iter < 6; iter++) {
+      if (!finalBlob) {
+        let workingCanvas = canvas;
+        let workingW = origWidth;
+        let workingH = origHeight;
+
+        // Test lowest quality floor at 100% resolution
+        const floorBlob = await new Promise(r => workingCanvas.toBlob(r, targetMime, 0.05));
+
+        // If even at lowest quality floor (0.05) the full-resolution image exceeds target,
+        // pre-scale dimensions smoothly so the file can physically fit inside the target budget
+        if (floorBlob && floorBlob.size > targetBytes) {
+          onProgress(50, 'Scaling resolution to satisfy target file size...');
+          const scale = Math.max(0.20, Math.min(0.95, Math.sqrt((targetBytes * 0.95) / floorBlob.size)));
+          workingW = Math.max(80, Math.round(origWidth * scale));
+          workingH = Math.max(80, Math.round(origHeight * scale));
+          workingCanvas = document.createElement('canvas');
+          workingCanvas.width = workingW;
+          workingCanvas.height = workingH;
+          const wCtx = workingCanvas.getContext('2d');
+          if (targetMime === 'image/jpeg') {
+            wCtx.fillStyle = '#FFFFFF';
+            wCtx.fillRect(0, 0, workingW, workingH);
+          }
+          wCtx.drawImage(img, 0, 0, workingW, workingH);
+        }
+
+        // Precision 9-Iteration Binary Search for Highest Quality <= targetBytes
+        let lowQ = 0.05;
+        let highQ = 0.98;
+        let bestBlob = null;
+        let bestQuality = 0.05;
+
+        // Check if highQ already produces output <= targetBytes
+        const highCandidate = await new Promise(r => workingCanvas.toBlob(r, targetMime, highQ));
+        if (highCandidate && highCandidate.size <= targetBytes) {
+          bestBlob = highCandidate;
+          bestQuality = highQ;
+        } else {
+          // Binary search bounded within [lowQ, highQ]
+          for (let iter = 0; iter < 9; iter++) {
             const midQ = (lowQ + highQ) / 2;
-            const testBlob = await new Promise(r => canvas.toBlob(r, targetMime, midQ));
+            const testBlob = await new Promise(r => workingCanvas.toBlob(r, targetMime, midQ));
             if (!testBlob) break;
 
             if (testBlob.size <= targetBytes) {
               bestBlob = testBlob;
-              if (testBlob.size >= targetBytes * 0.94) {
+              bestQuality = midQ;
+              // If within 2KB of target, exceptionally close
+              if (testBlob.size >= targetBytes - 2048) {
+                lowQ = midQ;
                 break;
               }
               lowQ = midQ;
@@ -709,9 +792,25 @@
               highQ = midQ;
             }
           }
-          finalBlob = bestBlob;
+        }
+
+        // Fallback to lowest floor candidate if needed
+        if (!bestBlob) {
+          bestBlob = await new Promise(r => workingCanvas.toBlob(r, targetMime, 0.05));
+        }
+
+        finalBlob = bestBlob;
+        if (finalBlob && finalBlob.size <= targetBytes) {
           achieved = true;
-          statusMessage = `Target achieved: Output (${formatBytes(finalBlob.size)}) is within your ${formatBytes(targetBytes)} goal.`;
+          const shortfall = targetBytes - finalBlob.size;
+          if (shortfall <= 10240) {
+            statusMessage = `✓ Target Achieved: Output (${formatBytes(finalBlob.size)}) is within 10 KB of your ${formatBytes(targetBytes)} target at ${Math.round(bestQuality * 100)}% quality.`;
+          } else {
+            statusMessage = `Target met: Output (${formatBytes(finalBlob.size)}) is within your ${formatBytes(targetBytes)} limit with highest visual clarity.`;
+          }
+        } else {
+          achieved = false;
+          statusMessage = `Target of ${formatBytes(targetBytes)} reached physical compression floor (${formatBytes(finalBlob ? finalBlob.size : 0)}).`;
         }
       }
     }
@@ -748,7 +847,8 @@
     const sliderPct = opts && typeof opts.sliderPct === 'number' ? opts.sliderPct : 60;
     const onProgress = (opts && opts.onProgress) || (() => {});
 
-    onProgress(10, 'Loading PDF document...');
+    onProgress(10, 'Loading PDF document & engine...');
+    await window.loadPdfLibraries();
 
     const arrayBuffer = await file.arrayBuffer();
     const pdfDoc = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
@@ -776,7 +876,9 @@
         statusMessage = `Target size (${formatBytes(targetBytes)}) is greater than or equal to original. File saved at maximum quality.`;
       } else {
         onProgress(15, 'Evaluating document complexity & clarity...');
-        const perPageBudget = Math.max(1500, (targetBytes - 3500) / Math.max(1, numPages));
+        const pdfOverhead = Math.round(1800 + numPages * 1200);
+        const netBudget = Math.max(2000, targetBytes - pdfOverhead);
+        const perPageBudget = netBudget / numPages;
 
         // Sample Page 1 at reference scale (1.5) and quality 0.82
         let sampleBytes = 35000;
@@ -796,79 +898,93 @@
           console.warn('PDF sampling notice:', e);
         }
 
-        // Calibrate scale and quality according to measured empirical sample:
-        // Aim for ~90% of budget to prevent overshoot while maximizing crispness
-        const budgetTarget = perPageBudget * 0.90;
+        // Aim for ~97% of budget to prevent overshoot while maximizing crispness
+        const budgetTarget = perPageBudget * 0.97;
         const ratio = budgetTarget / Math.max(1000, sampleBytes);
 
-        if (ratio >= 2.5) {
-          // Abundant budget headroom: maximize resolution and crisp text
-          scaleFactor = 1.80; // total viewport scale = 2.7 (~195 DPI)
-          qualityFactor = 0.92;
-        } else if (ratio >= 1.4) {
-          // Healthy budget headroom: high quality
-          scaleFactor = 1.55; // total viewport scale = 2.3 (~165 DPI)
-          qualityFactor = 0.86;
-        } else if (ratio >= 0.85) {
-          // Balanced budget: standard clear quality
-          scaleFactor = 1.25; // total viewport scale = 1.88 (~135 DPI)
-          qualityFactor = 0.78;
-        } else if (ratio >= 0.50) {
-          // Tight budget: moderate compression
-          scaleFactor = 1.05; // total viewport scale = 1.58 (~113 DPI)
-          qualityFactor = 0.62;
-        } else if (ratio >= 0.28) {
-          // Severe budget: compact compression
-          scaleFactor = 0.88; // total viewport scale = 1.32 (~95 DPI)
-          qualityFactor = 0.44;
-        } else {
-          // Readability floor: preserve text legibility
-          scaleFactor = 0.72; // total viewport scale = 1.08 (~78 DPI)
-          qualityFactor = 0.26;
+        // Continuous power curve calibrated around reference sample (scale 1.5, quality 0.82):
+        scaleFactor = Math.max(0.60, Math.min(1.65, 1.0 * Math.pow(ratio, 0.45)));
+        qualityFactor = Math.max(0.18, Math.min(0.90, 0.76 * Math.pow(ratio, 0.30)));
+      }
+    }
+
+    async function encodePdfDoc(scaleF, qualityF, reportProg = true) {
+      const outPdf = await PDFLib.PDFDocument.create();
+      for (let i = 1; i <= numPages; i++) {
+        if (reportProg) {
+          const prog = Math.round(20 + (i / numPages) * 70);
+          onProgress(prog, `Optimizing page ${i} of ${numPages}...`);
+        }
+        const page = await pdfDoc.getPage(i);
+        const viewport = page.getViewport({ scale: scaleF * 1.5 });
+        const canvas = document.createElement('canvas');
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        await page.render({ canvasContext: ctx, viewport }).promise;
+        const imgDataUrl = canvas.toDataURL('image/jpeg', qualityF);
+        const embeddedImg = await outPdf.embedJpg(imgDataUrl);
+        const newPage = outPdf.addPage([viewport.width, viewport.height]);
+        newPage.drawImage(embeddedImg, {
+          x: 0,
+          y: 0,
+          width: viewport.width,
+          height: viewport.height
+        });
+      }
+      const pdfBytes = await outPdf.save();
+      return new Blob([pdfBytes], { type: 'application/pdf' });
+    }
+
+    let finalBlob = await encodePdfDoc(scaleFactor, qualityFactor, true);
+
+    // Iterative refinement if output exceeds target OR significantly undershoots
+    if (mode === 'target' && targetBytes < origSize) {
+      let currentScale = scaleFactor;
+      let currentQuality = qualityFactor;
+
+      // While output exceeds target, apply smooth mathematical reduction (up to 2 passes)
+      for (let pass = 0; pass < 2 && finalBlob.size > targetBytes; pass++) {
+        onProgress(85 + pass * 5, 'Fine-tuning to guarantee output meets target size...');
+        const correction = (targetBytes * 0.94) / finalBlob.size;
+        currentScale = Math.max(0.50, currentScale * Math.sqrt(correction));
+        currentQuality = Math.max(0.15, currentQuality * Math.pow(correction, 0.35));
+        const refinedBlob = await encodePdfDoc(currentScale, currentQuality, false);
+        if (refinedBlob && refinedBlob.size < finalBlob.size) {
+          finalBlob = refinedBlob;
+        }
+      }
+
+      // If output undershot target significantly (> 10 KB headroom) on a document with <= 6 pages:
+      if (finalBlob.size <= targetBytes && (targetBytes - finalBlob.size > 10240) && numPages <= 6) {
+        const headroom = (targetBytes * 0.98) / finalBlob.size;
+        if (headroom > 1.05) {
+          onProgress(92, 'Maximizing visual clarity within target budget...');
+          const refinedScale = Math.min(1.65, currentScale * Math.min(1.25, Math.sqrt(headroom)));
+          const refinedQuality = Math.min(0.90, currentQuality * Math.min(1.25, Math.pow(headroom, 0.28)));
+          const refinedBlob = await encodePdfDoc(refinedScale, refinedQuality, false);
+          if (refinedBlob && refinedBlob.size <= targetBytes && refinedBlob.size > finalBlob.size) {
+            finalBlob = refinedBlob;
+          }
         }
       }
     }
 
-    const outPdf = await PDFLib.PDFDocument.create();
-
-    for (let i = 1; i <= numPages; i++) {
-      const prog = Math.round(20 + (i / numPages) * 70);
-      onProgress(prog, `Optimizing page ${i} of ${numPages}...`);
-
-      const page = await pdfDoc.getPage(i);
-      const viewport = page.getViewport({ scale: scaleFactor * 1.5 });
-
-      const canvas = document.createElement('canvas');
-      canvas.width = viewport.width;
-      canvas.height = viewport.height;
-      const ctx = canvas.getContext('2d');
-      ctx.fillStyle = '#FFFFFF';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      await page.render({ canvasContext: ctx, viewport }).promise;
-
-      const imgDataUrl = canvas.toDataURL('image/jpeg', qualityFactor);
-      const embeddedImg = await outPdf.embedJpg(imgDataUrl);
-
-      const newPage = outPdf.addPage([viewport.width, viewport.height]);
-      newPage.drawImage(embeddedImg, {
-        x: 0,
-        y: 0,
-        width: viewport.width,
-        height: viewport.height
-      });
-    }
-
     onProgress(95, 'Finalizing PDF output...');
-    const pdfBytes = await outPdf.save();
-    const finalBlob = new Blob([pdfBytes], { type: 'application/pdf' });
     const newSize = finalBlob.size;
     const savedPct = Math.round(((origSize - newSize) / origSize) * 100);
 
     if (mode === 'target') {
       if (newSize <= targetBytes) {
         achieved = true;
-        statusMessage = `Target achieved: Output (${formatBytes(newSize)}) is within your ${formatBytes(targetBytes)} target with maximum clarity preserved.`;
+        const shortfall = targetBytes - newSize;
+        if (shortfall <= 10240) {
+          statusMessage = `✓ Target Achieved: Output (${formatBytes(newSize)}) is within 10 KB of your ${formatBytes(targetBytes)} target with maximum clarity.`;
+        } else {
+          statusMessage = `Target met: Output (${formatBytes(newSize)}) is within your ${formatBytes(targetBytes)} target with maximum clarity preserved.`;
+        }
       } else {
         achieved = false;
         statusMessage = `Target of ${formatBytes(targetBytes)} reached readability floor (${formatBytes(newSize)}). Minimum legible quality was preserved.`;

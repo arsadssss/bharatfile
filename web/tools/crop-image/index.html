@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-FQQFMTFKSF"></script>
@@ -41,10 +41,10 @@
   <link rel="manifest" href="../../manifest.json">
 
   <!-- Shared Stylesheet -->
-  <link rel="stylesheet" href="../../css/style.css?v=2.7.0">
+  <link rel="stylesheet" href="../../css/style.css?v=2.8.0">
 
   <!-- Vendor Libraries for 100% In-Browser Execution -->
-  <script src="../../js/app.js?v=2.7.0" defer></script>
+  <script src="../../js/app.js?v=2.8.0" defer></script>
 
   <!-- JSON-LD Structured Data -->
   <script type="application/ld+json">
@@ -162,14 +162,19 @@
     <!-- Top Floating Navbar -->
     <header class="navbar">
       <a class="nav-brand" href="../../" aria-label="DocToolKit Homepage">
-        <picture>
+        <picture class="logo-light">
           <source srcset="../../icons/doctoolkit-logo-horizontal.webp" type="image/webp">
           <img src="../../icons/doctoolkit-logo-horizontal.png" alt="DocToolKit" width="199" height="36" class="nav-brand-logo" fetchpriority="high">
+        </picture>
+        <picture class="logo-dark">
+          <source srcset="../../icons/doctoolkit-logo-horizontal-dark.webp" type="image/webp">
+          <img src="../../icons/doctoolkit-logo-horizontal-dark.png" alt="DocToolKit" width="199" height="36" class="nav-brand-logo" fetchpriority="high">
         </picture>
       </a>
 
       <!-- Desktop Center Menu -->
       <nav class="desktop-menu" aria-label="Main Navigation">
+        <a class="menu-btn" href="../../tools/">🛠️ All Tools</a>
         <a class="menu-btn" href="../../tools/compress-pdf/">📄 Compress PDF</a>
         <a class="menu-btn" href="../../tools/compress-image/">🖼️ Compress Image</a>
         <a class="menu-btn" href="../../tools/pdf-scanner/">📸 Scanner</a>
@@ -216,18 +221,23 @@
           </div>
           <div style="display:flex; justify-content:space-between; align-items:center;">
             <div style="font-size:12px; font-weight:700; color:var(--text-muted);">Aspect Ratio Framing:</div>
-            <div style="font-size:11px; color:var(--text-muted);">Interactive draggable crop frame</div>
+            <div style="font-size:11px; color:var(--text-muted);">Interactive draggable &amp; resizable crop frame</div>
           </div>
-          <div style="display:flex; gap:8px; flex-wrap:wrap;">
-            <button type="button" class="preset-pill active" id="btnCrop1" onclick="setCropRatio(1, this, '1:1')">Square (1:1)</button>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;" id="cropRatioButtons">
+            <button type="button" class="preset-pill active" id="btnCropFree" onclick="setCropRatio(null, this, 'Freeform')">Freeform</button>
+            <button type="button" class="preset-pill" id="btnCrop1" onclick="setCropRatio(1, this, '1:1')">Square (1:1)</button>
             <button type="button" class="preset-pill" onclick="setCropRatio(4/3, this, '4:3')">Document (4:3)</button>
+            <button type="button" class="preset-pill" onclick="setCropRatio(3/2, this, '3:2')">Photo (3:2)</button>
             <button type="button" class="preset-pill" onclick="setCropRatio(3/4, this, '3:4')">Portrait (3:4)</button>
             <button type="button" class="preset-pill" onclick="setCropRatio(16/9, this, '16:9')">Widescreen (16:9)</button>
           </div>
           <div id="cropPreviewWrap" style="display:none; text-align:center; padding:16px; background:var(--track-bg); border-radius:12px; overflow:hidden;">
-            <div style="font-size:11px; font-weight:700; color:var(--text-muted); margin-bottom:10px;">Drag the highlighted frame to adjust crop position:</div>
-            <canvas id="cropPreviewCanvas" style="max-width:100%; max-height:280px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.15); cursor:move; touch-action:none;"></canvas>
-            <div style="font-size:11px; color:var(--text-muted); margin-top:8px;">💡 Click/touch and drag inside the frame to move the crop box.</div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+              <span style="font-size:11px; font-weight:700; color:var(--text-muted);">Interactive Crop Canvas:</span>
+              <span id="cropDimensionsLive" style="font-size:12px; font-weight:700; color:var(--primary); font-family:monospace;"></span>
+            </div>
+            <canvas id="cropPreviewCanvas" style="max-width:100%; max-height:280px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.15); touch-action:none;"></canvas>
+            <div style="font-size:11px; color:var(--text-muted); margin-top:8px;">💡 Drag the frame to move it. Drag corners or edge handles to resize freely.</div>
           </div>
           <button class="btn-choose-file" id="btnDoCrop" style="width:100%;" disabled>Crop & Download Image</button>
           <div id="cropResultBox" class="result-feedback-card hidden"></div>
@@ -427,33 +437,41 @@
   <script>
     let cropFile = null;
     let loadedImg = null;
-    let ratio = 1;
-    let ratioLabel = '1:1';
+    let ratio = null; // null = Freeform
+    let ratioLabel = 'Freeform';
     let cropX = 0;
     let cropY = 0;
     let cropW = 0;
     let cropH = 0;
     let previewScale = 1;
     let isDragging = false;
-    let dragStartX = 0;
-    let dragStartY = 0;
-    let dragStartCropX = 0;
-    let dragStartCropY = 0;
-    window.getCropCoords = () => ({ cropX, cropY, cropW, cropH, isDragging });
+    let activeHandle = null; // 'move', 'tl', 'tr', 'bl', 'br', 't', 'b', 'l', 'r'
+    let dragStartPos = { x: 0, y: 0 };
+    let dragStartCrop = { x: 0, y: 0, w: 0, h: 0 };
+    window.getCropCoords = () => ({ cropX, cropY, cropW, cropH, isDragging, activeHandle, ratio, ratioLabel });
 
     const cropInput = document.getElementById('cropInput');
     const cropStatus = document.getElementById('cropStatus');
     const cropPreviewWrap = document.getElementById('cropPreviewWrap');
     const cropPreviewCanvas = document.getElementById('cropPreviewCanvas');
+    const cropDimensionsLive = document.getElementById('cropDimensionsLive');
     const btnDoCrop = document.getElementById('btnDoCrop');
 
     function resetCropRect() {
       if (!loadedImg) return;
-      cropW = loadedImg.width;
-      cropH = loadedImg.width / ratio;
-      if (cropH > loadedImg.height) {
-        cropH = loadedImg.height;
-        cropW = loadedImg.height * ratio;
+      if (ratio === null) {
+        // Freeform default: 85% of image centered
+        cropW = Math.round(loadedImg.width * 0.85);
+        cropH = Math.round(loadedImg.height * 0.85);
+      } else {
+        cropW = loadedImg.width;
+        cropH = loadedImg.width / ratio;
+        if (cropH > loadedImg.height) {
+          cropH = loadedImg.height;
+          cropW = loadedImg.height * ratio;
+        }
+        cropW = Math.round(cropW);
+        cropH = Math.round(cropH);
       }
       cropX = Math.round((loadedImg.width - cropW) / 2);
       cropY = Math.round((loadedImg.height - cropH) / 2);
@@ -480,7 +498,7 @@
       ctx.drawImage(loadedImg, 0, 0, pw, ph);
 
       // Darken outside
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.55)';
       ctx.fillRect(0, 0, pw, ph);
 
       // Clear inside crop rectangle
@@ -498,7 +516,7 @@
       ctx.strokeRect(rx, ry, rw, rh);
 
       // Rule of thirds lines
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.40)';
       ctx.lineWidth = 1;
       ctx.beginPath();
       ctx.moveTo(rx + rw / 3, ry); ctx.lineTo(rx + rw / 3, ry + rh);
@@ -507,27 +525,47 @@
       ctx.moveTo(rx, ry + (2 * rh) / 3); ctx.lineTo(rx + rw, ry + (2 * rh) / 3);
       ctx.stroke();
 
-      // Corner handles
-      const handleSize = 6;
+      // Draw 8 interactive handles (4 corners + 4 edge bars)
+      const hs = 9;
       ctx.fillStyle = '#FFFFFF';
       ctx.strokeStyle = '#0D59F2';
       ctx.lineWidth = 2;
+
+      // Corners (squares)
       const corners = [
-        [rx, ry],
-        [rx + rw - handleSize, ry],
-        [rx, ry + rh - handleSize],
-        [rx + rw - handleSize, ry + rh - handleSize]
+        [rx - hs / 2, ry - hs / 2],
+        [rx + rw - hs / 2, ry - hs / 2],
+        [rx - hs / 2, ry + rh - hs / 2],
+        [rx + rw - hs / 2, ry + rh - hs / 2]
       ];
       corners.forEach(([cx, cy]) => {
-        ctx.fillRect(cx, cy, handleSize, handleSize);
-        ctx.strokeRect(cx, cy, handleSize, handleSize);
+        ctx.fillRect(cx, cy, hs, hs);
+        ctx.strokeRect(cx, cy, hs, hs);
       });
+
+      // Edge handles (pill bars)
+      // Top and Bottom
+      ctx.fillRect(rx + rw / 2 - 8, ry - 3, 16, 6);
+      ctx.strokeRect(rx + rw / 2 - 8, ry - 3, 16, 6);
+      ctx.fillRect(rx + rw / 2 - 8, ry + rh - 3, 16, 6);
+      ctx.strokeRect(rx + rw / 2 - 8, ry + rh - 3, 16, 6);
+
+      // Left and Right
+      ctx.fillRect(rx - 3, ry + rh / 2 - 8, 6, 16);
+      ctx.strokeRect(rx - 3, ry + rh / 2 - 8, 6, 16);
+      ctx.fillRect(rx + rw - 3, ry + rh / 2 - 8, 6, 16);
+      ctx.strokeRect(rx + rw - 3, ry + rh / 2 - 8, 6, 16);
+
+      // Live dimensions readout
+      if (cropDimensionsLive) {
+        cropDimensionsLive.textContent = `${Math.round(cropW)} × ${Math.round(cropH)} px (${ratioLabel})`;
+      }
     }
 
     function getCanvasCoords(e) {
       const rect = cropPreviewCanvas.getBoundingClientRect();
-      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      const clientX = e.touches && e.touches.length > 0 ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches && e.touches.length > 0 ? e.touches[0].clientY : e.clientY;
       const rw = rect.width > 0 ? rect.width : (cropPreviewCanvas.width || 1);
       const rh = rect.height > 0 ? rect.height : (cropPreviewCanvas.height || 1);
       return {
@@ -536,43 +574,179 @@
       };
     }
 
-    function isInsideCrop(x, y) {
+    function getHitHandle(x, y) {
       const rx = cropX * previewScale;
       const ry = cropY * previewScale;
       const rw = cropW * previewScale;
       const rh = cropH * previewScale;
-      return x >= rx && x <= rx + rw && y >= ry && y <= ry + rh;
+      const hitRadius = 16;
+
+      function dist(hx, hy) {
+        return Math.hypot(x - hx, y - hy);
+      }
+
+      // 1. Corners (highest priority)
+      if (dist(rx, ry) <= hitRadius) return 'tl';
+      if (dist(rx + rw, ry) <= hitRadius) return 'tr';
+      if (dist(rx, ry + rh) <= hitRadius) return 'bl';
+      if (dist(rx + rw, ry + rh) <= hitRadius) return 'br';
+
+      // 2. Edges
+      if (Math.abs(y - ry) <= hitRadius && x >= rx - 4 && x <= rx + rw + 4) return 't';
+      if (Math.abs(y - (ry + rh)) <= hitRadius && x >= rx - 4 && x <= rx + rw + 4) return 'b';
+      if (Math.abs(x - rx) <= hitRadius && y >= ry - 4 && y <= ry + rh + 4) return 'l';
+      if (Math.abs(x - (rx + rw)) <= hitRadius && y >= ry - 4 && y <= ry + rh + 4) return 'r';
+
+      // 3. Move whole rectangle
+      if (x >= rx && x <= rx + rw && y >= ry && y <= ry + rh) return 'move';
+
+      return null;
+    }
+
+    function getCursorForHandle(handle) {
+      switch (handle) {
+        case 'tl':
+        case 'br': return 'nwse-resize';
+        case 'tr':
+        case 'bl': return 'nesw-resize';
+        case 't':
+        case 'b': return 'ns-resize';
+        case 'l':
+        case 'r': return 'ew-resize';
+        case 'move': return 'move';
+        default: return 'default';
+      }
     }
 
     function onDragStart(e) {
       if (!loadedImg) return;
       const pos = getCanvasCoords(e);
-      if (isInsideCrop(pos.x, pos.y)) {
+      const handle = getHitHandle(pos.x, pos.y);
+      if (handle) {
+        if (e.cancelable) e.preventDefault();
         isDragging = true;
-        dragStartX = pos.x;
-        dragStartY = pos.y;
-        dragStartCropX = cropX;
-        dragStartCropY = cropY;
+        activeHandle = handle;
+        dragStartPos = pos;
+        dragStartCrop = { x: cropX, y: cropY, w: cropW, h: cropH };
       }
     }
 
     function onDragMove(e) {
       if (!loadedImg) return;
       const pos = getCanvasCoords(e);
-      if (isDragging) {
+
+      if (isDragging && activeHandle) {
         if (e.cancelable) e.preventDefault();
-        const dx = (pos.x - dragStartX) / previewScale;
-        const dy = (pos.y - dragStartY) / previewScale;
-        cropX = Math.round(Math.max(0, Math.min(loadedImg.width - cropW, dragStartCropX + dx)));
-        cropY = Math.round(Math.max(0, Math.min(loadedImg.height - cropH, dragStartCropY + dy)));
+        const dx = (pos.x - dragStartPos.x) / previewScale;
+        const dy = (pos.y - dragStartPos.y) / previewScale;
+        const minW = Math.max(20, Math.round(20 / previewScale));
+        const minH = Math.max(20, Math.round(20 / previewScale));
+
+        if (activeHandle === 'move') {
+          cropX = Math.round(Math.max(0, Math.min(loadedImg.width - dragStartCrop.w, dragStartCrop.x + dx)));
+          cropY = Math.round(Math.max(0, Math.min(loadedImg.height - dragStartCrop.h, dragStartCrop.y + dy)));
+        } else if (ratio === null) {
+          // ================= FREEFORM RESIZING =================
+          if (activeHandle === 'r') {
+            cropW = Math.round(Math.max(minW, Math.min(loadedImg.width - dragStartCrop.x, dragStartCrop.w + dx)));
+          } else if (activeHandle === 'l') {
+            const newX = Math.max(0, Math.min(dragStartCrop.x + dragStartCrop.w - minW, dragStartCrop.x + dx));
+            cropW = Math.round((dragStartCrop.x + dragStartCrop.w) - newX);
+            cropX = Math.round(newX);
+          } else if (activeHandle === 'b') {
+            cropH = Math.round(Math.max(minH, Math.min(loadedImg.height - dragStartCrop.y, dragStartCrop.h + dy)));
+          } else if (activeHandle === 't') {
+            const newY = Math.max(0, Math.min(dragStartCrop.y + dragStartCrop.h - minH, dragStartCrop.y + dy));
+            cropH = Math.round((dragStartCrop.y + dragStartCrop.h) - newY);
+            cropY = Math.round(newY);
+          } else if (activeHandle === 'br') {
+            cropW = Math.round(Math.max(minW, Math.min(loadedImg.width - dragStartCrop.x, dragStartCrop.w + dx)));
+            cropH = Math.round(Math.max(minH, Math.min(loadedImg.height - dragStartCrop.y, dragStartCrop.h + dy)));
+          } else if (activeHandle === 'bl') {
+            const newX = Math.max(0, Math.min(dragStartCrop.x + dragStartCrop.w - minW, dragStartCrop.x + dx));
+            cropW = Math.round((dragStartCrop.x + dragStartCrop.w) - newX);
+            cropX = Math.round(newX);
+            cropH = Math.round(Math.max(minH, Math.min(loadedImg.height - dragStartCrop.y, dragStartCrop.h + dy)));
+          } else if (activeHandle === 'tr') {
+            cropW = Math.round(Math.max(minW, Math.min(loadedImg.width - dragStartCrop.x, dragStartCrop.w + dx)));
+            const newY = Math.max(0, Math.min(dragStartCrop.y + dragStartCrop.h - minH, dragStartCrop.y + dy));
+            cropH = Math.round((dragStartCrop.y + dragStartCrop.h) - newY);
+            cropY = Math.round(newY);
+          } else if (activeHandle === 'tl') {
+            const newX = Math.max(0, Math.min(dragStartCrop.x + dragStartCrop.w - minW, dragStartCrop.x + dx));
+            const newY = Math.max(0, Math.min(dragStartCrop.y + dragStartCrop.h - minH, dragStartCrop.y + dy));
+            cropW = Math.round((dragStartCrop.x + dragStartCrop.w) - newX);
+            cropH = Math.round((dragStartCrop.y + dragStartCrop.h) - newY);
+            cropX = Math.round(newX);
+            cropY = Math.round(newY);
+          }
+        } else {
+          // ================= ASPECT-RATIO LOCKED RESIZING =================
+          if (activeHandle === 'br' || activeHandle === 'r' || activeHandle === 'b') {
+            let candidateW = Math.max(minW, Math.min(loadedImg.width - dragStartCrop.x, dragStartCrop.w + dx));
+            let candidateH = candidateW / ratio;
+            if (dragStartCrop.y + candidateH > loadedImg.height) {
+              candidateH = loadedImg.height - dragStartCrop.y;
+              candidateW = candidateH * ratio;
+            }
+            cropW = Math.round(Math.max(minW, candidateW));
+            cropH = Math.round(Math.max(minH, cropW / ratio));
+          } else if (activeHandle === 'tl' || activeHandle === 'l' || activeHandle === 't') {
+            let candidateW = Math.max(minW, Math.min(dragStartCrop.x + dragStartCrop.w, dragStartCrop.w - dx));
+            let candidateH = candidateW / ratio;
+            if (candidateH > dragStartCrop.y + dragStartCrop.h) {
+              candidateH = dragStartCrop.y + dragStartCrop.h;
+              candidateW = candidateH * ratio;
+            }
+            candidateW = Math.max(minW, candidateW);
+            candidateH = candidateW / ratio;
+            cropX = Math.round((dragStartCrop.x + dragStartCrop.w) - candidateW);
+            cropY = Math.round((dragStartCrop.y + dragStartCrop.h) - candidateH);
+            cropW = Math.round(candidateW);
+            cropH = Math.round(candidateH);
+          } else if (activeHandle === 'tr') {
+            let candidateW = Math.max(minW, Math.min(loadedImg.width - dragStartCrop.x, dragStartCrop.w + dx));
+            let candidateH = candidateW / ratio;
+            if (candidateH > dragStartCrop.y + dragStartCrop.h) {
+              candidateH = dragStartCrop.y + dragStartCrop.h;
+              candidateW = candidateH * ratio;
+            }
+            candidateW = Math.max(minW, candidateW);
+            candidateH = candidateW / ratio;
+            cropY = Math.round((dragStartCrop.y + dragStartCrop.h) - candidateH);
+            cropW = Math.round(candidateW);
+            cropH = Math.round(candidateH);
+          } else if (activeHandle === 'bl') {
+            let candidateW = Math.max(minW, Math.min(dragStartCrop.x + dragStartCrop.w, dragStartCrop.w - dx));
+            let candidateH = candidateW / ratio;
+            if (dragStartCrop.y + candidateH > loadedImg.height) {
+              candidateH = loadedImg.height - dragStartCrop.y;
+              candidateW = candidateH * ratio;
+            }
+            candidateW = Math.max(minW, candidateW);
+            candidateH = candidateW / ratio;
+            cropX = Math.round((dragStartCrop.x + dragStartCrop.w) - candidateW);
+            cropW = Math.round(candidateW);
+            cropH = Math.round(candidateH);
+          }
+        }
+
+        // Final boundary sanity clamp
+        cropX = Math.max(0, Math.min(loadedImg.width - cropW, cropX));
+        cropY = Math.max(0, Math.min(loadedImg.height - cropH, cropY));
+        cropW = Math.max(minW, Math.min(loadedImg.width - cropX, cropW));
+        cropH = Math.max(minH, Math.min(loadedImg.height - cropY, cropH));
+
         drawCropPreview();
       } else {
-        cropPreviewCanvas.style.cursor = isInsideCrop(pos.x, pos.y) ? 'move' : 'default';
+        const handle = getHitHandle(pos.x, pos.y);
+        cropPreviewCanvas.style.cursor = getCursorForHandle(handle);
       }
     }
 
     function onDragEnd() {
       isDragging = false;
+      activeHandle = null;
     }
 
     cropPreviewCanvas.addEventListener('mousedown', onDragStart);
@@ -581,11 +755,12 @@
     cropPreviewCanvas.addEventListener('touchstart', onDragStart, { passive: false });
     window.addEventListener('touchmove', onDragMove, { passive: false });
     window.addEventListener('touchend', onDragEnd);
+    window.addEventListener('touchcancel', onDragEnd);
 
     window.setCropRatio = (r, btn, label) => {
       ratio = r;
-      ratioLabel = label || 'Custom';
-      document.querySelectorAll('.preset-pill').forEach(p => p.classList.remove('active'));
+      ratioLabel = label || (r === null ? 'Freeform' : 'Custom');
+      document.querySelectorAll('#cropRatioButtons .preset-pill').forEach(p => p.classList.remove('active'));
       if (btn) btn.classList.add('active');
       resetCropRect();
       updateLivePreview();

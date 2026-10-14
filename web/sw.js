@@ -1,8 +1,10 @@
-// DocToolKit Service Worker for Offline PWA - v2.7.0
-const CACHE_NAME = 'doctoolkit-v2.7.0';
+// DocToolKit Service Worker for Offline PWA - v2.8.0
+const CACHE_NAME = 'doctoolkit-v2.8.0';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
+  './tools/',
+  './tools/index.html',
   './404.html',
   './manifest.json',
   './favicon.ico',
@@ -15,14 +17,16 @@ const ASSETS_TO_CACHE = [
   './icons/favicon-32x32.png',
   './icons/doctoolkit-logo-horizontal.png',
   './icons/doctoolkit-logo-horizontal.webp',
+  './icons/doctoolkit-logo-horizontal-dark.png',
+  './icons/doctoolkit-logo-horizontal-dark.webp',
   './icons/doctoolkit-icon-master.png',
   './icons/og-image.png',
   './icons/icon-192.webp',
   './icons/icon-512.webp',
   './css/style.css',
-  './css/style.css?v=2.7.0',
+  './css/style.css?v=2.8.0',
   './js/app.js',
-  './js/app.js?v=2.7.0',
+  './js/app.js?v=2.8.0',
   './js/pdf-lib.min.js',
   './js/pdf.min.js',
   './js/pdf.worker.min.js'
