@@ -82,10 +82,16 @@
 
   // 3. User Preferences & Storage
   function getPref(key, def) {
-    return localStorage.getItem('doctoolkit_' + key) || localStorage.getItem('bharatfile_' + key) || def;
+    try {
+      return localStorage.getItem('doctoolkit_' + key) || localStorage.getItem('bharatfile_' + key) || def;
+    } catch (e) {
+      return def;
+    }
   }
   function setPref(key, val) {
-    localStorage.setItem('doctoolkit_' + key, val);
+    try {
+      localStorage.setItem('doctoolkit_' + key, val);
+    } catch (e) {}
   }
 
   // Recent Activity Local Storage Manager
@@ -249,8 +255,8 @@
       const btn = container.querySelector('#btnRetryFeedbackOp');
       if (btn) {
         btn.onclick = () => {
+          DocToolKit.hideResult(containerId);
           if (onRetry) onRetry();
-          else DocToolKit.hideResult(containerId);
         };
       }
     },
@@ -373,12 +379,17 @@
     const saved = getPref('theme', null);
     const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
     const isDark = saved === 'dark' || (!saved && prefersDark);
-    if (isDark) {
-      document.body.classList.add('dark-mode');
-      document.documentElement.setAttribute('data-theme', 'dark');
-    } else {
-      document.body.classList.remove('dark-mode');
-      document.documentElement.setAttribute('data-theme', 'light');
+    if (document.documentElement) {
+      document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+    }
+    if (document.body) {
+      if (isDark) {
+        document.body.classList.add('dark-mode');
+        document.body.classList.remove('light-mode');
+      } else {
+        document.body.classList.remove('dark-mode');
+        document.body.classList.add('light-mode');
+      }
     }
     const btns = document.querySelectorAll('.theme-toggle-btn');
     btns.forEach(b => {
@@ -389,9 +400,21 @@
   };
 
   window.toggleTheme = function() {
-    document.body.classList.toggle('dark-mode');
-    const isDark = document.body.classList.contains('dark-mode');
-    document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+    const wasDark = (document.documentElement && document.documentElement.getAttribute('data-theme') === 'dark') ||
+                    (document.body && document.body.classList.contains('dark-mode'));
+    const isDark = !wasDark;
+    if (document.documentElement) {
+      document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+    }
+    if (document.body) {
+      if (isDark) {
+        document.body.classList.add('dark-mode');
+        document.body.classList.remove('light-mode');
+      } else {
+        document.body.classList.remove('dark-mode');
+        document.body.classList.add('light-mode');
+      }
+    }
     setPref('theme', isDark ? 'dark' : 'light');
     const btns = document.querySelectorAll('.theme-toggle-btn');
     btns.forEach(b => {
@@ -400,6 +423,14 @@
       b.setAttribute('title', isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode');
     });
   };
+
+  // Immediate theme execution to prevent theme flash
+  try { initTheme(); } catch (e) {}
+
+  // Synchronize theme on page restoration from bfcache
+  window.addEventListener('pageshow', () => {
+    try { initTheme(); } catch (e) {}
+  });
 
   // 5. Drawer Controls
   window.openDrawer = function() {

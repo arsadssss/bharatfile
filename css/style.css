@@ -20,7 +20,9 @@
   --dropzone-border: #B8C7E8;
 }
 
-body.dark-mode {
+body.dark-mode,
+[data-theme="dark"],
+[data-theme="dark"] body {
   --bg-page: #0B0E14;
   --card-bg: rgba(20, 25, 36, 0.96);
   --card-border: rgba(45, 55, 75, 0.85);
@@ -30,6 +32,20 @@ body.dark-mode {
   --track-bg: #222938;
   --dropzone-bg: rgba(244, 248, 255, 0.04);
   --dropzone-border: #38445C;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg-page: #0B0E14;
+    --card-bg: rgba(20, 25, 36, 0.96);
+    --card-border: rgba(45, 55, 75, 0.85);
+    --card-shadow: 0 10px 32px rgba(0, 0, 0, 0.3);
+    --text-main: #F1F5F9;
+    --text-muted: #94A3B8;
+    --track-bg: #222938;
+    --dropzone-bg: rgba(244, 248, 255, 0.04);
+    --dropzone-border: #38445C;
+  }
 }
 
 * {
@@ -182,9 +198,11 @@ body.dark-mode .logo-light,
 }
 
 @media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .logo-dark,
   body:not(.light-mode):not([data-theme="light"]):not(.dark-mode) .logo-dark {
     display: inline-block !important;
   }
+  :root:not([data-theme="light"]) .logo-light,
   body:not(.light-mode):not([data-theme="light"]):not(.dark-mode) .logo-light {
     display: none !important;
   }
@@ -1041,7 +1059,8 @@ button:disabled,
   box-shadow: 0 0 0 3px rgba(13, 89, 242, 0.15);
 }
 
-body.dark-mode .target-unit-select {
+body.dark-mode .target-unit-select,
+[data-theme="dark"] .target-unit-select {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
 }
 
@@ -1265,12 +1284,14 @@ body.dark-mode .target-unit-select {
   100% { transform: translateY(-6px) scale(1.05); }
 }
 
-body.dark-mode .stacked-doc {
+body.dark-mode .stacked-doc,
+[data-theme="dark"] .stacked-doc {
   background: #1A2234;
   border-color: #2D374B;
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4);
 }
-body.dark-mode .doc-back {
+body.dark-mode .doc-back,
+[data-theme="dark"] .doc-back {
   background: #111827;
   border-color: #1F2937;
 }
